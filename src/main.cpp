@@ -1,4 +1,5 @@
-#include <iostream>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
@@ -6,8 +7,31 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include <iostream>
+#include <utility>
+
 enum PieceType {
 	NO_PIECE, WHITE_PIECE, BLACK_PIECE
+};
+
+PieceType board[8][8];
+
+void initGame() {
+	for(int row = 0; row < 3; row++) {
+		for(int col = 0; col < 8; col++) {
+			board[row][col] = (row + col) % 2 == 0 ? NO_PIECE : WHITE_PIECE;
+		}
+	}
+	for(int row = 3; row < 5; row++) {
+		for(int col = 0; col < 8; col++) {
+			board[row][col] = NO_PIECE;
+		}
+	}
+	for(int row = 5; row < 8; row++) {
+		for(int col = 0; col < 8; col++) {
+			board[row][col] = (row + col) % 2 == 0 ? NO_PIECE : BLACK_PIECE;
+		}
+	}
 }
 
 void initOpenGL() {
@@ -16,6 +40,7 @@ void initOpenGL() {
 	glEnable (GL_BLEND); 
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glClearColor(1.f, 1.f, 1.f, 1.f);
+	//glDepthFunc(GL_NEVER);
 }
 
 /* function to reset our viewport after a window resize */
@@ -28,8 +53,13 @@ int updateViewport(int width, int height) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
+std::pair<int, int> windowToGameCoords(int x, int y) {
+	return std::pair<int, int>(8. * x / 800., 8. * y / 600.);
+}
+
 bool handleMouseButtonEvent(const SDL_MouseButtonEvent& event) {
-	std::cout << "mouse click on " << event.x << " " << event.y << std::endl;
+	std::pair<int, int> gameCoords = windowToGameCoords(event.x, event.y);
+	std::cout << "mouse click on " << gameCoords.first << " " << gameCoords.second << std::endl;
 	
 	return true;
 }
@@ -61,15 +91,44 @@ bool handleEvent(const SDL_Event& event) {
 	return true;
 }
 
+void drawCircle(float x, float y, float radius) {
+	const int vertices = 20;
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex2f(x, y);
+	for(int i = 0; i < vertices + 1; i++) {
+		glVertex2f(x + radius * cos(2.0 * M_PI * i / vertices), y + radius * sin(2.0 * M_PI * i / vertices));
+	}
+	glEnd();
+}
+
 void render(SDL_Renderer* displayRenderer) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	for(int row = 0; row < 8; row++) {
+		for(int col = 0; col < 8; col++) {
+			if(board[row][col] == WHITE_PIECE) {
+				glColor3f(1, 1, 1);
+			} else if(board[row][col] == BLACK_PIECE) {
+				glColor3f(0, 0, 0);
+			}
+			
+			if(board[row][col] != NO_PIECE) {
+				drawCircle((col + .5) / 8., (row + .5) / 8., 1/16.);
+			}
+		}
+	}
+	
 	glBegin(GL_QUADS);
-	glColor3f(1.0, 0., 0.);
-	glVertex2d(0.0, 0.0);
-	glVertex2d(0.0, 0.5);
-	glVertex2d(0.5, 0.5);
-	glVertex2d(0.5, 0.0);
+	for(int row = 0; row < 8; row++) {
+		for(int col = 0; col < 8; col++) {
+			float shade = (row + col) % 2 == 0 ? .75f : .25f;
+			glColor3f(shade, shade, shade);
+			glVertex2f((row + 0) / 8.f, (col + 0) / 8.f);
+			glVertex2f((row + 1) / 8.f, (col + 0) / 8.f);
+			glVertex2f((row + 1) / 8.f, (col + 1) / 8.f);
+			glVertex2f((row + 0) / 8.f, (col + 1) / 8.f);
+		}
+	}
 	glEnd();
 	
 	SDL_RenderPresent(displayRenderer);
@@ -90,7 +149,7 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 	
-	
+	initGame();
 	initOpenGL();
 
 	updateViewport(800, 600);
