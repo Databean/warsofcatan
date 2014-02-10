@@ -54,12 +54,24 @@ int updateViewport(int width, int height) {
 }
 
 std::pair<int, int> windowToGameCoords(int x, int y) {
-	return std::pair<int, int>(8. * x / 800., 8. * y / 600.);
+	return std::pair<int, int>((8. * x / 800.), (8. * y / 600.));
 }
+
+std::pair<int, int> selectedCoord(-1, -1);
 
 bool handleMouseButtonEvent(const SDL_MouseButtonEvent& event) {
 	std::pair<int, int> gameCoords = windowToGameCoords(event.x, event.y);
-	std::cout << "mouse click on " << gameCoords.first << " " << gameCoords.second << std::endl;
+	
+	if(event.type == SDL_MOUSEBUTTONDOWN) {
+		std::cout << "mouse click on " << gameCoords.first << " " << gameCoords.second << std::endl;
+		if(selectedCoord == std::make_pair(-1, -1)) {
+			selectedCoord = gameCoords;
+		} else {
+			board[gameCoords.second][gameCoords.first] = board[selectedCoord.second][selectedCoord.first];
+			board[selectedCoord.second][selectedCoord.first] = NO_PIECE;
+			selectedCoord = std::make_pair(-1, -1);
+		}
+	}
 	
 	return true;
 }
@@ -123,6 +135,9 @@ void render(SDL_Renderer* displayRenderer) {
 		for(int col = 0; col < 8; col++) {
 			float shade = (row + col) % 2 == 0 ? .75f : .25f;
 			glColor3f(shade, shade, shade);
+			if(selectedCoord == std::make_pair(row, col)) {
+				glColor3f(1.f, 0.f, 0.f);
+			}
 			glVertex2f((row + 0) / 8.f, (col + 0) / 8.f);
 			glVertex2f((row + 1) / 8.f, (col + 0) / 8.f);
 			glVertex2f((row + 1) / 8.f, (col + 1) / 8.f);
