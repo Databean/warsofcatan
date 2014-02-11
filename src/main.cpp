@@ -51,6 +51,7 @@ int updateViewport(int width, int height) {
 	gluOrtho2D(0, 1, 1, 0);
 	
 	glMatrixMode(GL_MODELVIEW);
+	return 0;
 }
 
 std::pair<int, int> windowToGameCoords(int x, int y) {
