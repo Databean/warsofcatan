@@ -165,7 +165,7 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 	
-	SDL_GL_CreateContext(displayWindow);
+	SDL_GLContext glContext = SDL_GL_CreateContext(displayWindow);
 	
 	initGame();
 	initOpenGL();
@@ -182,6 +182,7 @@ int main(int argc, char *argv[]) {
 		SDL_Delay(100);
 	}
 	
+	SDL_GL_DeleteContext(glContext);
 	SDL_Quit();
 	
 	return 0;
