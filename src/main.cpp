@@ -113,7 +113,7 @@ void drawCircle(float x, float y, float radius) {
 	glEnd();
 }
 
-void render(SDL_Renderer* displayRenderer) {
+void render(SDL_Window* displayWindow) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	for(int row = 0; row < 8; row++) {
@@ -146,7 +146,8 @@ void render(SDL_Renderer* displayRenderer) {
 	}
 	glEnd();
 	
-	SDL_RenderPresent(displayRenderer);
+	glFlush();
+	SDL_GL_SwapWindow(displayWindow);
 }
 
 
@@ -164,6 +165,8 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 	
+	SDL_GL_CreateContext(displayWindow);
+	
 	initGame();
 	initOpenGL();
 
@@ -175,7 +178,7 @@ int main(int argc, char *argv[]) {
 		while(SDL_PollEvent(&event)) {
 			running = handleEvent(event);
 		}
-		render(displayRenderer);
+		render(displayWindow);
 		SDL_Delay(100);
 	}
 	
