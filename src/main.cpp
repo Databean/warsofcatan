@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 			running = acceptInput(testBoard, testPlayer, event);
 		}
 		
-		
+		renderBoard(testBoard, testPlayer);
 		
 		SDL_GL_SwapWindow(displayWindow);
 		SDL_Delay(100);
