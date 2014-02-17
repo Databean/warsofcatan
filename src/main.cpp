@@ -10,28 +10,8 @@
 #include <iostream>
 #include <utility>
 
-enum PieceType {
-	NO_PIECE, WHITE_PIECE, BLACK_PIECE
-};
-
-PieceType board[8][8];
-
 void initGame() {
-	for(int row = 0; row < 3; row++) {
-		for(int col = 0; col < 8; col++) {
-			board[row][col] = (row + col) % 2 == 0 ? NO_PIECE : WHITE_PIECE;
-		}
-	}
-	for(int row = 3; row < 5; row++) {
-		for(int col = 0; col < 8; col++) {
-			board[row][col] = NO_PIECE;
-		}
-	}
-	for(int row = 5; row < 8; row++) {
-		for(int col = 0; col < 8; col++) {
-			board[row][col] = (row + col) % 2 == 0 ? NO_PIECE : BLACK_PIECE;
-		}
-	}
+	
 }
 
 void initOpenGL() {
@@ -53,34 +33,13 @@ int updateViewport(int width, int height) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
-std::pair<int, int> windowToGameCoords(int x, int y) {
-	return std::pair<int, int>((8. * x / 800.), (8. * y / 600.));
-}
-
-std::pair<int, int> selectedCoord(-1, -1);
-
 bool handleMouseButtonEvent(const SDL_MouseButtonEvent& event) {
-	std::pair<int, int> gameCoords = windowToGameCoords(event.x, event.y);
-	
-	if(event.type == SDL_MOUSEBUTTONDOWN) {
-		std::cout << "mouse click on " << gameCoords.first << " " << gameCoords.second << std::endl;
-		if(selectedCoord == std::make_pair(-1, -1)) {
-			selectedCoord = gameCoords;
-		} else {
-			board[gameCoords.second][gameCoords.first] = board[selectedCoord.second][selectedCoord.first];
-			board[selectedCoord.second][selectedCoord.first] = NO_PIECE;
-			selectedCoord = std::make_pair(-1, -1);
-		}
-	}
 	
 	return true;
 }
 
 bool handleKeyboardEvent(const SDL_KeyboardEvent& event) {
-	if(event.keysym.sym == SDLK_ESCAPE) {
-		return false;
-	}
-	//TODO: key-specific code
+	
 	return true;
 }
 
@@ -103,48 +62,8 @@ bool handleEvent(const SDL_Event& event) {
 	return true;
 }
 
-void drawCircle(float x, float y, float radius) {
-	const int vertices = 20;
-	glBegin(GL_TRIANGLE_FAN);
-	glVertex2f(x, y);
-	for(int i = 0; i < vertices + 1; i++) {
-		glVertex2f(x + radius * cos(2.0 * M_PI * i / vertices), y + radius * sin(2.0 * M_PI * i / vertices));
-	}
-	glEnd();
-}
-
 void render(SDL_Window* displayWindow) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	for(int row = 0; row < 8; row++) {
-		for(int col = 0; col < 8; col++) {
-			if(board[row][col] == WHITE_PIECE) {
-				glColor3f(1, 1, 1);
-			} else if(board[row][col] == BLACK_PIECE) {
-				glColor3f(0, 0, 0);
-			}
-			
-			if(board[row][col] != NO_PIECE) {
-				drawCircle((col + .5) / 8., (row + .5) / 8., 1/16.);
-			}
-		}
-	}
-	
-	glBegin(GL_QUADS);
-	for(int row = 0; row < 8; row++) {
-		for(int col = 0; col < 8; col++) {
-			float shade = (row + col) % 2 == 0 ? .75f : .25f;
-			glColor3f(shade, shade, shade);
-			if(selectedCoord == std::make_pair(row, col)) {
-				glColor3f(1.f, 0.f, 0.f);
-			}
-			glVertex2f((row + 0) / 8.f, (col + 0) / 8.f);
-			glVertex2f((row + 1) / 8.f, (col + 0) / 8.f);
-			glVertex2f((row + 1) / 8.f, (col + 1) / 8.f);
-			glVertex2f((row + 0) / 8.f, (col + 1) / 8.f);
-		}
-	}
-	glEnd();
 	
 	glFlush();
 	SDL_GL_SwapWindow(displayWindow);
