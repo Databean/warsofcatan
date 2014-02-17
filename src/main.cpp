@@ -10,6 +10,11 @@
 #include <iostream>
 #include <utility>
 
+#include "GameBoard.h"
+#include "UserInput.h"
+#include "Player.h"
+#include "Renderer.h"
+
 void initGame() {
 	
 }
@@ -33,43 +38,6 @@ int updateViewport(int width, int height) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
-bool handleMouseButtonEvent(const SDL_MouseButtonEvent& event) {
-	
-	return true;
-}
-
-bool handleKeyboardEvent(const SDL_KeyboardEvent& event) {
-	
-	return true;
-}
-
-bool handleQuitEvent(const SDL_QuitEvent& event) {
-	return false;
-}
-
-// Returns true if the program should continue running, false if it should exit
-bool handleEvent(const SDL_Event& event) {
-	switch(event.type) {
-		case SDL_MOUSEBUTTONDOWN:
-		case SDL_MOUSEBUTTONUP:
-			return handleMouseButtonEvent(event.button);
-		case SDL_KEYUP:
-		case SDL_KEYDOWN:
-			return handleKeyboardEvent(event.key);
-		case SDL_QUIT:
-			return handleQuitEvent(event.quit);
-	}
-	return true;
-}
-
-void render(SDL_Window* displayWindow) {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	glFlush();
-	SDL_GL_SwapWindow(displayWindow);
-}
-
-
 int main(int argc, char *argv[]) {
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_Window* displayWindow;
@@ -86,18 +54,23 @@ int main(int argc, char *argv[]) {
 	
 	SDL_GLContext glContext = SDL_GL_CreateContext(displayWindow);
 	
-	initGame();
 	initOpenGL();
 
-	updateViewport(800, 600);
+	updateViewport(1024, 768);
+	
+	Player testPlayer;
+	GameBoard testBoard;
 	
 	bool running = true;
 	while(running) {
 		SDL_Event event;
 		while(SDL_PollEvent(&event)) {
-			running = handleEvent(event);
+			running = acceptInput(testBoard, testPlayer, event);
 		}
-		render(displayWindow);
+		
+		
+		
+		SDL_GL_SwapWindow(displayWindow);
 		SDL_Delay(100);
 	}
 	

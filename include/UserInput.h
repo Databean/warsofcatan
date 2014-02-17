@@ -6,6 +6,6 @@
 #include "GameBoard.h"
 #include "Player.h"
 
-void acceptInput(GameBoard& board, Player& turn, SDL_Event& event);
+bool acceptInput(GameBoard& board, Player& turn, SDL_Event& event);
 
 #endif
