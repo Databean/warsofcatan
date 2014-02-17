@@ -6,4 +6,4 @@ HEADERS := $(wildcard $(INCL_HOME)/*.h)
 main: $(OBJECTS)
 
 $(OBJ_HOME)/%.o: %.cpp $(HEADERS)
-	$(CXX) $(CXXFLAGS) $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
