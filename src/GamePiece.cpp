@@ -15,7 +15,7 @@ GamePiece::~GamePiece() {
 }
 
 ResourceTile::ResourceTile(GameBoard& board, Type type, unsigned short diceValue) : GamePiece(board), type(type), diceValue(diceValue) {
-	if(type != WOOD || type != SHEEP || type != ORE || type != BRICK || type != GRAIN || type != DESERT) {
+	if(type != WOOD && type != SHEEP && type != ORE && type != BRICK && type != GRAIN && type != DESERT) {
 		throw runtime_error("Invalid resource tile type");
 	}
 	if(diceValue < 2 || diceValue > 12) {
