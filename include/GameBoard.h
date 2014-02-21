@@ -18,6 +18,8 @@ public:
 	GameBoard(GameBoard&) = delete;
 	~GameBoard();
 	GameBoard& operator=(GameBoard&) = delete;
+	
+	const std::map<Coordinate, std::unique_ptr<GamePiece>>& getPieces() const;
 };
 
 #endif
