@@ -13,7 +13,7 @@ public:
 	GamePiece(GameBoard& board);
 	GamePiece(GamePiece&) = delete;
 	virtual ~GamePiece();
-	virtual GamePiece& operator=(GamePiece&) = delete;
+	//virtual GamePiece& operator=(GamePiece&) = delete;
 };
 
 class ResourceTile : public GamePiece {
@@ -23,7 +23,7 @@ public:
 	ResourceTile(GameBoard& board);
 	ResourceTile(ResourceTile&) = delete;
 	virtual ~ResourceTile();
-	virtual ResourceTile& operator=(ResourceTile&) = delete;
+	//virtual ResourceTile& operator=(ResourceTile&) = delete;
 };
 
 class Settlement : public GamePiece {
@@ -33,7 +33,7 @@ public:
 	Settlement(GameBoard& board, Player& owner);
 	Settlement(Settlement&) = delete;
 	virtual ~Settlement();
-	virtual Settlement& operator=(Settlement&) = delete;
+	//virtual Settlement& operator=(Settlement&) = delete;
 };
 
 class Road {
@@ -46,7 +46,8 @@ public:
 	Road(GameBoard& board, Player& owner, Coordinate start, Coordinate end);
 	Road(Road&);
 	~Road();
-	Road& operator=(Road&) = delete;
+	//Road& operator=(Road&) = delete;
 };
 
 #endif
+
