@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 
 	updateViewport(1024, 768);
 	
-	Player testPlayer;
+	Player testPlayer("test");
 	GameBoard testBoard;
 	
 	bool running = true;
