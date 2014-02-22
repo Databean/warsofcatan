@@ -14,6 +14,23 @@ GamePiece::~GamePiece() {
 	
 }
 
+Coordinate GamePiece::getCoordinates() const {
+	for(auto& it : board.getPieces()) {
+		if(it.second.get() == this) {
+			return it.first;
+		}
+	}
+	throw runtime_error("This GamePiece does not exist on the board it holds a reference to.");
+}
+
+GameBoard& GamePiece::getBoard() {
+	return board;
+}
+
+const GameBoard& GamePiece::getBoard() const {
+	return board;
+}
+
 ResourceTile::ResourceTile(GameBoard& board, Type type, unsigned short diceValue) : GamePiece(board), type(type), diceValue(diceValue) {
 	if(type != WOOD && type != SHEEP && type != ORE && type != BRICK && type != GRAIN && type != DESERT) {
 		throw runtime_error("Invalid resource tile type");

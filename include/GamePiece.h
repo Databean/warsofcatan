@@ -14,6 +14,10 @@ public:
 	GamePiece(GamePiece&) = delete;
 	virtual ~GamePiece();
 	virtual GamePiece& operator=(GamePiece&) = delete;
+	
+	Coordinate getCoordinates() const;
+	GameBoard& getBoard();
+	const GameBoard& getBoard() const;
 };
 
 class ResourceTile : public GamePiece {
