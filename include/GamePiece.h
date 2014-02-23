@@ -10,10 +10,11 @@ class GamePiece {
 private:
 	GameBoard& board;
 public:
-	GamePiece(GameBoard& board);
+	GamePiece(GameBoard& board, Coordinate location);
 	GamePiece(GamePiece&) = delete;
 	virtual ~GamePiece();
-	virtual GamePiece& operator=(GamePiece&) = delete;
+	Coordinate location; 
+	//virtual GamePiece& operator=(GamePiece&) = delete;
 };
 
 class ResourceTile : public GamePiece {
@@ -21,19 +22,28 @@ private:
 	
 public:
 	ResourceTile(GameBoard& board);
+	ResourceTile(GameBoard& board, Coordinate location, int resource, int value);
 	ResourceTile(ResourceTile&) = delete;
+
+	//dispense resource cards to owning players
+	void Payout();
+
+	int resource;
+	int value;
+
 	virtual ~ResourceTile();
-	virtual ResourceTile& operator=(ResourceTile&) = delete;
+	//virtual ResourceTile& operator=(ResourceTile&) = delete;
 };
 
 class Settlement : public GamePiece {
 private:
 	Player& owner;
 public:
-	Settlement(GameBoard& board, Player& owner);
+	Settlement(GameBoard& board, Coordinate location, Player& owner);
 	Settlement(Settlement&) = delete;
 	virtual ~Settlement();
-	virtual Settlement& operator=(Settlement&) = delete;
+	bool city;
+	//virtual Settlement& operator=(Settlement&) = delete;
 };
 
 class Road {
@@ -46,7 +56,7 @@ public:
 	Road(GameBoard& board, Player& owner, Coordinate start, Coordinate end);
 	Road(Road&);
 	~Road();
-	Road& operator=(Road&) = delete;
+	//Road& operator=(Road&) = delete;
 };
 
 #endif
