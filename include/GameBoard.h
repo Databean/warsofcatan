@@ -23,7 +23,7 @@ public:
 	GameBoard(GameBoard&) = delete;
 	~GameBoard();
 	GameBoard& operator=(GameBoard&) = delete;
-	std::vector<GamePiece> GetNeighbors(Coordinate location);
+	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location);
 
 	void PlaceSettlement(Coordinate location, Player& Owner);
 

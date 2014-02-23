@@ -14,29 +14,23 @@ GameBoard::GameBoard() {
 GameBoard::~GameBoard() {
 	
 }
-/*
-std::vector<GamePiece> GameBoard::GetNeighbors(Coordinate location){
-	std::vector<GamePiece> v;
-	for (int i = -1; i < 1; i++)
-	{
-		Settlement* sett = dynamic_cast<Settlement*>(&(corners[Coordinate(location.first + i, location.second)]));
-		if (sett != 0)
-		{
-			v.insert(sett)
-		}
-		Settlement sett = dynamic_cast<Settlement*>(corners[Coordinate(location.first + i, location.second - i)]);
-		if (sett != 0)
-		{
-			v.insert(sett)		}
-		Settlement sett = dynamic_cast<Settlement*>(corners[Coordinate(location.first, location.second - i)]);
-		if (sett != 0)
-		{
-			v.insert(sett)
+
+std::vector<Settlement*> GameBoard::GetNeighboringSettlements(Coordinate location) {
+	static Coordinate adjacentCoordDiffs[] = {Coordinate(0, 1), Coordinate(1, 0), Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0), Coordinate(-1, 1)};
+	std::vector<Settlement*> v;
+	for(unsigned int i = 0; i < 6; i++) {
+		const Coordinate& diff = adjacentCoordDiffs[i];
+		Coordinate adjacentPoint(location.first + diff.first, location.second + diff.second);
+		auto it = resources.find(adjacentPoint);
+		if(it != resources.end()) {
+			GamePiece* piece = it->second.get();
+			if(dynamic_cast<Settlement*>(piece)) {
+				v.push_back(static_cast<Settlement*>(piece));
+			}
 		}
 	}
+	return v;
 }
-
-&/
 
 /* initialize board with a set of resources. Right now, just creates a static tile arrangement to test
 URL: http://images.fanpop.com/images/image_uploads/Differents-Boards-settlers-of-catan-521934_1157_768.jpg*/
