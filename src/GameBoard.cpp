@@ -110,7 +110,7 @@ void GameBoard::init_resources()
     random_shuffle(&rolls[0], &rolls[18]);
     
     int xcoords[] = {0, -2, 2, -3, -1, 1, 3, -4, -2, 0, 2, 4, -3, -1, 1, 3, -2, 0, 2};
-    int ycoords[] = {1,  2, 0,  3,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
+    int ycoords[] = {1,  2, 0,  4,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
 	
     
     #ifdef DUMMY_BOARD
