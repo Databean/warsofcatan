@@ -97,14 +97,3 @@ void GameBoard::init_resources()
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 	corners[location] = std::unique_ptr<GamePiece>(new Settlement(*this, location, Owner));
 }
-
-resourceType* randomizeBoard(resourceType* resources)
-{
-    std::srand(std::time(0));
-    
-}
-
-int* randomizeRolls(int* rolls)
-{
-    
-}
