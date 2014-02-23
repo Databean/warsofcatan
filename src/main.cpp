@@ -33,7 +33,7 @@ void updateViewport(int width, int height) {
 	glViewport(0, 0, width, height); 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity ();
-	gluOrtho2D(0, 1, 1, 0);
+	gluOrtho2D(0, 1, 0, 1);
 	
 	glMatrixMode(GL_MODELVIEW);
 }
