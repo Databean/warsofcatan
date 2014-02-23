@@ -52,8 +52,8 @@ void GameBoard::init_resources()
     int rolls[] = {2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11};
     random_shuffle(&rolls[0], &rolls[18]);
     
-    int xcoords[] = {0, -2, 2, -3, -1, 1, 3, -4, 2, 0, 2, 4, -3, -1, 1, 3, -2, 0, 2};
-    int ycoords[] = {1, 2, 0, 3, 3, 2, 1, 6, 5, 4, 3, 2, 7, 6, 5, 4, 8, 7, 6};
+    int xcoords[] = {0, -2, 2, -3, -1, 1, 3, -4, -2, 0, 2, 4, -3, -1, 1, 3, -2, 0, 2};
+    int ycoords[] = {1,  2, 0,  3,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
 	
     
     #ifdef DUMMY_BOARD
@@ -74,25 +74,25 @@ void GameBoard::init_resources()
 
     /*
     #ifdef DUMMY_BOARD
-	ADD_RESOURCE(0, 1, BRICK, 2);
+	ADD_RESOURCE( 0, 1, BRICK, 2);
 	ADD_RESOURCE(-2, 2, SHEEP, 5);
-	ADD_RESOURCE(2, 0, WOOD, 6);
+	ADD_RESOURCE( 2, 0, WOOD, 6);
 	ADD_RESOURCE(-3, 3, DESERT, 0);
 	ADD_RESOURCE(-1, 3, SHEEP, 10);
-	ADD_RESOURCE(1, 2, WHEAT, 9);
-	ADD_RESOURCE(3, 1, WHEAT, 3);
+	ADD_RESOURCE( 1, 2, WHEAT, 9);
+	ADD_RESOURCE( 3, 1, WHEAT, 3);
 	ADD_RESOURCE(-4, 6, WOOD, 8);
 	ADD_RESOURCE(-2, 5, SHEEP, 3);
-	ADD_RESOURCE(0, 4, STONE, 11);
-	ADD_RESOURCE(2, 3, STONE, 4);
-	ADD_RESOURCE(4, 2, SHEEP, 8);
+	ADD_RESOURCE( 0, 4, STONE, 11);
+	ADD_RESOURCE( 2, 3, STONE, 4);
+	ADD_RESOURCE( 4, 2, SHEEP, 8);
 	ADD_RESOURCE(-3, 7, BRICK, 4);
 	ADD_RESOURCE(-1, 6, WHEAT, 6);
-	ADD_RESOURCE(1, 5, WOOD, 5);
-	ADD_RESOURCE(3, 4, BRICK, 10);
+	ADD_RESOURCE( 1, 5, WOOD, 5);
+	ADD_RESOURCE( 3, 4, BRICK, 10);
 	ADD_RESOURCE(-2, 8, WOOD, 11);
-	ADD_RESOURCE(0, 7, STONE, 12);
-	ADD_RESOURCE(2, 6, WHEAT, 9);
+	ADD_RESOURCE( 0, 7, STONE, 12);
+	ADD_RESOURCE( 2, 6, WHEAT, 9);
 	#endif
     */
 	
