@@ -1,8 +1,14 @@
 #include "GameBoard.h"
 
-#define ADD_RESOURCE(x, y, res, val) (resources[Coordinate(x,y)] = \
+#include <ctime>
+#include <algorithm>
+
+#define ADD_RESOURCE(x, y, res, val) (this->resources[Coordinate(x,y)] = \
 std::unique_ptr<GamePiece>(new ResourceTile(*this, Coordinate(x,y), res, val)))
 #define DUMMY_BOARD //define to instantiate dummy board for debugging 
+
+using std::random_shuffle;
+using std::time;
 
 GameBoard::GameBoard() {
 
@@ -52,7 +58,7 @@ void GameBoard::init_resources()
     
     #ifdef DUMMY_BOARD
     int rollCount = 0;
-    for (int i = 0; i<19, i++)
+    for (int i = 0; i<19; i++)
     {
         if (resources[i]==DESERT)
         {
