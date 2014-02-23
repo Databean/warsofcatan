@@ -4,6 +4,6 @@
 #include "GameBoard.h"
 #include "Player.h"
 
-void renderBoard(GameBoard& board, Player& perspective);
+void renderBoard(const GameBoard& board, const Player& perspective);
 
 #endif

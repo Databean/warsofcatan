@@ -1,5 +1,11 @@
 #include "GameBoard.h"
 
+#include <map>
+#include <memory>
+
+using std::map;
+using std::unique_ptr;
+
 #include <ctime>
 #include <algorithm>
 
@@ -11,14 +17,65 @@ using std::random_shuffle;
 using std::time;
 
 GameBoard::GameBoard() {
-
 	init_resources();
-
-
 }
 
 GameBoard::~GameBoard() {
 	
+}
+
+
+int GameBoard::save_Board(std::string filename){
+	std::ofstream file;
+	file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+	try {
+		filename = filename + ".wocs";
+		file.open(filename.c_str());
+		constructFileFromBoard(file);
+		file.close();
+		return 0;
+	} catch (std::ofstream::failure e) {
+		std::cerr << "Exception opening/closing/writing file: " << e.what();
+	}
+	return -1;
+}
+
+int GameBoard::load_Board(std::string filename){
+	std::ifstream file;
+	try {
+		filename = filename + ".wocs";
+		file.open(filename.c_str());
+		constructBoardFromFile(file);
+		file.close();
+		return 0;
+	} catch (std::ifstream::failure e) {
+		std::cerr << "Exception opening/closing/reading file: " << e.what();
+	}
+	return -1;
+}
+
+int GameBoard::constructBoardFromFile(std::ifstream &file){
+	//Parse and construct the board from the file
+	//@ TODO
+	std::string line;
+	if (file.is_open()) {
+		while (getline(file, line)) {
+			std::cout << line << '\n';
+		}
+	}
+	return 0;
+}
+
+
+int GameBoard::constructFileFromBoard(std::ofstream &file){
+	//Construct the file based on the structure of the board
+	//@ TODO
+	file << "Hello World!";
+	return 0;
+}
+
+const map<Coordinate, unique_ptr<GamePiece>>& GameBoard::getResources() const {
+	return resources;
 }
 
 std::vector<Settlement*> GameBoard::GetNeighboringSettlements(Coordinate location) {
@@ -76,8 +133,8 @@ void GameBoard::init_resources()
     #ifdef DUMMY_BOARD
 	ADD_RESOURCE( 0, 1, BRICK, 2);
 	ADD_RESOURCE(-2, 2, SHEEP, 5);
-	ADD_RESOURCE( 2, 0, WOOD, 6);
-	ADD_RESOURCE(-3, 3, DESERT, 0);
+	ADD_RESOURCE(2, 0, WOOD, 6);
+	ADD_RESOURCE(-3, 4, DESERT, 0);
 	ADD_RESOURCE(-1, 3, SHEEP, 10);
 	ADD_RESOURCE( 1, 2, WHEAT, 9);
 	ADD_RESOURCE( 3, 1, WHEAT, 3);
@@ -103,3 +160,4 @@ void GameBoard::init_resources()
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 	corners[location] = std::unique_ptr<GamePiece>(new Settlement(*this, location, Owner));
 }
+

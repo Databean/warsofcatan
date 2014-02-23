@@ -4,6 +4,8 @@
 #include "Util.h"
 #include "Player.h"
 
+enum resourceType { WHEAT, SHEEP, STONE, BRICK, WOOD, DESERT };
+
 class GameBoard;
 
 class GamePiece {
@@ -13,26 +15,29 @@ public:
 	GamePiece(GameBoard& board, Coordinate location);
 	GamePiece(GamePiece&) = delete;
 	virtual ~GamePiece();
-	Coordinate location; 
 	//virtual GamePiece& operator=(GamePiece&) = delete;
+	
+	Coordinate getCoordinates() const;
+	GameBoard& getBoard();
+	const GameBoard& getBoard() const;
+	
+	Coordinate location; 
 };
 
 class ResourceTile : public GamePiece {
-private:
-	
 public:
 	ResourceTile(GameBoard& board);
-	ResourceTile(GameBoard& board, Coordinate location, int resource, int value);
+	ResourceTile(GameBoard& board, Coordinate location, resourceType resource, int value);
 	ResourceTile(ResourceTile&) = delete;
+	//virtual ResourceTile& operator=(ResourceTile&) = delete;
 
 	//dispense resource cards to owning players
 	void Payout();
 
-	int resource;
+	resourceType resource;
 	int value;
 
 	virtual ~ResourceTile();
-	//virtual ResourceTile& operator=(ResourceTile&) = delete;
 };
 
 class Settlement : public GamePiece {
@@ -42,8 +47,9 @@ public:
 	Settlement(GameBoard& board, Coordinate location, Player& owner);
 	Settlement(Settlement&) = delete;
 	virtual ~Settlement();
-	bool city;
 	//virtual Settlement& operator=(Settlement&) = delete;
+	
+	bool city;
 };
 
 class Road {
@@ -60,3 +66,4 @@ public:
 };
 
 #endif
+

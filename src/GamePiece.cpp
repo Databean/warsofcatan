@@ -2,8 +2,6 @@
 
 #include "GameBoard.h"
 
-
-
 GamePiece::GamePiece(GameBoard& board, Coordinate location) : board(board), location(location) {
 	
 }
@@ -12,7 +10,19 @@ GamePiece::~GamePiece() {
 	
 }
 
-ResourceTile::ResourceTile(GameBoard& board, Coordinate location, int resource, int value) : 
+Coordinate GamePiece::getCoordinates() const {
+	return location;
+}
+
+GameBoard& GamePiece::getBoard() {
+	return board;
+}
+
+const GameBoard& GamePiece::getBoard() const {
+	return board;
+}
+
+ResourceTile::ResourceTile(GameBoard& board, Coordinate location, resourceType resource, int value) : 
 GamePiece(board, location), resource(resource), value(value) {
 	
 }
@@ -21,9 +31,7 @@ ResourceTile::~ResourceTile() {
 	
 }
 
-
 //pay resource cards to owners of this tile
-
 /*
 void ResourceTile::Payout() {
 	std::vector<GamePiece> neighbors = board.GetNeighbors(location);
@@ -33,6 +41,7 @@ void ResourceTile::Payout() {
 	}
 }
 */
+
 Settlement::Settlement(GameBoard& board, Coordinate location, Player& owner) : 
 GamePiece(board, location), owner(owner), city(0) {
 	

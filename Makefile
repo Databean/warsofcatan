@@ -3,11 +3,11 @@ export SRC_HOME := $(realpath src)
 export INCL_HOME := $(realpath include)
 export TEST_LINK_FILES := $(realpath UnitTest++/libUnitTest++.a)
 export TEST_INCLUDE := $(realpath UnitTest++/src)
-EXECUTABLE := warsofcatan
+export EXECUTABLE := warsofcatan
 ALLFILES := $(wildcard $(SRC_HOME)/*) $(wildcard $(INCL_HOME)/*)
 export CXX := g++
 export LD := g++
-export CXXFLAGS := -g -I$(INCL_HOME) -std=c++0x
+export CXXFLAGS := -g -I$(INCL_HOME) -std=c++0x -Wall
 export LDFLAGS := -lSDL2 -lGL -lGLU
 
 .PHONY: all

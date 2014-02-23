@@ -29,11 +29,11 @@ void initOpenGL() {
 }
 
 /* function to reset our viewport after a window resize */
-int updateViewport(int width, int height) {
+void updateViewport(int width, int height) {
 	glViewport(0, 0, width, height); 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity ();
-	gluOrtho2D(0, 1, 1, 0);
+	gluOrtho2D(0, 1, 0, 1);
 	
 	glMatrixMode(GL_MODELVIEW);
 }
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
 	SDL_Window* displayWindow;
 	SDL_Renderer* displayRenderer;
 	SDL_RendererInfo displayRendererInfo;
-	SDL_CreateWindowAndRenderer(800, 600, SDL_WINDOW_OPENGL, &displayWindow, &displayRenderer);
+	SDL_CreateWindowAndRenderer(900, 900, SDL_WINDOW_OPENGL, &displayWindow, &displayRenderer);
 	SDL_GetRendererInfo(displayRenderer, &displayRendererInfo);
 	/*TODO: Check that we have OpenGL */
 	if ((displayRendererInfo.flags & SDL_RENDERER_ACCELERATED) == 0 || 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 
 	updateViewport(1024, 768);
 	
-	Player testPlayer;
+	Player testPlayer("test");
 	GameBoard testBoard;
 	
 	bool running = true;
