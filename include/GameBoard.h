@@ -18,8 +18,8 @@ private:
 	std::map<Coordinate, std::unique_ptr<GamePiece>> pieces;
 	std::vector<std::unique_ptr<const Road>> roads;
 
-	int constructBoardFromFile(std::ifstream * file);
-	int constructFileFromBoard(std::ofstream * file);
+	int constructBoardFromFile(std::ifstream &file);
+	int constructFileFromBoard(std::ofstream &file);
 
 public:
 	GameBoard();
