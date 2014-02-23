@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <utility>
+#include <algorithm>
 
 #include "Util.h"
 #include "GamePiece.h"
@@ -18,6 +19,7 @@ private:
 	std::map<Coordinate, std::unique_ptr<GamePiece>> corners;
 	std::map<Coordinate, std::unique_ptr<GamePiece>> resources;
 	std::vector<std::unique_ptr<const Road>> roads;
+    
 public:
 	GameBoard();
 	GameBoard(GameBoard&) = delete;

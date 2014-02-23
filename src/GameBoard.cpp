@@ -32,14 +32,42 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(Coordinate locatio
 	return v;
 }
 
-/* initialize board with a set of resources. Right now, just creates a static tile arrangement to test
-URL: http://images.fanpop.com/images/image_uploads/Differents-Boards-settlers-of-catan-521934_1157_768.jpg*/
+/* initialize board with a set of resources. Currently only the standard configuration (no custom shapes or expansion packs) is implemented.  Board tiles and roll numbers are randomized.
+    @todo Change the dummy board to the actual board
+ */
 
 void GameBoard::init_resources()
 {
+    std::srand(std::time(0));
+    
+    resourceType resources[] = {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP, DESERT};
+    random_shuffle(&resources[0], &resources[19]);
+    
+    int rolls[] = {2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11};
+    random_shuffle(&rolls[0], &rolls[18]);
+    
+    int xcoords[] = {0, -2, 2, -3, -1, 1, 3, -4, 2, 0, 2, 4, -3, -1, 1, 3, -2, 0, 2};
+    int ycoords[] = {1, 2, 0, 3, 3, 2, 1, 6, 5, 4, 3, 2, 7, 6, 5, 4, 8, 7, 6};
 	
+    
+    #ifdef DUMMY_BOARD
+    int rollCount = 0;
+    for (int i = 0; i<19, i++)
+    {
+        if (resources[i]==DESERT)
+        {
+            ADD_RESOURCE(xcoords[i], ycoords[i], resources[i], 0);
+        }
+        else
+        {
+            ADD_RESOURCE(xcoords[i], ycoords[i], resources[i], rolls[rollCount]);
+            rollCount++;
+        }
+    }
+    #endif
 
-	#ifdef DUMMY_BOARD
+    /*
+    #ifdef DUMMY_BOARD
 	ADD_RESOURCE(0, 1, BRICK, 2);
 	ADD_RESOURCE(-2, 2, SHEEP, 5);
 	ADD_RESOURCE(2, 0, WOOD, 6);
@@ -60,10 +88,23 @@ void GameBoard::init_resources()
 	ADD_RESOURCE(0, 7, STONE, 12);
 	ADD_RESOURCE(2, 6, WHEAT, 9);
 	#endif
+    */
 	
+    
 
 }
 
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 	corners[location] = std::unique_ptr<GamePiece>(new Settlement(*this, location, Owner));
+}
+
+resourceType* randomizeBoard(resourceType* resources)
+{
+    std::srand(std::time(0));
+    
+}
+
+int* randomizeRolls(int* rolls)
+{
+    
 }
