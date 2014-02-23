@@ -18,3 +18,4 @@ warsofcatan
 *.d
 *.test
 /Default
+*.wocs
