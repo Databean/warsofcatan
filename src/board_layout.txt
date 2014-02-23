@@ -5,7 +5,7 @@
 						hex cell
 
 
-
+						nicer looking but confusing picture
 						   (0,8)
 						/ \ /.\ / \
 						| | | | | |
@@ -30,3 +30,22 @@
 							| /
 							|/x
 							coordinate axes
+
+						more geometrically correct picture (just shrunk horizontally)
+						  (0,8)
+						/\ /\ /\
+						|| || ||
+						\/ \/ \/
+					   /\ /\ /\ /\
+					   || || || ||
+					   \/ \/ \/ \/
+					  /\ /\ /\ /\ /\
+			(-4, 6)   || || || || || (4,2)
+					  \/ \/ \/ \/ \/
+					   /\ /\ /\ /\
+					   || || || ||
+					   \/ \/ \/ \/
+					    /\ /\ /\
+						|| || ||
+						\/ \/ \/
+						  (0,0)
