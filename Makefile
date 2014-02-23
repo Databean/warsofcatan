@@ -7,7 +7,7 @@ EXECUTABLE := warsofcatan
 ALLFILES := $(wildcard $(SRC_HOME)/*) $(wildcard $(INCL_HOME)/*)
 export CXX := g++
 export LD := g++
-export CXXFLAGS := -g -I$(INCL_HOME) -std=gnu++0x -Wall
+export CXXFLAGS := -g -I$(INCL_HOME) -std=c++0x -Wall
 export LDFLAGS := -lSDL2 -lGL -lGLU
 
 .PHONY: all

@@ -2,11 +2,7 @@
 
 #include "GameBoard.h"
 
-#include <stdexcept>
-
-using std::runtime_error;
-
-GamePiece::GamePiece(GameBoard& board) : board(board) {
+GamePiece::GamePiece(GameBoard& board, Coordinate location) : board(board), location(location) {
 	
 }
 
@@ -15,12 +11,7 @@ GamePiece::~GamePiece() {
 }
 
 Coordinate GamePiece::getCoordinates() const {
-	for(auto& it : board.getPieces()) {
-		if(it.second.get() == this) {
-			return it.first;
-		}
-	}
-	throw runtime_error("This GamePiece does not exist on the board it holds a reference to.");
+	return location;
 }
 
 GameBoard& GamePiece::getBoard() {
@@ -31,28 +22,28 @@ const GameBoard& GamePiece::getBoard() const {
 	return board;
 }
 
-ResourceTile::ResourceTile(GameBoard& board, Type type, unsigned short diceValue) : GamePiece(board), type(type), diceValue(diceValue) {
-	if(type != WOOD && type != SHEEP && type != ORE && type != BRICK && type != GRAIN && type != DESERT) {
-		throw runtime_error("Invalid resource tile type");
-	}
-	if(diceValue < 2 || diceValue > 12) {
-		throw runtime_error("Invalid dice value");
-	}
+ResourceTile::ResourceTile(GameBoard& board, Coordinate location, resourceType resource, int value) : 
+GamePiece(board, location), resource(resource), value(value) {
+	
 }
 
 ResourceTile::~ResourceTile() {
 	
 }
 
-ResourceTile::Type ResourceTile::getType() const {
-	return type;
+//pay resource cards to owners of this tile
+/*
+void ResourceTile::Payout() {
+	std::vector<GamePiece> neighbors = board.GetNeighbors(location);
+	for (int i = 0; i < neighbors.size; i++) //someone tell me how to traverse a vector less stupidly
+	{
+		neighbors[i].owner.addresource(resource, 1 + neighbors[i].city)
+	}
 }
+*/
 
-unsigned short ResourceTile::getDiceValue() const {
-	return diceValue;
-}
-
-Settlement::Settlement(GameBoard& board, Player& owner) : GamePiece(board), owner(owner) {
+Settlement::Settlement(GameBoard& board, Coordinate location, Player& owner) : 
+GamePiece(board, location), owner(owner), city(0) {
 	
 }
 

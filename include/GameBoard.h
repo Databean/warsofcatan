@@ -14,7 +14,8 @@
 
 class GameBoard {
 private:
-	std::map<Coordinate, std::unique_ptr<GamePiece>> pieces;
+	std::map<Coordinate, std::unique_ptr<GamePiece>> corners;
+	std::map<Coordinate, std::unique_ptr<GamePiece>> resources;
 	std::vector<std::unique_ptr<const Road>> roads;
 
 	int constructBoardFromFile(std::ifstream &file);
@@ -28,7 +29,13 @@ public:
 	
 	int saveBoardToFile(std::string filename);
 	int loadBoardFromFile(std::string filename);
-	const std::map<Coordinate, std::unique_ptr<GamePiece>>& getPieces() const;
+	const std::map<Coordinate, std::unique_ptr<GamePiece>>& getResources() const;
+	
+	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location);
+
+	void PlaceSettlement(Coordinate location, Player& Owner);
+
+	void init_resources();
 };
 
 #endif

@@ -78,25 +78,25 @@ void drawHex(const Coordinate& coord, const ResourceTile& tile) {
 	static GLuint tileTextures = loadImageAsTexture("resources/tiles.bmp");
 	glBindTexture(GL_TEXTURE_2D, tileTextures);
 	typedef std::vector<pair<float, float> > texCoordList;
-	static const std::map<ResourceTile::Type, texCoordList> resourceTexCoords = {
-		make_pair(ResourceTile::GRAIN, texCoordList { make_pair(377, 73), make_pair(500, 285), 
+	static const std::map<resourceType, texCoordList> resourceTexCoords = {
+		make_pair(WHEAT, texCoordList { make_pair(377, 73), make_pair(500, 285), 
 			make_pair(380, 502), make_pair(136, 503), make_pair(10, 288), make_pair(134, 74)}),
-		make_pair(ResourceTile::SHEEP, texCoordList { make_pair(959, 75), make_pair(1076, 288),
+		make_pair(SHEEP, texCoordList { make_pair(959, 75), make_pair(1076, 288),
 			make_pair(955, 503), make_pair(712, 501), make_pair(586, 289), make_pair(708, 73)}),
-		make_pair(ResourceTile::WOOD, texCoordList { make_pair(1491, 60), make_pair(1618, 269),
+		make_pair(WOOD, texCoordList { make_pair(1491, 60), make_pair(1618, 269),
 			make_pair(1479, 490), make_pair(1260, 493), make_pair(1126, 283), make_pair(1246, 65)}),
-		make_pair(ResourceTile::ORE, texCoordList { make_pair(382, 689), make_pair(506, 898),
+		make_pair(STONE, texCoordList { make_pair(382, 689), make_pair(506, 898),
 			make_pair(386, 1118), make_pair(142, 1120), make_pair(17, 905), make_pair(138, 691)}),
-		make_pair(ResourceTile::BRICK, texCoordList { make_pair(1496, 690), make_pair(1617, 908),
+		make_pair(BRICK, texCoordList { make_pair(1496, 690), make_pair(1617, 908),
 			make_pair(1490, 1120), make_pair(1248, 1118), make_pair(1124, 898), make_pair(1250, 688)}),
-		make_pair(ResourceTile::DESERT, texCoordList { make_pair(1496, 690), make_pair(1617, 908),
+		make_pair(DESERT, texCoordList { make_pair(1496, 690), make_pair(1617, 908),
 			make_pair(1490, 1120), make_pair(1248, 1118), make_pair(1124, 898), make_pair(1250, 688)}),
 	};
 	static Coordinate adjacentCoordDiffs[] = {Coordinate(0, 1), Coordinate(1, 0), Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0), Coordinate(-1, 1)};
-	if(resourceTexCoords.find(tile.getType()) == resourceTexCoords.end()) {
+	if(resourceTexCoords.find(tile.resource) == resourceTexCoords.end()) {
 		throw runtime_error("Cannot draw this tile; it is invalid.");
 	}
-	const texCoordList& texCoords = resourceTexCoords.at(tile.getType());
+	const texCoordList& texCoords = resourceTexCoords.find(tile.resource)->second;
 	glBegin(GL_TRIANGLE_FAN);
 	texCoordPair(averagePoint(texCoords));
 	vertexPair(coord);
@@ -122,7 +122,7 @@ void drawHex(const Coordinate& coord, const ResourceTile& tile) {
 void renderBoard(const GameBoard& board, const Player& perspective) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	for(auto& it : board.getPieces()) {
+	for(auto& it : board.getResources()) {
 		const Coordinate& coord = it.first;
 		const GamePiece& piece = *(it.second);
 		if(dynamic_cast<const ResourceTile*>(&piece)) {
