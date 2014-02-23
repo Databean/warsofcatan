@@ -19,10 +19,6 @@
 class DevelopmentCard;
 class Deck;
 
-enum ResourceType {WOOD, BRICK, ORE, WHEAT, WOOL};
-
-
-
 //#include <ext/hash_map>
 //#include <unordered_map>
 

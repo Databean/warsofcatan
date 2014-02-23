@@ -8,6 +8,9 @@
 
 
 #include "Player.h"
+
+#include <algorithm>
+
 #include "DevelopmentCard.h"
 
 
@@ -16,6 +19,10 @@ Player::Player(std::string playerName)
 	armySize = 0;
 	longestRoad = 0;
 	victoryPoints = 0;
+}
+
+Player::~Player() {
+	
 }
 
 int Player::getDevCardsInHand()
