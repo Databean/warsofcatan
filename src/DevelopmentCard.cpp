@@ -16,8 +16,9 @@ DevelopmentCard::DevelopmentCard(Player* player):owner(player)
 
 }
 
-
-
+DevelopmentCard::~DevelopmentCard() {
+	
+}
 
 KnightCard::KnightCard(Player* player):DevelopmentCard(player)
 {

@@ -25,7 +25,7 @@ private:
     DevCardType type;
 public:
     DevelopmentCard(Player* player);
-//    virtual ~DevelopmentCard();
+    virtual ~DevelopmentCard();
 
     virtual DevCardType getType() = 0;
     virtual void playCard() = 0;
