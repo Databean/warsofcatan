@@ -25,9 +25,10 @@ public:
 	GameBoard(GameBoard&) = delete;
 	~GameBoard();
 	GameBoard& operator=(GameBoard&) = delete;
-
+	
 	int saveBoardToFile(std::string filename);
 	int loadBoardFromFile(std::string filename);
+	const std::map<Coordinate, std::unique_ptr<GamePiece>>& getPieces() const;
 };
 
 #endif
