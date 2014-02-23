@@ -51,7 +51,7 @@ inline pair<float, float> coordToScreen(const Coordinate& coord) {
 	float angle = M_PI / 3.f;
 	float x = .5f + (scale * coord.first) + (scale * coord.second) * cos(angle);
 	float y = .5f + (scale * coord.second) * sin(angle);
-	return std::make_pair(x, y);
+	return std::make_pair(x - 0.25f, y - 0.4f);
 }
 
 inline void vertexPair(const Coordinate& coord) {
