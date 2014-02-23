@@ -18,7 +18,7 @@ GamePiece(board, location), resource(resource), value(value) {
 }
 
 ResourceTile::~ResourceTile() {
-	int a;
+	
 }
 
 
@@ -26,7 +26,7 @@ ResourceTile::~ResourceTile() {
 
 /*
 void ResourceTile::Payout() {
-	std::vector<GamePiece> neighbors;
+	std::vector<GamePiece> neighbors = board.GetNeighbors(location);
 	for (int i = 0; i < neighbors.size; i++) //someone tell me how to traverse a vector less stupidly
 	{
 		neighbors[i].owner.addresource(resource, 1 + neighbors[i].city)
