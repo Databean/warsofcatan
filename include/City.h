@@ -7,7 +7,7 @@ class City : public CornerPiece {
 private:
 
 public:
-	City(GameBoard& board, Coordinate location);
+	City(GameBoard& board, Coordinate location, Player& owner);
 	City(City&) = delete;
 	~City();
 	City& operator=(City&) = delete;

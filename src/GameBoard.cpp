@@ -158,6 +158,6 @@ void GameBoard::init_resources()
 }
 
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
-	corners[location] = std::unique_ptr<GamePiece>(new Settlement(*this, location));
+	corners[location] = std::unique_ptr<GamePiece>(new Settlement(*this, location, Owner));
 }
 

@@ -1,6 +1,6 @@
 #include "Settlement.h"
 
-Settlement::Settlement(GameBoard& board, Coordinate location) : CornerPiece(board, location) {
+Settlement::Settlement(GameBoard& board, Coordinate location, Player& owner) : CornerPiece(board, location, owner) {
 	
 }
 

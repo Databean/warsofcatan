@@ -7,7 +7,7 @@ class Settlement : public CornerPiece {
 private:
 
 public:
-	Settlement(GameBoard& board, Coordinate location);
+	Settlement(GameBoard& board, Coordinate location, Player& owner);
 	Settlement(Settlement&) = delete;
 	~Settlement();
 	Settlement& operator=(Settlement&) = delete;
