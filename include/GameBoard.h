@@ -16,6 +16,8 @@
 #include "tinyxml2.h"
 #include "Road.h"
 
+class GameVisitor;
+
 class GameBoard {
 private:
 	std::map<Coordinate, std::unique_ptr<GamePiece>> corners;
@@ -39,6 +41,8 @@ public:
 	void PlaceSettlement(Coordinate location, Player& Owner);
 
 	void init_resources();
+	
+	void accept(GameVisitor& visitor);
 };
 
 #endif

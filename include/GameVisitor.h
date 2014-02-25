@@ -22,6 +22,7 @@ public:
 	virtual void visit(Settlement&) = 0;
 	virtual void visit(City&) = 0;
 	virtual void visit(Player&) = 0;
+	virtual void visit(ResourceTile&) = 0;
 };
 
 #endif

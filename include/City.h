@@ -11,6 +11,8 @@ public:
 	City(City&) = delete;
 	~City();
 	City& operator=(City&) = delete;
+	
+	void accept(GameVisitor&);
 };
 
 #endif

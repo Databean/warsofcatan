@@ -1,6 +1,7 @@
 #include "GamePiece.h"
 
 #include "GameBoard.h"
+#include "GameVisitor.h"
 
 GamePiece::GamePiece(GameBoard& board, Coordinate location) : board(board), location(location) {
 	
@@ -29,6 +30,10 @@ GamePiece(board, location), resource(resource), value(value) {
 
 ResourceTile::~ResourceTile() {
 	
+}
+
+void ResourceTile::accept(GameVisitor& visitor) {
+	visitor.visit(*this);
 }
 
 //pay resource cards to owners of this tile

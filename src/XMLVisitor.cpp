@@ -36,3 +36,7 @@ void XMLVisitor::visit(Player& player) {
 	
 }
 
+void XMLVisitor::visit(ResourceTile& tile) {
+	
+}
+

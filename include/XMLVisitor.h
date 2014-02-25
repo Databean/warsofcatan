@@ -17,6 +17,7 @@ public:
 	virtual void visit(Settlement&);
 	virtual void visit(City&);
 	virtual void visit(Player&);
+	virtual void visit(ResourceTile&);
 };
 
 #endif

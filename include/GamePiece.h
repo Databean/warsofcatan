@@ -4,6 +4,8 @@
 #include "Util.h"
 #include "Player.h"
 
+class GameVisitor;
+
 enum resourceType { WHEAT, SHEEP, STONE, BRICK, WOOD, DESERT };
 
 class GameBoard;
@@ -21,7 +23,9 @@ public:
 	GameBoard& getBoard();
 	const GameBoard& getBoard() const;
 	
-	Coordinate location; 
+	Coordinate location;
+	
+	void accept(GameVisitor&);
 };
 
 class ResourceTile : public GamePiece {
@@ -38,6 +42,8 @@ public:
 	int value;
 
 	virtual ~ResourceTile();
+	
+	void accept(GameVisitor&);
 };
 
 #endif

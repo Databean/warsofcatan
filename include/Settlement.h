@@ -11,6 +11,8 @@ public:
 	Settlement(Settlement&) = delete;
 	~Settlement();
 	Settlement& operator=(Settlement&) = delete;
+	
+	void accept(GameVisitor&);
 };
 
 #endif

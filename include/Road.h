@@ -3,6 +3,8 @@
 
 #include "Util.h"
 
+class GameVisitor;
+
 class Road {
 private:
 	Coordinate start;
@@ -12,6 +14,8 @@ public:
 	Road(Road&) = delete;
 	~Road();
 	Road& operator=(Road&) = delete;
+	
+	void accept(GameVisitor& visitor);
 };
 
 #endif

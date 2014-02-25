@@ -9,6 +9,8 @@ using std::unique_ptr;
 #include <ctime>
 #include <algorithm>
 
+#include "GameVisitor.h"
+
 #define ADD_RESOURCE(x, y, res, val) (this->resources[Coordinate(x,y)] = \
 std::unique_ptr<GamePiece>(new ResourceTile(*this, Coordinate(x,y), res, val)))
 #define DUMMY_BOARD //define to instantiate dummy board for debugging 
@@ -132,5 +134,9 @@ void GameBoard::init_resources()
 
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 	corners[location] = std::unique_ptr<GamePiece>(new Settlement(*this, location, Owner));
+}
+
+void GameBoard::accept(GameVisitor& visitor) {
+		visitor.visit(*this);
 }
 
