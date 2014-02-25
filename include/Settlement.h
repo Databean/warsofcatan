@@ -1,11 +1,13 @@
 #ifndef SETTLEMENT_H
 #define SETTLEMENT_H
 
-class Settlement: public CornerPiece {
+#include "CornerPiece.h"
+
+class Settlement : public CornerPiece {
 private:
 
 public:
-	Settlement();
+	Settlement(GameBoard& board, Coordinate location);
 	Settlement(Settlement&) = delete;
 	~Settlement();
 	Settlement& operator=(Settlement&) = delete;

@@ -12,7 +12,9 @@
 
 #include "Util.h"
 #include "GamePiece.h"
+#include "Settlement.h"
 #include "tinyxml2.h"
+#include "Road.h"
 
 class GameBoard {
 private:

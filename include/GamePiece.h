@@ -40,30 +40,5 @@ public:
 	virtual ~ResourceTile();
 };
 
-class Settlement : public GamePiece {
-private:
-	Player& owner;
-public:
-	Settlement(GameBoard& board, Coordinate location, Player& owner);
-	Settlement(Settlement&) = delete;
-	virtual ~Settlement();
-	//virtual Settlement& operator=(Settlement&) = delete;
-	
-	bool city;
-};
-
-class Road {
-private:
-	GameBoard& board;
-	Player& owner;
-	Coordinate start;
-	Coordinate end;
-public:
-	Road(GameBoard& board, Player& owner, Coordinate start, Coordinate end);
-	Road(Road&);
-	~Road();
-	//Road& operator=(Road&) = delete;
-};
-
 #endif
 
