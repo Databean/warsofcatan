@@ -1,11 +1,14 @@
 #ifndef ROAD_H
 #define ROAD_H
 
-class Road public CornerPiece {
-private:
+#include "Util.h"
 
+class Road {
+private:
+	Coordinate start;
+	Coordinate end;
 public:
-	Road();
+	Road(Coordinate start, Coordinate end);
 	Road(Road&) = delete;
 	~Road();
 	Road& operator=(Road&) = delete;

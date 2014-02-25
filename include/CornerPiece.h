@@ -1,14 +1,20 @@
 #ifndef CORNERPIECE_H
 #define CORNERPIECE_H
 
-class CornerPiece {
-private:
+#include "GamePiece.h"
+#include "Player.h"
 
+class CornerPiece : public GamePiece {
+private:
+	Player& owner;
 public:
-	CornerPiece();
+	CornerPiece(GameBoard& board, Coordinate location, Player& owner);
 	CornerPiece(CornerPiece&) = delete;
 	~CornerPiece();
 	CornerPiece& operator=(CornerPiece&) = delete;
+	
+	Player& getOwner();
+	const Player& getOwner() const;
 };
 
 #endif

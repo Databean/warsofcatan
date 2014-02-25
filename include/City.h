@@ -1,11 +1,13 @@
 #ifndef CITY_H
 #define CITY_H
 
-class City public CornerPiece {
+#include "CornerPiece.h"
+
+class City : public CornerPiece {
 private:
 
 public:
-	City();
+	City(GameBoard& board, Coordinate location, Player& owner);
 	City(City&) = delete;
 	~City();
 	City& operator=(City&) = delete;

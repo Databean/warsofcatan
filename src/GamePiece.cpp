@@ -41,24 +41,3 @@ void ResourceTile::Payout() {
 	}
 }
 */
-
-Settlement::Settlement(GameBoard& board, Coordinate location, Player& owner) : 
-GamePiece(board, location), owner(owner), city(0) {
-	
-}
-
-Settlement::~Settlement() {
-	
-}
-
-Road::Road(GameBoard& board, Player& owner, Coordinate start, Coordinate end) : board(board), owner(owner), start(start), end(end) {
-	
-}
-
-Road::Road(Road& other) : board(other.board), owner(other.owner), start(other.start), end(other.end) {
-	
-}
-
-Road::~Road() {
-	
-}
