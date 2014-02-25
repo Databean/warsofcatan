@@ -1,10 +1,10 @@
-#include "GameVisitor.H'
+#include "GameVisitor.h"
 
 GameVisitor::GameVisitor() {
 	
 }
 
-GameVisitor::~GameVisitor() {'
+GameVisitor::~GameVisitor() {
 	
 }
 
