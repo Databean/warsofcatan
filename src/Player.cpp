@@ -63,7 +63,6 @@ void Player::playCard(DevelopmentCard *card)
 
 
 
-
 int Player::getWood()
 {
     return resources[0];

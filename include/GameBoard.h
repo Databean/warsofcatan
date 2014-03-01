@@ -20,8 +20,14 @@ class GameBoard {
 private:
 	std::map<Coordinate, std::unique_ptr<GamePiece>> corners;
 	std::map<Coordinate, std::unique_ptr<GamePiece>> resources;
-	std::vector<std::unique_ptr<const Road>> roads;
+
+	std::map<Coordinate, std::vector<Road*>> roads;
 	
+	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner);
+	bool outOfBounds(const Coordinate& coord);
+	bool roadExists(Coordinate start, Coordinate end);
+	bool isRoadConnectionPoint(Coordinate start, Coordinate end, Player& Owner);
+
 	int constructBoardFromFile(std::ifstream &file);
 	int constructFileFromBoard(std::ofstream &file);
 public:
@@ -33,10 +39,13 @@ public:
 	int save_Board(std::string filename);
 	int load_Board(std::string filename);
 	const std::map<Coordinate, std::unique_ptr<GamePiece>>& getResources() const;
+	const Road& getRoad(int start, int end);
 	
 	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location);
 
 	void PlaceSettlement(Coordinate location, Player& Owner);
+	void PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
+
 
 	void init_resources();
 };

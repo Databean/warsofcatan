@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
 	SDL_Window* displayWindow;
 	SDL_Renderer* displayRenderer;
 	SDL_RendererInfo displayRendererInfo;
-	SDL_CreateWindowAndRenderer(900, 900, SDL_WINDOW_OPENGL, &displayWindow, &displayRenderer);
+	SDL_CreateWindowAndRenderer(900, 800, SDL_WINDOW_OPENGL, &displayWindow, &displayRenderer);
 	SDL_GetRendererInfo(displayRenderer, &displayRendererInfo);
 	/*TODO: Check that we have OpenGL */
 	if ((displayRendererInfo.flags & SDL_RENDERER_ACCELERATED) == 0 || 

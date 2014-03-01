@@ -60,7 +60,6 @@ public:
     void setWheat(int resource);
     void setWool(int resource);
 
-
 };
 
 #endif
