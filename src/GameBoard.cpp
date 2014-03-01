@@ -137,6 +137,15 @@ void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 }
 
 void GameBoard::accept(GameVisitor& visitor) {
-		visitor.visit(*this);
+	for(auto& it : corners) {
+		it.second->accept(visitor);
+	}
+	for(auto& it : resources) {
+		it.second->accept(visitor);
+	}
+	for(auto& it : roads) {
+		it->accept(visitor);
+	}
+	visitor.visit(*this);
 }
 

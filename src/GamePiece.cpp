@@ -23,6 +23,10 @@ const GameBoard& GamePiece::getBoard() const {
 	return board;
 }
 
+Coordinate GamePiece::getLocation() const {
+	return location;
+}
+
 ResourceTile::ResourceTile(GameBoard& board, Coordinate location, resourceType resource, int value) : 
 GamePiece(board, location), resource(resource), value(value) {
 	
@@ -34,6 +38,14 @@ ResourceTile::~ResourceTile() {
 
 void ResourceTile::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
+}
+
+resourceType ResourceTile::getType() const {
+	return resource;
+}
+
+int ResourceTile::getDiceValue() const {
+	return value;
 }
 
 //pay resource cards to owners of this tile

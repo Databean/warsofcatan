@@ -115,3 +115,8 @@ void Player::setWool(int resource)
 {
     resources[4] = resource;
 }
+
+std::string Player::getName() const
+{
+    return name;
+}

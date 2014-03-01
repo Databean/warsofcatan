@@ -25,7 +25,8 @@ public:
 	
 	Coordinate location;
 	
-	void accept(GameVisitor&);
+	virtual void accept(GameVisitor&) = 0;
+	Coordinate getLocation() const;
 };
 
 class ResourceTile : public GamePiece {
@@ -43,7 +44,9 @@ public:
 
 	virtual ~ResourceTile();
 	
-	void accept(GameVisitor&);
+	virtual void accept(GameVisitor&);
+	resourceType getType() const;
+	int getDiceValue() const;
 };
 
 #endif

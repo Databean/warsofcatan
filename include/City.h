@@ -12,7 +12,7 @@ public:
 	~City();
 	City& operator=(City&) = delete;
 	
-	void accept(GameVisitor&);
+	virtual void accept(GameVisitor&);
 };
 
 #endif

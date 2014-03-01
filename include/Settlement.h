@@ -12,7 +12,7 @@ public:
 	~Settlement();
 	Settlement& operator=(Settlement&) = delete;
 	
-	void accept(GameVisitor&);
+	virtual void accept(GameVisitor&);
 };
 
 #endif

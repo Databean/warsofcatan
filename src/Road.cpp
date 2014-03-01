@@ -2,7 +2,7 @@
 
 #include "GameVisitor.h"
 
-Road::Road(Coordinate start, Coordinate end) {
+Road::Road(Player& owner, Coordinate start, Coordinate end) : owner(owner) {
 	if(start < end) {
 		this->start = start;
 		this->end = end;
@@ -18,4 +18,16 @@ Road::~Road() {
 
 void Road::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
+}
+
+Coordinate Road::getStart() const {
+	return start;
+}
+
+Coordinate Road::getEnd() const {
+	return end;
+}
+
+Player& Road::getOwner() {
+	return owner;
 }
