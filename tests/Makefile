@@ -7,7 +7,7 @@ OBJECTS_NO_MAIN := $(subst $(OBJ_HOME)/main.o,,$(OBJECTS))
 run: $(TEST_FILE)
 	./$(TEST_FILE)
 
-$(TEST_FILE): ../$(EXECUTABLE) $(TEST_LINK_FILES)
+$(TEST_FILE): ../$(EXECUTABLE) $(TEST_LINK_FILES) $(wildcard *.cpp)
 	$(CXX) $(CXXFLAGS) -I$(TEST_INCLUDE) $(wildcard *.cpp) -o $@ $(TEST_LINK_FILES) $(OBJECTS_NO_MAIN) $(LDFLAGS)
 
 .PHONY: clean

@@ -1,4 +1,4 @@
-#include "XMLVisitor.h"
+#include "Serialization.h"
 
 #include <map>
 #include <utility>
@@ -89,6 +89,10 @@ void XMLVisitor::visit(ResourceTile& tile) {
 	
 	newTileElement->InsertEndChild(coordinateElement(tile.getCoordinates()));
 	
+	XMLElement* tileValueElement = xmldoc.NewElement("value");
+	tileValueElement->InsertEndChild(xmldoc.NewText(toString(tile.getDiceValue()).c_str()));
+	newTileElement->InsertEndChild(tileValueElement);
+	
 	tilesElement->InsertEndChild(newTileElement);
 }
 
@@ -101,5 +105,9 @@ XMLElement* XMLVisitor::coordinateElement(const Coordinate& c) {
 
 const tinyxml2::XMLDocument& XMLVisitor::getXMLDoc() const {
 	return xmldoc;
+}
+
+Coordinate xmlElementToCoord(const XMLElement& elem) {
+	return Coordinate(elem.IntAttribute("u"), elem.IntAttribute("v"));
 }
 

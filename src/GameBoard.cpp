@@ -2,14 +2,13 @@
 
 #include <map>
 #include <memory>
-
-using std::map;
-using std::unique_ptr;
-
 #include <ctime>
 #include <algorithm>
+#include <iostream>
 
 #include "GameVisitor.h"
+#include "Serialization.h"
+#include "tinyxml2.h"
 
 #define ADD_RESOURCE(x, y, res, val) (this->resources[Coordinate(x,y)] = \
 std::unique_ptr<GamePiece>(new ResourceTile(*this, Coordinate(x,y), res, val)))
@@ -17,63 +16,59 @@ std::unique_ptr<GamePiece>(new ResourceTile(*this, Coordinate(x,y), res, val)))
 
 using std::random_shuffle;
 using std::time;
+using std::string;
+using std::map;
+using std::unique_ptr;
+using std::istream;
+using std::ostream;
 
 GameBoard::GameBoard() {
 	init_resources();
+}
+
+GameBoard::GameBoard(istream& in) {
+	std::string gameXML;
+	std::getline(in, gameXML, '\0'); //Read until the null character (end of file) and put in the string
+	
+	tinyxml2::XMLDocument doc;
+	doc.Parse(gameXML.c_str());
+	
+	auto hexTiles = doc.RootElement()->FirstChildElement("tiles");
+	
+	for(tinyxml2::XMLElement* tileElement = hexTiles->FirstChildElement(); tileElement; tileElement = tileElement->NextSiblingElement()) {
+		static const map<std::string, resourceType> textToType = {
+			std::make_pair("wheat", WHEAT),
+			std::make_pair("sheep", SHEEP),
+			std::make_pair("stone", STONE),
+			std::make_pair("brick", BRICK),
+			std::make_pair("wood", WOOD),
+			std::make_pair("desert", DESERT),
+		};
+		std::string typeString = tileElement->FirstChildElement("type")->FirstChild()->Value();
+		auto it = textToType.find(typeString);
+		if(it == textToType.end()) {
+			throw std::runtime_error("Invalid type string");
+		}
+		resourceType type = it->second;
+		
+		int diceValue = fromString<int>(tileElement->FirstChildElement("value")->FirstChild()->Value());
+		
+		Coordinate coord = xmlElementToCoord(*(tileElement->FirstChildElement("coordinate")));
+		
+		resources[coord] = unique_ptr<ResourceTile>(new ResourceTile(*this, coord, type, diceValue));
+	}
 }
 
 GameBoard::~GameBoard() {
 	
 }
 
-
-int GameBoard::save_Board(std::string filename){
-	std::ofstream file;
-	file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
-	try {
-		filename = filename + ".wocs";
-		file.open(filename.c_str());
-		constructFileFromBoard(file);
-		file.close();
-		return 0;
-	} catch (std::ofstream::failure e) {
-		std::cerr << "Exception opening/closing/writing file: " << e.what();
-	}
-	return -1;
-}
-
-int GameBoard::load_Board(std::string filename){
-	std::ifstream file;
-	try {
-		filename = filename + ".wocs";
-		file.open(filename.c_str());
-		constructBoardFromFile(file);
-		file.close();
-		return 0;
-	} catch (std::ifstream::failure e) {
-		std::cerr << "Exception opening/closing/reading file: " << e.what();
-	}
-	return -1;
-}
-
-int GameBoard::constructBoardFromFile(std::ifstream &file){
-	//Parse and construct the board from the file
-	//@ TODO
-	std::string line;
-	if (file.is_open()) {
-		while (getline(file, line)) {
-			std::cout << line << '\n';
-		}
-	}
-	return 0;
-}
-
-
-int GameBoard::constructFileFromBoard(std::ofstream &file){
-	//Construct the file based on the structure of the board
-	//@ TODO
-	file << "Hello World!";
-	return 0;
+void GameBoard::save(ostream& out) {
+	XMLVisitor saver;
+	accept(saver);
+	tinyxml2::XMLPrinter printer;
+	saver.getXMLDoc().Print(&printer);
+	out << printer.CStr();
 }
 
 const map<Coordinate, unique_ptr<GamePiece>>& GameBoard::getResources() const {

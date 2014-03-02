@@ -21,3 +21,8 @@ $(EXECUTABLE): $(ALLFILES)
 tests:
 	cd UnitTest++ && $(MAKE) libUnitTest++.a
 	cd tests && $(MAKE)
+
+.PHONY: clean
+clean:
+	rm -f $(EXECUTABLE)
+	rm -f obj/*.o

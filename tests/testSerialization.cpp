@@ -1,21 +1,22 @@
 #include <UnitTest++.h>
 
-#include "XMLVisitor.h"
+#include "Serialization.h"
 #include "GameBoard.h"
 #include "Player.h"
 
 #include "tinyxml2.h"
 
 #include <iostream>
+#include <sstream>
+
+using std::stringstream;
 
 TEST(xmlPrint) {
 	GameBoard testBoard;
 	
-	XMLVisitor vs;
-	testBoard.accept(vs);
+	stringstream stream;
+	testBoard.save(stream);
 	
-	tinyxml2::XMLPrinter printer;
-	vs.getXMLDoc().Print( &printer );
+	GameBoard copyBoard(stream);
 	
-	std::cout << printer.CStr() << std::endl;
 }

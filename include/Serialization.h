@@ -1,5 +1,5 @@
-#ifndef XML_VISITOR_H
-#define XML_VISITOR_H
+#ifndef SERIALIZATION_H
+#define SERIALIZATION_H
 
 #include "GameVisitor.h"
 #include "Util.h"
@@ -24,5 +24,7 @@ public:
 	
 	const tinyxml2::XMLDocument& getXMLDoc() const;
 };
+
+Coordinate xmlElementToCoord(const tinyxml2::XMLElement& element);
 
 #endif
