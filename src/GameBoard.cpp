@@ -36,7 +36,7 @@ GameBoard::GameBoard(istream& in) {
 	
 	auto hexTiles = doc.RootElement()->FirstChildElement("tiles");
 	
-	for(tinyxml2::XMLElement* tileElement = hexTiles->FirstChildElement(); tileElement; tileElement = tileElement->NextSiblingElement()) {
+	for(auto tileElement = hexTiles->FirstChildElement(); tileElement; tileElement = tileElement->NextSiblingElement()) {
 		static const map<std::string, resourceType> textToType = {
 			std::make_pair("wheat", WHEAT),
 			std::make_pair("sheep", SHEEP),
@@ -57,6 +57,18 @@ GameBoard::GameBoard(istream& in) {
 		Coordinate coord = xmlElementToCoord(*(tileElement->FirstChildElement("coordinate")));
 		
 		resources[coord] = unique_ptr<ResourceTile>(new ResourceTile(*this, coord, type, diceValue));
+	}
+	
+	auto playerElements = doc.RootElement()->FirstChildElement("players");
+	
+	for(auto playerElement = playerElements->FirstChildElement(); playerElement; playerElement = playerElement->NextSiblingElement()) {
+		unique_ptr<Player> player(new Player(playerElement->FirstChildElement("name")->FirstChild()->Value()));
+		player->setWood(fromString<int>(playerElement->FirstChildElement("wood")->FirstChild()->Value()));
+		player->setBrick(fromString<int>(playerElement->FirstChildElement("brick")->FirstChild()->Value()));
+		player->setOre(fromString<int>(playerElement->FirstChildElement("ore")->FirstChild()->Value()));
+		player->setWheat(fromString<int>(playerElement->FirstChildElement("wheat")->FirstChild()->Value()));
+		player->setWool(fromString<int>(playerElement->FirstChildElement("wool")->FirstChild()->Value()));
+		players.emplace_back(std::move(player));
 	}
 }
 
@@ -142,6 +154,9 @@ void GameBoard::accept(GameVisitor& visitor) {
 	for(auto& it : roads) {
 		it->accept(visitor);
 	}
+	for(auto& it : players) {
+		it->accept(visitor);
+	}
 	visitor.visit(*this);
 }
 
@@ -175,6 +190,14 @@ bool GameBoard::operator==(const GameBoard& other) const {
 			}
 		}
 		if(hasIt == false) {
+			return false;
+		}
+	}
+	if(players.size() != other.players.size()) {
+		return false;
+	}
+	for(unsigned int i = 0; i < players.size(); i++) {
+		if(!(*(players[i]) == *(other.players[i]))) {
 			return false;
 		}
 	}

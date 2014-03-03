@@ -13,6 +13,8 @@
 #include <vector>
 #include <string>
 
+#include "GameVisitor.h"
+
 //#include "DevelopmentCard.h"
 
 
@@ -48,11 +50,11 @@ public:
     void buyCard(DevelopmentCard* card);
     void playCard(DevelopmentCard* card);
 
-    int getWood();
-    int getBrick();
-    int getOre();
-    int getWheat();
-    int getWool();
+    int getWood() const;
+    int getBrick() const;
+    int getOre() const;
+    int getWheat() const;
+    int getWool() const;
 
     void setWood(int resource);
     void setBrick(int resource);
@@ -62,6 +64,7 @@ public:
 
     std::string getName() const;
 	
+	void accept(GameVisitor& visitor);
 	bool operator==(const Player& player) const;
 };
 

@@ -53,15 +53,69 @@ void XMLVisitor::visit(Road& road) {
 }
 
 void XMLVisitor::visit(Settlement& settlement) {
+	if(!xmldoc.RootElement()->FirstChildElement("settlements")) {
+		xmldoc.RootElement()->InsertEndChild(xmldoc.NewElement("settlements"));
+	}
+	XMLElement* settlementsElement = xmldoc.RootElement()->FirstChildElement("settlements");
+	XMLElement* newSettlementElement = xmldoc.NewElement("settlement");
 	
+	XMLElement* ownerElement = xmldoc.NewElement("owner");
+	ownerElement->InsertEndChild(xmldoc.NewText(settlement.getOwner().getName().c_str()));
+	newSettlementElement->InsertEndChild(ownerElement);
+	
+	newSettlementElement->InsertEndChild(coordinateElement(settlement.getLocation()));
+	
+	settlementsElement->InsertEndChild(newSettlementElement);
 }
 
 void XMLVisitor::visit(City& city) {
+	if(!xmldoc.RootElement()->FirstChildElement("cities")) {
+		xmldoc.RootElement()->InsertEndChild(xmldoc.NewElement("cities"));
+	}
+	XMLElement* citiesElement = xmldoc.RootElement()->FirstChildElement("cities");
+	XMLElement* newCityElement = xmldoc.NewElement("city");
 	
+	XMLElement* ownerElement = xmldoc.NewElement("owner");
+	ownerElement->InsertEndChild(xmldoc.NewText(city.getOwner().getName().c_str()));
+	newCityElement->InsertEndChild(ownerElement);
+	
+	newCityElement->InsertEndChild(coordinateElement(city.getLocation()));
+	
+	citiesElement->InsertEndChild(newCityElement);
 }
 
 void XMLVisitor::visit(Player& player) {
+	if(!xmldoc.RootElement()->FirstChildElement("players")) {
+		xmldoc.RootElement()->InsertEndChild(xmldoc.NewElement("players"));
+	}
+	XMLElement* playersElement = xmldoc.RootElement()->FirstChildElement("players");
+	XMLElement* newPlayerElement = xmldoc.NewElement("player");
 	
+	XMLElement* nameElement = xmldoc.NewElement("name");
+	nameElement->InsertEndChild(xmldoc.NewText(player.getName().c_str()));
+	newPlayerElement->InsertEndChild(nameElement);
+	
+	XMLElement* woodElement = xmldoc.NewElement("wood");
+	woodElement->InsertEndChild(xmldoc.NewText(toString(player.getWood()).c_str()));
+	newPlayerElement->InsertEndChild(woodElement);
+	
+	XMLElement* brickElement = xmldoc.NewElement("brick");
+	brickElement->InsertEndChild(xmldoc.NewText(toString(player.getBrick()).c_str()));
+	newPlayerElement->InsertEndChild(brickElement);
+	
+	XMLElement* oreElement = xmldoc.NewElement("ore");
+	oreElement->InsertEndChild(xmldoc.NewText(toString(player.getOre()).c_str()));
+	newPlayerElement->InsertEndChild(oreElement);
+	
+	XMLElement* wheatElement = xmldoc.NewElement("wheat");
+	wheatElement->InsertEndChild(xmldoc.NewText(toString(player.getWheat()).c_str()));
+	newPlayerElement->InsertEndChild(wheatElement);
+	
+	XMLElement* woolElement = xmldoc.NewElement("wool");
+	woolElement->InsertEndChild(xmldoc.NewText(toString(player.getWool()).c_str()));
+	newPlayerElement->InsertEndChild(woolElement);
+	
+	playersElement->InsertEndChild(newPlayerElement);
 }
 
 void XMLVisitor::visit(ResourceTile& tile) {

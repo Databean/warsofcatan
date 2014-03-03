@@ -14,11 +14,14 @@
 #include "DevelopmentCard.h"
 
 
-Player::Player(std::string playerName)
+Player::Player(std::string playerName) : name(playerName)
 {
 	armySize = 0;
 	longestRoad = 0;
 	victoryPoints = 0;
+	for(auto& r : resources) {
+		r = 0;
+	}
 }
 
 Player::~Player() {
@@ -64,27 +67,27 @@ void Player::playCard(DevelopmentCard *card)
 
 
 
-int Player::getWood()
+int Player::getWood() const
 {
     return resources[0];
 }
 
-int Player::getBrick()
+int Player::getBrick() const
 {
     return resources[1];
 }
 
-int Player::getOre()
+int Player::getOre() const
 {
     return resources[2];
 }
 
-int Player::getWheat()
+int Player::getWheat() const
 {
     return resources[3];
 }
 
-int Player::getWool()
+int Player::getWool() const
 {
     return resources[4];
 }
@@ -121,6 +124,15 @@ std::string Player::getName() const
     return name;
 }
 
+void Player::accept(GameVisitor& visitor) {
+	visitor.visit(*this);
+}
+
 bool Player::operator==(const Player& player) const {
-	return getName() == player.getName();
+	return getName() == player.getName() &&
+		getWood() == player.getWood() &&
+		getBrick() == player.getBrick() &&
+		getOre() == player.getOre() &&
+		getWheat() == player.getWheat() &&
+		getWool() == player.getWool();
 }
