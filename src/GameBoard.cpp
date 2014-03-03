@@ -21,8 +21,9 @@ using std::map;
 using std::unique_ptr;
 using std::istream;
 using std::ostream;
+using std::vector;
 
-GameBoard::GameBoard() {
+GameBoard::GameBoard(vector<unique_ptr<Player>>&& players) : players(std::move(players)) {
 	init_resources();
 }
 

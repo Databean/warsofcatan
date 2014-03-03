@@ -9,11 +9,16 @@
 
 #include <iostream>
 #include <utility>
+#include <vector>
+#include <memory>
 
 #include "GameBoard.h"
 #include "UserInput.h"
 #include "Player.h"
 #include "Renderer.h"
+
+using std::vector;
+using std::unique_ptr;
 
 void initGame() {
 	
@@ -58,8 +63,12 @@ int main(int argc, char *argv[]) {
 
 	updateViewport(1024, 768);
 	
-	Player testPlayer("test");
-	GameBoard testBoard;
+	vector<unique_ptr<Player>> players;
+	players.emplace_back(unique_ptr<Player>(new Player("test")));
+	
+	Player& testPlayer = *(players[0]);
+	
+	GameBoard testBoard(std::move(players));
 	
 	bool running = true;
 	while(running) {

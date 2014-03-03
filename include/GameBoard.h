@@ -23,9 +23,10 @@ private:
 	std::map<Coordinate, std::unique_ptr<GamePiece>> corners;
 	std::map<Coordinate, std::unique_ptr<GamePiece>> resources;
 	std::vector<std::unique_ptr<Road>> roads;
+    std::vector<std::unique_ptr<Player>> players;
 	
 public:
-	GameBoard();
+	GameBoard(std::vector<std::unique_ptr<Player>>&& players);
 	GameBoard(std::istream& in);
 	GameBoard(GameBoard&) = delete;
 	~GameBoard();
