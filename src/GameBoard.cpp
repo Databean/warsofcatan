@@ -60,15 +60,16 @@ GameBoard::GameBoard(istream& in) {
 	}
 	
 	auto playerElements = doc.RootElement()->FirstChildElement("players");
-	
-	for(auto playerElement = playerElements->FirstChildElement(); playerElement; playerElement = playerElement->NextSiblingElement()) {
-		unique_ptr<Player> player(new Player(playerElement->FirstChildElement("name")->FirstChild()->Value()));
-		player->setWood(fromString<int>(playerElement->FirstChildElement("wood")->FirstChild()->Value()));
-		player->setBrick(fromString<int>(playerElement->FirstChildElement("brick")->FirstChild()->Value()));
-		player->setOre(fromString<int>(playerElement->FirstChildElement("ore")->FirstChild()->Value()));
-		player->setWheat(fromString<int>(playerElement->FirstChildElement("wheat")->FirstChild()->Value()));
-		player->setWool(fromString<int>(playerElement->FirstChildElement("wool")->FirstChild()->Value()));
-		players.emplace_back(std::move(player));
+	if(playerElements) {
+		for(auto playerElement = playerElements->FirstChildElement(); playerElement; playerElement = playerElement->NextSiblingElement()) {
+			unique_ptr<Player> player(new Player(playerElement->FirstChildElement("name")->FirstChild()->Value()));
+			player->setWood(fromString<int>(playerElement->FirstChildElement("wood")->FirstChild()->Value()));
+			player->setBrick(fromString<int>(playerElement->FirstChildElement("brick")->FirstChild()->Value()));
+			player->setOre(fromString<int>(playerElement->FirstChildElement("ore")->FirstChild()->Value()));
+			player->setWheat(fromString<int>(playerElement->FirstChildElement("wheat")->FirstChild()->Value()));
+			player->setWool(fromString<int>(playerElement->FirstChildElement("wool")->FirstChild()->Value()));
+			players.emplace_back(std::move(player));
+		}
 	}
 }
 

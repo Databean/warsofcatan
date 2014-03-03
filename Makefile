@@ -18,7 +18,7 @@ $(EXECUTABLE): $(ALLFILES)
 	${LD} obj/*.o $(LDFLAGS) -o $(EXECUTABLE)
 
 .PHONY: tests
-tests:
+tests: $(EXECUTABLE)
 	cd UnitTest++ && $(MAKE) libUnitTest++.a
 	cd tests && $(MAKE)
 

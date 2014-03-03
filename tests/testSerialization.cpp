@@ -17,7 +17,21 @@ using std::stringstream;
 
 TEST(emptyBoardSerialization) {
 	vector<unique_ptr<Player>> players;
+	
+	GameBoard testBoard(std::move(players));
+	
+	stringstream stream;
+	testBoard.save(stream);
+	
+	GameBoard copyBoard(stream);
+	
+	CHECK(testBoard == copyBoard);
+}
+
+TEST(multiplePlayerSerialization) {
+	vector<unique_ptr<Player>> players;
 	players.emplace_back(unique_ptr<Player>(new Player("test")));
+	players.emplace_back(unique_ptr<Player>(new Player("test2")));
 	
 	GameBoard testBoard(std::move(players));
 	
