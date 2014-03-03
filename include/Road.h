@@ -20,8 +20,6 @@ public:
 	Coordinate start;
 	Coordinate end;
 
-	Coordinate getStart();
-
 	bool equals(const Road& otherRoad);
 	bool equals(const Coordinate& otherStart, const Coordinate& otherEnd);
 
