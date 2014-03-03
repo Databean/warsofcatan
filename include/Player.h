@@ -61,6 +61,8 @@ public:
     void setWool(int resource);
 
     std::string getName() const;
+	
+	bool operator==(const Player& player) const;
 };
 
 #endif

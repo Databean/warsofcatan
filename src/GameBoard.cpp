@@ -144,3 +144,39 @@ void GameBoard::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
 }
 
+bool GameBoard::operator==(const GameBoard& other) const {
+	if(corners.size() != other.corners.size()) {
+		return false;
+	}
+	for(auto& it : corners) {
+		auto otherIt = other.corners.find(it.first);
+		if(otherIt == other.corners.end()) {
+			return false; // This location isn't in the other array
+		}
+		if(!(*(it.second) == *(otherIt->second))) {
+			return false;
+		}
+	}
+	for(auto& it : resources) {
+		auto otherIt = other.resources.find(it.first);
+		if(otherIt == other.resources.end()) {
+			return false; // This location isn't in the other array
+		}
+		if(!(*(it.second) == *(otherIt->second))) {
+			return false;
+		}
+	}
+	for(auto& it : roads) {
+		bool hasIt = false;
+		for(auto& otherIt : other.roads) {
+			if(*it == *otherIt) {
+				hasIt = true;
+			}
+		}
+		if(hasIt == false) {
+			return false;
+		}
+	}
+	return true;
+}
+

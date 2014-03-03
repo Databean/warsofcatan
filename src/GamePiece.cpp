@@ -48,6 +48,15 @@ int ResourceTile::getDiceValue() const {
 	return value;
 }
 
+bool ResourceTile::operator==(const GamePiece& other) const {
+	const ResourceTile* tile = dynamic_cast<const ResourceTile*>(&other);
+	if(tile == nullptr) {
+		return false;
+	}
+	
+	return getType() == tile->getType() && getDiceValue() == tile->getDiceValue();
+}
+
 //pay resource cards to owners of this tile
 /*
 void ResourceTile::Payout() {

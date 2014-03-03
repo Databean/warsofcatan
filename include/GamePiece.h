@@ -26,6 +26,8 @@ public:
 	Coordinate location;
 	
 	virtual void accept(GameVisitor&) = 0;
+	virtual bool operator==(const GamePiece& other) const = 0;
+	
 	Coordinate getLocation() const;
 };
 
@@ -45,6 +47,8 @@ public:
 	virtual ~ResourceTile();
 	
 	virtual void accept(GameVisitor&);
+	virtual bool operator==(const GamePiece& other) const;
+	
 	resourceType getType() const;
 	int getDiceValue() const;
 };

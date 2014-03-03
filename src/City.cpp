@@ -13,3 +13,7 @@ City::~City() {
 void City::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
 }
+
+bool City::operator==(const GamePiece& p) const {
+	return false;
+}

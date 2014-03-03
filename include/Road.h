@@ -22,6 +22,9 @@ public:
 	Coordinate getStart() const;
 	Coordinate getEnd() const;
 	Player& getOwner();
+	const Player& getOwner() const;
+	
+	bool operator==(const Road&) const;
 };
 
 #endif

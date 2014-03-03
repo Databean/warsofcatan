@@ -13,6 +13,7 @@ public:
 	Settlement& operator=(Settlement&) = delete;
 	
 	virtual void accept(GameVisitor&);
+	virtual bool operator==(const GamePiece&) const;
 };
 
 #endif

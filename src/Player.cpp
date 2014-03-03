@@ -120,3 +120,7 @@ std::string Player::getName() const
 {
     return name;
 }
+
+bool Player::operator==(const Player& player) const {
+	return getName() == player.getName();
+}

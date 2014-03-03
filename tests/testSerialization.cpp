@@ -11,7 +11,7 @@
 
 using std::stringstream;
 
-TEST(xmlPrint) {
+TEST(emptyBoardSerialization) {
 	GameBoard testBoard;
 	
 	stringstream stream;
@@ -19,4 +19,5 @@ TEST(xmlPrint) {
 	
 	GameBoard copyBoard(stream);
 	
+	CHECK(testBoard == copyBoard);
 }

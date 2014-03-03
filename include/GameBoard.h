@@ -42,6 +42,8 @@ public:
 	void init_resources();
 	
 	void accept(GameVisitor& visitor);
+	
+	bool operator==(const GameBoard& other) const;
 };
 
 #endif

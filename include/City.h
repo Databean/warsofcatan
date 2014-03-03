@@ -13,6 +13,7 @@ public:
 	City& operator=(City&) = delete;
 	
 	virtual void accept(GameVisitor&);
+	virtual bool operator==(const GamePiece& piece) const;
 };
 
 #endif

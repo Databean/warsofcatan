@@ -13,3 +13,7 @@ Settlement::~Settlement() {
 void Settlement::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
 }
+
+bool Settlement::operator==(const GamePiece&) const {
+	return false;
+}

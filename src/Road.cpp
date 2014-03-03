@@ -31,3 +31,13 @@ Coordinate Road::getEnd() const {
 Player& Road::getOwner() {
 	return owner;
 }
+
+const Player& Road::getOwner() const {
+	return owner;
+}
+
+bool Road::operator==(const Road& other) const {
+	return getStart() == other.getStart() &&
+		getEnd() == other.getEnd() &&
+		getOwner() == other.getOwner();
+}
