@@ -9,10 +9,6 @@ using std::unique_ptr;
 #include <ctime>
 #include <algorithm>
 
-#define ADD_RESOURCE(x, y, res, val) (this->resources[Coordinate(x,y)] = \
-std::unique_ptr<GamePiece>(new ResourceTile(*this, Coordinate(x,y), res, val)))
-#define DUMMY_BOARD //define to instantiate dummy board for debugging 
-
 using std::random_shuffle;
 using std::time;
 
