@@ -10,10 +10,6 @@
 #include "Serialization.h"
 #include "tinyxml2.h"
 
-#define ADD_RESOURCE(x, y, res, val) (this->resources[Coordinate(x,y)] = \
-std::unique_ptr<GamePiece>(new ResourceTile(*this, Coordinate(x,y), res, val)))
-#define DUMMY_BOARD //define to instantiate dummy board for debugging 
-
 using std::random_shuffle;
 using std::time;
 using std::string;
@@ -106,8 +102,9 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(Coordinate locatio
 	return v;
 }
 
-/* initialize board with a set of resources. Currently only the standard configuration (no custom shapes or expansion packs) is implemented.  Board tiles and roll numbers are randomized.
-    @todo Change the dummy board to the actual board
+/* 
+ *   Initialize board with a set of resources. Currently only the standard configuration (no custom shapes or expansion packs) is implemented.
+ *   Board tiles and roll numbers are randomized.
  */
 
 void GameBoard::init_resources()
@@ -124,21 +121,21 @@ void GameBoard::init_resources()
     int ycoords[] = {1,  2, 0,  4,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
 	
     
-    #ifdef DUMMY_BOARD
+    
     int rollCount = 0;
     for (int i = 0; i<19; i++)
     {
         if (resources[i]==DESERT)
         {
-            ADD_RESOURCE(xcoords[i], ycoords[i], resources[i], 0);
+            addResource(xcoords[i], ycoords[i], resources[i], 0);
         }
         else
         {
-            ADD_RESOURCE(xcoords[i], ycoords[i], resources[i], rolls[rollCount]);
+            addResource(xcoords[i], ycoords[i], resources[i], rolls[rollCount]);
             rollCount++;
         }
     }
-    #endif
+    
 }
 
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
@@ -203,5 +200,16 @@ bool GameBoard::operator==(const GameBoard& other) const {
 		}
 	}
 	return true;
+}
+/*
+ *  Adds a resource and roll tile combo to the board
+ *  @param x The first coordinate
+ *  @param y The second coordinate
+ *  @param res The resource type to be added
+ *  @param val The roll tile to be added
+ */
+void GameBoard::addResource(int x, int y, resourceType res, int val)
+{
+    this->resources[Coordinate(x,y)] = std::unique_ptr<GamePiece>(new ResourceTile(*this, Coordinate(x,y), res, val));
 }
 

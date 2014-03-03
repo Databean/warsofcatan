@@ -23,7 +23,9 @@ private:
 	std::map<Coordinate, std::unique_ptr<GamePiece>> corners;
 	std::map<Coordinate, std::unique_ptr<GamePiece>> resources;
 	std::vector<std::unique_ptr<Road>> roads;
-    std::vector<std::unique_ptr<Player>> players;
+	std::vector<std::unique_ptr<Player>> players;
+	
+	void addResource(int x, int y, resourceType res, int val);
 	
 public:
 	GameBoard(std::vector<std::unique_ptr<Player>>&& players);
