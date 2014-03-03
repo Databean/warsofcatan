@@ -113,24 +113,30 @@ void GameBoard::init_resources()
     int ycoords[] = {1,  2, 0,  4,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
 	
     
-    #ifdef DUMMY_BOARD
+    
     int rollCount = 0;
     for (int i = 0; i<19; i++)
     {
         if (resources[i]==DESERT)
         {
-            ADD_RESOURCE(xcoords[i], ycoords[i], resources[i], 0);
+            addResource(xcoords[i], ycoords[i], resources[i], 0);
         }
         else
         {
-            ADD_RESOURCE(xcoords[i], ycoords[i], resources[i], rolls[rollCount]);
+            addResource(xcoords[i], ycoords[i], resources[i], rolls[rollCount]);
             rollCount++;
         }
     }
-    #endif
+    
 }
 
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 	corners[location] = std::unique_ptr<GamePiece>(new Settlement(*this, location, Owner));
+}
+
+void addResource(x, y, res, val)
+{
+    GamePiece* newPiece = new ResourceTile(*this, Coordinate(x,y), res, val))
+    this->resources[Coordinate(x,y)] = newPiece;
 }
 
