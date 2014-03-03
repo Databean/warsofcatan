@@ -95,8 +95,9 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(Coordinate locatio
 	return v;
 }
 
-/* initialize board with a set of resources. Currently only the standard configuration (no custom shapes or expansion packs) is implemented.  Board tiles and roll numbers are randomized.
-    @todo Change the dummy board to the actual board
+/* 
+ *   Initialize board with a set of resources. Currently only the standard configuration (no custom shapes or expansion packs) is implemented.
+ *   Board tiles and roll numbers are randomized.
  */
 
 void GameBoard::init_resources()
@@ -134,6 +135,13 @@ void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 	corners[location] = std::unique_ptr<GamePiece>(new Settlement(*this, location, Owner));
 }
 
+/*
+ *  Adds a resource and roll tile combo to the board
+ *  @param x The first coordinate
+ *  @param y The second coordinate
+ *  @param res The resource type to be added
+ *  @param val The roll tile to be added
+ */
 void GameBoard::addResource(int x, int y, resourceType res, int val)
 {
     this->resources[Coordinate(x,y)] = std::unique_ptr<GamePiece>(new ResourceTile(*this, Coordinate(x,y), res, val));
