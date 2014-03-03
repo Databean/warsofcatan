@@ -134,7 +134,7 @@ void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 	corners[location] = std::unique_ptr<GamePiece>(new Settlement(*this, location, Owner));
 }
 
-void addResource(x, y, res, val)
+void addResource(int x, int y, resourceType res, int val)
 {
     GamePiece* newPiece = new ResourceTile(*this, Coordinate(x,y), res, val))
     this->resources[Coordinate(x,y)] = newPiece;
