@@ -105,7 +105,7 @@ void GameBoard::init_resources()
     random_shuffle(&resources[0], &resources[19]);
     
     int rolls[] = {2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11};
-    while !checkRolls(rolls)
+    while (!checkRolls(rolls))
     {
         random_shuffle(&rolls[0], &rolls[18]);
     }
