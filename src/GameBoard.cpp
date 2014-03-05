@@ -101,7 +101,7 @@ void GameBoard::init_resources()
 {
     std::srand(std::time(0));
     
-    resourceType resources[] = {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP};
+    resourceType resources[] = {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP, DESERT};
     random_shuffle(&resources[0], &resources[19]);
     
     int rolls[] = {0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
@@ -120,7 +120,7 @@ void GameBoard::init_resources()
     {
         if (rolls[i] == 0)
         {
-            addResource(xcoords[i], ycoords[i], DESERT, 0);
+            addResource(xcoords[i], ycoords[i], resources[18], 0);
         }
         else
         {
