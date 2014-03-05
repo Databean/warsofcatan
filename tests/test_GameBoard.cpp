@@ -20,3 +20,17 @@ TEST(loadFile_simple){
 	CHECK(test_board->load_Board("test_1") == 0);
 	delete(test_board);
 }
+
+TEST(randomize_rolls_fail)
+{
+    GameBoard * test_board = new GameBoard;
+    CHECK(test_board->testRollChecking({0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12}) == false);
+    delete(test_board);
+}
+
+TEST(randomize_rolls_pass)
+{
+    GameBoard * test_board = new GameBoard;
+    CHECK(test_board->testRollChecking({9, 11, 5, 4, 0, 3, 4, 2, 10, 8, 3, 6, 9, 11, 5, 10, 6, 12, 8}) == true);
+    delete(test_board);
+}

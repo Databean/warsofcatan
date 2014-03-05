@@ -43,6 +43,8 @@ public:
 	void PlaceSettlement(Coordinate location, Player& Owner);
 
 	void init_resources();
+    
+    bool testRollChecking(int* rolls);
 };
 
 #endif

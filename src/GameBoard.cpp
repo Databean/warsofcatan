@@ -101,10 +101,10 @@ void GameBoard::init_resources()
 {
     std::srand(std::time(0));
     
-    resourceType resources[] = {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP, DESERT};
+    resourceType resources[] = {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP};
     random_shuffle(&resources[0], &resources[19]);
     
-    int rolls[] = {2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11};
+    int rolls[] = {0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
     while (!checkRolls(rolls))
     {
         random_shuffle(&rolls[0], &rolls[18]);
@@ -115,17 +115,17 @@ void GameBoard::init_resources()
 	
     
     
-    int rollCount = 0;
+    int resourceCount = 0;
     for (int i = 0; i<19; i++)
     {
-        if (resources[i]==DESERT)
+        if (rolls[i] == 0)
         {
-            addResource(xcoords[i], ycoords[i], resources[i], 0);
+            addResource(xcoords[i], ycoords[i], DESERT, 0);
         }
         else
         {
-            addResource(xcoords[i], ycoords[i], resources[i], rolls[rollCount]);
-            rollCount++;
+            addResource(xcoords[i], ycoords[i], resources[resourceCount], rolls[i]);
+            resourceCount++;
         }
     }
     
@@ -316,4 +316,9 @@ bool GameBoard::checkRolls(int* rolls)
     }
     
     return true;
+}
+
+bool GameBoard::testRollChecking(int* rolls)
+{
+    return checkRolls(rolls);
 }
