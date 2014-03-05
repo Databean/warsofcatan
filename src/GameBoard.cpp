@@ -92,7 +92,8 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(Coordinate locatio
 }
 
 /* 
- *   Initialize board with a set of resources. Currently only the standard configuration (no custom shapes or expansion packs) is implemented.
+ *   Initialize board with a set of resources. 
+ *   Currently only the standard configuration (no custom shapes or expansion packs) is implemented.
  *   Board tiles and roll numbers are randomized.
  */
 
@@ -106,8 +107,8 @@ void GameBoard::init_resources()
     int rolls[] = {2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11};
     random_shuffle(&rolls[0], &rolls[18]);
     
-    int xcoords[] = {0, -2, 2, -3, -1, 1, 3, -4, -2, 0, 2, 4, -3, -1, 1, 3, -2, 0, 2};
-    int ycoords[] = {1,  2, 0,  4,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
+    int xcoords[] = {-2, 0, 2, -3, -1, 1, 3, -4, -2, 0, 2, 4, -3, -1, 1, 3, -2, 0, 2};
+    int ycoords[] = { 2, 1, 0,  4,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
 	
     
     
