@@ -23,6 +23,7 @@ private:
 	std::map<Coordinate, std::unique_ptr<GamePiece>> resources;
 	std::vector<std::unique_ptr<const Road>> roads;
     void addResource(int x, int y, resourceType res, int val);
+    bool checkRolls(int* rolls);
 	
 	int constructBoardFromFile(std::ifstream &file);
 	int constructFileFromBoard(std::ofstream &file);
