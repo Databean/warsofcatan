@@ -22,10 +22,13 @@ class GameBoard {
 private:
 	std::map<Coordinate, std::unique_ptr<GamePiece>> corners;
 	std::map<Coordinate, std::unique_ptr<GamePiece>> resources;
+	
 	std::vector<std::unique_ptr<Road>> roads;
 	std::vector<std::unique_ptr<Player>> players;
 	
-	void addResource(int x, int y, resourceType res, int val);
+    void addResource(int x, int y, resourceType res, int val);
+    bool checkRolls(int* rolls);
+    
 	
 public:
 	GameBoard(std::vector<std::unique_ptr<Player>>&& players);
@@ -47,6 +50,8 @@ public:
 	void accept(GameVisitor& visitor);
 	
 	bool operator==(const GameBoard& other) const;
+    
+    bool testRollChecking(int* rolls);
 };
 
 #endif

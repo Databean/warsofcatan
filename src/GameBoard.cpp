@@ -5,6 +5,7 @@
 #include <ctime>
 #include <algorithm>
 #include <iostream>
+#include <stdexcept>
 
 #include "GameVisitor.h"
 #include "Serialization.h"
@@ -103,7 +104,8 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(Coordinate locatio
 }
 
 /* 
- *   Initialize board with a set of resources. Currently only the standard configuration (no custom shapes or expansion packs) is implemented.
+ *   Initialize board with a set of resources. 
+ *   Currently only the standard configuration (no custom shapes or expansion packs) is implemented.
  *   Board tiles and roll numbers are randomized.
  */
 
@@ -114,25 +116,28 @@ void GameBoard::init_resources()
     resourceType resources[] = {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP, DESERT};
     random_shuffle(&resources[0], &resources[19]);
     
-    int rolls[] = {2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11};
-    random_shuffle(&rolls[0], &rolls[18]);
+    int rolls[] = {0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
+    while (!checkRolls(rolls))
+    {
+        random_shuffle(&rolls[0], &rolls[18]);
+    }
     
-    int xcoords[] = {0, -2, 2, -3, -1, 1, 3, -4, -2, 0, 2, 4, -3, -1, 1, 3, -2, 0, 2};
-    int ycoords[] = {1,  2, 0,  4,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
+    int xcoords[] = {-2, 0, 2, -3, -1, 1, 3, -4, -2, 0, 2, 4, -3, -1, 1, 3, -2, 0, 2};
+    int ycoords[] = { 2, 1, 0,  4,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
 	
     
     
-    int rollCount = 0;
+    int resourceCount = 0;
     for (int i = 0; i<19; i++)
     {
-        if (resources[i]==DESERT)
+        if (rolls[i] == 0)
         {
-            addResource(xcoords[i], ycoords[i], resources[i], 0);
+            addResource(xcoords[i], ycoords[i], resources[18], 0);
         }
         else
         {
-            addResource(xcoords[i], ycoords[i], resources[i], rolls[rollCount]);
-            rollCount++;
+            addResource(xcoords[i], ycoords[i], resources[resourceCount], rolls[i]);
+            resourceCount++;
         }
     }
     
@@ -203,6 +208,7 @@ bool GameBoard::operator==(const GameBoard& other) const {
 }
 /*
  *  Adds a resource and roll tile combo to the board
+ *
  *  @param x The first coordinate
  *  @param y The second coordinate
  *  @param res The resource type to be added
@@ -213,3 +219,177 @@ void GameBoard::addResource(int x, int y, resourceType res, int val)
     this->resources[Coordinate(x,y)] = std::unique_ptr<GamePiece>(new ResourceTile(*this, Coordinate(x,y), res, val));
 }
 
+/*
+ *  This method checks the array of roll tiles
+ *  and makes sure that there are no 6s or 8s next to eachother
+ *  for the placement scheme defined in init_resources.
+ *
+ *  P.S. It's a giant clusterf...well, if you have any ideas on refactoring, please do
+ *
+ *  @param rolls The array to check
+ */
+bool GameBoard::checkRolls(int* rolls)
+{
+    if (rolls[0] == 6 || rolls[0] == 8)
+    {
+        if (rolls[1] == 6 || rolls[1] == 8)
+            return false;
+        if (rolls[3] == 6 || rolls[3] == 8)
+            return false;
+        if (rolls[4] == 6 || rolls[4] == 8)
+            return false;
+    }
+    
+    if (rolls[1] == 6 || rolls[1] == 8)
+    {
+        if (rolls[2] == 6 || rolls[2] == 8)
+            return false;
+        if (rolls[4] == 6 || rolls[4] == 8)
+            return false;
+        if (rolls[5] == 6 || rolls[5] == 8)
+            return false;
+    }
+    
+    if (rolls[2] == 6 || rolls[2] == 8)
+    {
+        if (rolls[5] == 6 || rolls[5] == 8)
+            return false;
+        if (rolls[6] == 6 || rolls[6] == 8)
+            return false;
+    }
+    
+    if (rolls[3] == 6 || rolls[3] == 8)
+    {
+        if (rolls[7] == 6 || rolls[7] == 8)
+            return false;
+        if (rolls[8] == 6 || rolls[8] == 8)
+            return false;
+        if (rolls[4] == 6 || rolls[4] == 8)
+            return false;
+    }
+    
+    if (rolls[4] == 6 || rolls[4] == 8)
+    {
+        if (rolls[8] == 6 || rolls[8] == 8)
+            return false;
+        if (rolls[9] == 6 || rolls[9] == 8)
+            return false;
+        if (rolls[5] == 6 || rolls[5] == 8)
+            return false;
+    }
+    
+    if (rolls[5] == 6 || rolls[5] == 8)
+    {
+        if (rolls[9] == 6 || rolls[9] == 8)
+            return false;
+        if (rolls[10] == 6 || rolls[10] == 8)
+            return false;
+        if (rolls[6] == 6 || rolls[6] == 8)
+            return false;
+    }
+    
+    if (rolls[6] == 6 || rolls[6] == 8)
+    {
+        if (rolls[10] == 6 || rolls[10] == 8)
+            return false;
+        if (rolls[11] == 6 || rolls[11] == 8)
+            return false;
+    }
+    
+    if (rolls[7] == 6 || rolls[7] == 8)
+    {
+        if (rolls[12] == 6 || rolls[12] == 8)
+            return false;
+        if (rolls[8] == 6 || rolls[8] == 8)
+            return false;
+    }
+    
+    if (rolls[8] == 6 || rolls[8] == 8)
+    {
+        if (rolls[12] == 6 || rolls[12] == 8)
+            return false;
+        if (rolls[13] == 6 || rolls[13] == 8)
+            return false;
+        if (rolls[9] == 6 || rolls[9] == 8)
+            return false;
+    }
+    
+    if (rolls[9] == 6 || rolls[9] == 8)
+    {
+        if (rolls[13] == 6 || rolls[13] == 8)
+            return false;
+        if (rolls[14] == 6 || rolls[14] == 8)
+            return false;
+        if (rolls[10] == 6 || rolls[10] == 8)
+            return false;
+    }
+    
+    if (rolls[10] == 6 || rolls[10] == 8)
+    {
+        if (rolls[14] == 6 || rolls[14] == 8)
+            return false;
+        if (rolls[15] == 6 || rolls[15] == 8)
+            return false;
+        if (rolls[11] == 6 || rolls[11] == 8)
+            return false;
+    }
+    
+    if (rolls[11] == 6 || rolls[11] == 8)
+    {
+        if (rolls[15] == 6 || rolls[15] == 8)
+            return false;
+    }
+    
+    if (rolls[12] == 6 || rolls[12] == 8)
+    {
+        if (rolls[16] == 6 || rolls[16] == 8)
+            return false;
+        if (rolls[13] == 6 || rolls[13] == 8)
+            return false;
+    }
+    
+    if (rolls[13] == 6 || rolls[13] == 8)
+    {
+        if (rolls[16] == 6 || rolls[16] == 8)
+            return false;
+        if (rolls[17] == 6 || rolls[17] == 8)
+            return false;
+        if (rolls[14] == 6 || rolls[14] == 8)
+            return false;
+    }
+    
+    if (rolls[14] == 6 || rolls[14] == 8)
+    {
+        if (rolls[17] == 6 || rolls[17] == 8)
+            return false;
+        if (rolls[18] == 6 || rolls[18] == 8)
+            return false;
+        if (rolls[15] == 6 || rolls[15] == 8)
+            return false;
+    }
+    
+    if (rolls[15] == 6 || rolls[15] == 8)
+    {
+        if (rolls[18] == 6 || rolls[18] == 8)
+            return false;
+    }
+    
+    if (rolls[16] == 6 || rolls[16] == 8)
+    {
+        if (rolls[17] == 6 || rolls[17] == 8)
+            return false;
+    }
+    
+    if (rolls[17] == 6 || rolls[17] == 8)
+    {
+        if (rolls[18] == 6 || rolls[18] == 8)
+            return false;
+    }
+    
+    return true;
+}
+
+bool GameBoard::testRollChecking(int* rolls)
+{
+    return checkRolls(rolls);
+}
