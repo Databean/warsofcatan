@@ -7,6 +7,7 @@ class Settlement;
 class Road;
 class City;
 class Player;
+class DevelopmentCard;
 
 class GameVisitor {
 private:
@@ -23,6 +24,7 @@ public:
 	virtual void visit(City&) = 0;
 	virtual void visit(Player&) = 0;
 	virtual void visit(ResourceTile&) = 0;
+	virtual void visit(DevelopmentCard&) = 0;
 };
 
 #endif

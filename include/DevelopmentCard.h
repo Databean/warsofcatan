@@ -12,6 +12,7 @@
 
 #include "Util.h"
 #include "Player.h"
+#include "GameVisitor.h"
 
 
 enum DevCardType { KNIGHT, VICTORYPOINT, YEAROFPLENTY, MONOPOLY, ROADBUILDING };
@@ -27,9 +28,12 @@ public:
     DevelopmentCard(Player* player);
     virtual ~DevelopmentCard();
 
-    virtual DevCardType getType() = 0;
+    virtual DevCardType getType() const = 0;
     virtual void playCard() = 0;
 
+    virtual Player* getOwner();
+	virtual void accept(GameVisitor& visitor);
+	virtual bool operator==(const DevelopmentCard&);
 };
 
 
@@ -41,8 +45,8 @@ public:
 	KnightCard(Player* player);
 //	virtual ~KnightCard();
 
-    DevCardType getType();
-    void playCard();
+    virtual DevCardType getType() const;
+    virtual void playCard();
 
 };
 
@@ -53,8 +57,8 @@ public:
     VictoryPointCard(Player* player);
 //    virtual ~VictoryPointCard();
 
-    DevCardType getType();
-    void playCard();
+    virtual DevCardType getType() const;
+    virtual void playCard();
 
 };
 
@@ -64,8 +68,8 @@ public:
     YearOfPlentyCard(Player* player);
 //    virtual ~YearOfPlentyCard();
 
-    DevCardType getType();
-    void playCard();
+    virtual DevCardType getType() const;
+    virtual void playCard();
 
 };
 
@@ -77,8 +81,8 @@ public:
     MonopolyCard(Player* player);
 //    virtual ~MonopolyCard();
 
-    DevCardType getType();
-    void playCard();
+    virtual DevCardType getType() const;
+    virtual void playCard();
 
 };
 
@@ -91,8 +95,8 @@ public:
 	RoadBuildingCard(Player* player);
 //	virtual ~RoadBuildingCard();
 
-    DevCardType getType();
-    void playCard();
+    virtual DevCardType getType() const;
+    virtual void playCard();
 };
 
 

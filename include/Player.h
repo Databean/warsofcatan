@@ -12,6 +12,9 @@
 
 #include <vector>
 #include <string>
+#include <memory>
+
+#include "tinyxml2.h"
 
 #include "GameVisitor.h"
 
@@ -28,7 +31,7 @@ class Player {
 private:
     std::string name;
 
-    std::vector<DevelopmentCard*> developmentCards;
+    std::vector<std::unique_ptr<DevelopmentCard>> developmentCards;
 
     int armySize;
     int longestRoad;
@@ -40,6 +43,7 @@ private:
 public:
 
 	Player(std::string playerName);
+	Player(tinyxml2::XMLElement*);
 	~Player();
 
     int getVictoryPoints();
@@ -47,7 +51,7 @@ public:
 
     int getDevCardsInHand();
 
-    void buyCard(DevelopmentCard* card);
+    void buyCard(std::unique_ptr<DevelopmentCard> card);
     void playCard(DevelopmentCard* card);
 
     int getWood() const;

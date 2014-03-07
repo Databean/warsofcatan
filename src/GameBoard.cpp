@@ -59,12 +59,7 @@ GameBoard::GameBoard(istream& in) {
 	auto playerElements = doc.RootElement()->FirstChildElement("players");
 	if(playerElements) {
 		for(auto playerElement = playerElements->FirstChildElement(); playerElement; playerElement = playerElement->NextSiblingElement()) {
-			unique_ptr<Player> player(new Player(playerElement->FirstChildElement("name")->FirstChild()->Value()));
-			player->setWood(fromString<int>(playerElement->FirstChildElement("wood")->FirstChild()->Value()));
-			player->setBrick(fromString<int>(playerElement->FirstChildElement("brick")->FirstChild()->Value()));
-			player->setOre(fromString<int>(playerElement->FirstChildElement("ore")->FirstChild()->Value()));
-			player->setWheat(fromString<int>(playerElement->FirstChildElement("wheat")->FirstChild()->Value()));
-			player->setWool(fromString<int>(playerElement->FirstChildElement("wool")->FirstChild()->Value()));
+			unique_ptr<Player> player(new Player(playerElement));
 			players.emplace_back(std::move(player));
 		}
 	}
@@ -148,6 +143,7 @@ void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 }
 
 void GameBoard::accept(GameVisitor& visitor) {
+	visitor.visit(*this);
 	for(auto& it : corners) {
 		it.second->accept(visitor);
 	}
@@ -160,7 +156,6 @@ void GameBoard::accept(GameVisitor& visitor) {
 	for(auto& it : players) {
 		it->accept(visitor);
 	}
-	visitor.visit(*this);
 }
 
 bool GameBoard::operator==(const GameBoard& other) const {

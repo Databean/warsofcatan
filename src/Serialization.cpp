@@ -9,9 +9,11 @@
 #include "City.h"
 #include "Settlement.h"
 #include "Road.h"
+#include "DevelopmentCard.h"
 
 using std::map;
 using std::runtime_error;
+using std::make_pair;
 
 using tinyxml2::XMLElement;
 using tinyxml2::XMLText;
@@ -115,7 +117,10 @@ void XMLVisitor::visit(Player& player) {
 	woolElement->InsertEndChild(xmldoc.NewText(toString(player.getWool()).c_str()));
 	newPlayerElement->InsertEndChild(woolElement);
 	
+	newPlayerElement->InsertEndChild(xmldoc.NewElement("cards"));
+	
 	playersElement->InsertEndChild(newPlayerElement);
+	playerElementMap[player.getName()] = newPlayerElement;
 }
 
 void XMLVisitor::visit(ResourceTile& tile) {
@@ -148,6 +153,38 @@ void XMLVisitor::visit(ResourceTile& tile) {
 	newTileElement->InsertEndChild(tileValueElement);
 	
 	tilesElement->InsertEndChild(newTileElement);
+}
+
+void XMLVisitor::visit(DevelopmentCard& card) {
+	auto playerElementIt = playerElementMap.find(card.getOwner()->getName());
+	if(playerElementIt == playerElementMap.end()) {
+		throw runtime_error("This card belongs to a player that hasn't been saved!");
+	}
+	XMLElement* playerElement = playerElementIt->second;
+	if(!playerElement->FirstChildElement("cards")) {
+		playerElement->InsertEndChild(xmldoc.NewElement("cards"));
+	}
+	XMLElement* cardsElement = playerElement->FirstChildElement("cards");
+	
+	XMLElement* newCardElement = xmldoc.NewElement("card");
+	
+	static const map<DevCardType, std::string> typeToText = {
+		make_pair(KNIGHT, "knight"),
+		make_pair(VICTORYPOINT, "victorypoint"),
+		make_pair(YEAROFPLENTY, "yearofplenty"),
+		make_pair(MONOPOLY, "monopoly"),
+		make_pair(ROADBUILDING, "roadbuilding")
+	};
+	auto typeIt = typeToText.find(card.getType());
+	if(typeIt == typeToText.end()) {
+		throw runtime_error("Unknown card type");
+	}
+	
+	XMLElement* typeElement = xmldoc.NewElement("type");
+	typeElement->InsertEndChild(xmldoc.NewText(typeIt->second.c_str()));
+	newCardElement->InsertEndChild(typeElement);
+	
+	cardsElement->InsertEndChild(newCardElement);
 }
 
 XMLElement* XMLVisitor::coordinateElement(const Coordinate& c) {

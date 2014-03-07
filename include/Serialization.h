@@ -1,6 +1,9 @@
 #ifndef SERIALIZATION_H
 #define SERIALIZATION_H
 
+#include <map>
+#include <string>
+
 #include "GameVisitor.h"
 #include "Util.h"
 
@@ -9,6 +12,7 @@
 class XMLVisitor : public GameVisitor {
 private:
 	tinyxml2::XMLDocument xmldoc;
+	std::map<std::string, tinyxml2::XMLElement*> playerElementMap;
 	
 	tinyxml2::XMLElement* coordinateElement(const Coordinate& c);
 public:
@@ -21,6 +25,7 @@ public:
 	virtual void visit(City&);
 	virtual void visit(Player&);
 	virtual void visit(ResourceTile&);
+	virtual void visit(DevelopmentCard&);
 	
 	const tinyxml2::XMLDocument& getXMLDoc() const;
 };

@@ -20,12 +20,24 @@ DevelopmentCard::~DevelopmentCard() {
 	
 }
 
+Player* DevelopmentCard::getOwner() {
+    return owner;
+}
+
+void DevelopmentCard::accept(GameVisitor& visitor) {
+    visitor.visit(*this);
+}
+
+bool DevelopmentCard::operator==(const DevelopmentCard& other) {
+	return getType() == other.getType();
+}
+
 KnightCard::KnightCard(Player* player):DevelopmentCard(player)
 {
 
 }
 
-DevCardType KnightCard::getType(){
+DevCardType KnightCard::getType() const {
     return KNIGHT;
 }
 
@@ -40,7 +52,7 @@ VictoryPointCard::VictoryPointCard(Player* player):DevelopmentCard(player)
 
 }
 
-DevCardType VictoryPointCard::getType(){
+DevCardType VictoryPointCard::getType() const {
     return VICTORYPOINT;
 }
 
@@ -55,7 +67,7 @@ YearOfPlentyCard::YearOfPlentyCard(Player* player):DevelopmentCard(player)
 
 }
 
-DevCardType YearOfPlentyCard::getType(){
+DevCardType YearOfPlentyCard::getType() const {
     return YEAROFPLENTY;
 }
 
@@ -71,7 +83,7 @@ MonopolyCard::MonopolyCard(Player* player):DevelopmentCard(player)
 
 }
 
-DevCardType MonopolyCard::getType(){
+DevCardType MonopolyCard::getType() const {
     return MONOPOLY;
 }
 
@@ -84,7 +96,7 @@ void MonopolyCard::playCard()
 
 RoadBuildingCard::RoadBuildingCard(Player* player):DevelopmentCard(player){};
 
-DevCardType RoadBuildingCard::getType()
+DevCardType RoadBuildingCard::getType() const
 {
     return ROADBUILDING;
 }
