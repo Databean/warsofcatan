@@ -307,8 +307,6 @@ int GameBoard::FindLongestRoad(Player & owner){
 		Coordinate start = roadVector->first;
 		int temp_longest_path = FindLongestRoad_FromPoint(start, owner, marked, 0);
 
-		std::cout << "LONGEST PATH: " << start.first << ", " << start.second << ": " << temp_longest_path << "\n";
-
 		//if that path is longer than the current longest, set to the longest
 		if (temp_longest_path > longest_path)
 			longest_path = temp_longest_path;
@@ -319,9 +317,6 @@ int GameBoard::FindLongestRoad(Player & owner){
 
 
 int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::map<Coordinate, bool>& marked, int length){
-
-	std::cout << "       " << curr.first << ", " << curr.second << ": " << length << "\n";
-
 	marked[curr] = true;
 	int longest_path = length;
 	//traverse all the surrounding edges and vertices

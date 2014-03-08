@@ -35,35 +35,55 @@ Road::~Road() {
 	
 }
 
+/**
+ * Returns the starting coordinate of the road
+ */
 Coordinate Road::getStart() const{
 	return start;
 }
+
+/**
+ * Returns the ending coordinate of the road
+ */
 Coordinate Road::getEnd() const{
 	return end;
 }
 
+/**
+ * Returns true if the roads have the same coordinates whether they are matching starting or ending coordinates doesn't matter
+ */
 bool Road::equals(const Road& otherRoad){
 	Coordinate otherstart = otherRoad.getStart();
 	Coordinate otherend = otherRoad.getEnd();
 	return equals(otherstart, otherend);
 }
 
+/**
+ * Returns true if the roads have the same coordinates whether they are matching starting or ending coordinates doesn't matter
+ */
 bool Road::equals(const Coordinate& otherStart, const Coordinate& otherEnd){
 	if((otherStart == start && otherEnd == end) || (otherStart == end && otherEnd == start))
 		return true;
 	return false;
 }
 
-
-
+/**
+ * Returns true if the road is marked, false otherwise
+ */
 bool Road::isMarked(){
 	return marker;
 }
 
+/**
+ * Marks the road
+ */
 void Road::mark(){
 	marker = true;
 }
 
+/**
+ * Unmarks the road
+ */
 void Road::unmark(){
 	marker = false;
 }
