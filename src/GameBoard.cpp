@@ -409,10 +409,12 @@ bool GameBoard::operator==(const GameBoard& other) const {
 		}
 	}
 	if(players.size() != other.players.size()) {
+		std::cout << "sizes differ" << std::endl;
 		return false;
 	}
 	for(unsigned int i = 0; i < players.size(); i++) {
 		if(!(*(players[i]) == *(other.players[i]))) {
+			std::cout << "player " << i << " differs" << std::endl;
 			return false;
 		}
 	}

@@ -35,6 +35,9 @@ Player::Player(std::string playerName) : name(playerName)
 
 Player::Player(XMLElement* elem)
 {
+	for(auto& r : resources) {
+		r = 0;
+	}
 	name = elem->FirstChildElement("name")->FirstChild()->Value();
 	setWood(fromString<int>(elem->FirstChildElement("wood")->FirstChild()->Value()));
 	setBrick(fromString<int>(elem->FirstChildElement("brick")->FirstChild()->Value()));
