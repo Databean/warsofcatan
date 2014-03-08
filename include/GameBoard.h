@@ -20,6 +20,10 @@ private:
 	std::map<Coordinate, std::unique_ptr<GamePiece>> resources;
 	std::vector<std::unique_ptr<const Road>> roads;
 	
+
+	std::vector<Player*> players;
+
+
 	int constructBoardFromFile(std::ifstream &file);
 	int constructFileFromBoard(std::ofstream &file);
 public:
@@ -37,6 +41,14 @@ public:
 	void PlaceSettlement(Coordinate location, Player& Owner);
 
 	void init_resources();
+
+	int getNoOfPlayers();
+
+	std::vector<Player*> getPlayerList();
+
+
+
+
 };
 
 #endif

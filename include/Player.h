@@ -13,14 +13,18 @@
 #include <vector>
 #include <string>
 
-//#include "DevelopmentCard.h"
+const int WOOD_INDEX = 0;
+const int BRICK_INDEX = 1;
+const int ORE_INDEX = 2;
+const int WHEAT_INDEX = 3;
+const int WOOL_INDEX = 4;
 
 
 class DevelopmentCard;
 class Deck;
 
-//#include <ext/hash_map>
-//#include <unordered_map>
+
+
 
 class Player {
 private:
@@ -31,8 +35,10 @@ private:
     int armySize;
     int longestRoad;
     int victoryPoints;
-
+//    GameBoard *board;
     int resources[5];
+
+
 
 
 public:
@@ -43,10 +49,20 @@ public:
     int getVictoryPoints();
     void updateVictoryPoints();
 
+    int getVictoryPointsWithoutCards();
+    int getVictoryPointCards();
+
     int getDevCardsInHand();
 
     void buyCard(DevelopmentCard* card);
     void playCard(DevelopmentCard* card);
+
+    bool offerTrade(Player* p, int offer[], int demand[]);
+    bool recieveOffer(Player* p, int offer[], int demand[]);
+    bool acceptOffer(Player* p, int offer[], int demand[]);
+
+    bool checkResources(int resourceList[]);
+
 
     int getWood();
     int getBrick();
