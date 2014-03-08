@@ -38,7 +38,7 @@ TEST(place_road_good){
 	GameBoard * test_board = new GameBoard(std::move(players));
 
 	test_board->PlaceRoad(start, end, test_player);
-	Road * test_road = test_board->getRoad(start, end);
+	std::shared_ptr<Road> test_road = test_board->getRoad(start, end);
 	if (test_road == NULL)
 		CHECK(false);
 	else
@@ -58,7 +58,7 @@ TEST(place_road_badroad){
 	Coordinate end(0,2);
 
 	test_board->PlaceRoad(start, end, test_player);
-	Road * test_road = test_board->getRoad(start, end);
+	std::shared_ptr<Road> test_road = test_board->getRoad(start, end);
 
 	CHECK(test_road == NULL);
 
@@ -76,7 +76,7 @@ TEST(place_road_outofbounds){
 	Coordinate end(-1,0);
 
 	test_board->PlaceRoad(start, end, test_player);
-	Road * test_road = test_board->getRoad(start, end);
+	std::shared_ptr<Road> test_road = test_board->getRoad(start, end);
 
 	CHECK(test_road == NULL);
 
@@ -94,7 +94,7 @@ TEST(place_road_roadexists){
 	Coordinate end(0,1);
 
 	test_board->PlaceRoad(start, end, test_player);
-	Road * test_road = test_board->getRoad(start, end);
+	std::shared_ptr<Road> test_road = test_board->getRoad(start, end);
 	if (test_road == NULL)
 		CHECK(false);
 	else

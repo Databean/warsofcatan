@@ -27,7 +27,7 @@ private:
     void addResource(int x, int y, resourceType res, int val);
     bool checkRolls(int* rolls);
 	
-	std::map<Coordinate, std::vector<Road*>> roads;
+	std::map<Coordinate, std::vector<std::shared_ptr<Road>>> roads;
 	
 	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner);
 	bool outOfBounds(const Coordinate& coord);
@@ -37,8 +37,7 @@ private:
 	int constructBoardFromFile(std::ifstream &file);
 	int constructFileFromBoard(std::ofstream &file);
 
-	void freeRoads();
-	void removeRoadEnd(Road * startRoad);
+	void removeRoadEnd(std::shared_ptr<Road> startRoad);
 	int FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::map<Coordinate, bool>& marked, int length);
 
 public:
@@ -51,7 +50,7 @@ public:
 	void save(std::ostream& out);
 	
 	const std::map<Coordinate, std::unique_ptr<GamePiece>>& getResources() const;
-	Road * getRoad(Coordinate start, Coordinate end);
+	std::shared_ptr<Road> getRoad(Coordinate start, Coordinate end);
 	
 	int FindLongestRoad(Player & owner);
 
