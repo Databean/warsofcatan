@@ -62,3 +62,24 @@ TEST(testCardSerialization) {
 	
 	CHECK(testBoard == copyBoard);
 }
+
+TEST(roadSerialization) {
+	vector<unique_ptr<Player>> players;
+	players.emplace_back(unique_ptr<Player>(new Player("test")));
+	players.emplace_back(unique_ptr<Player>(new Player("test2")));
+	
+	Player& firstPlayer = *players[0];
+	Player& secondPlayer = *players[1];
+	
+	GameBoard testBoard(std::move(players));
+	
+	testBoard.PlaceRoad(Coordinate(0,0), Coordinate(-1,1), firstPlayer);
+	testBoard.PlaceRoad(Coordinate(-1,1), Coordinate(-1,2), secondPlayer);
+	
+	stringstream stream;
+	testBoard.save(stream);
+	
+	GameBoard copyBoard(stream);
+	
+	CHECK(testBoard == copyBoard);
+}

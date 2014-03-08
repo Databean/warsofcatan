@@ -63,6 +63,27 @@ GameBoard::GameBoard(istream& in) {
 			players.emplace_back(std::move(player));
 		}
 	}
+	
+	auto roadElements = doc.RootElement()->FirstChildElement("roads");
+	if(roadElements) {
+		for(auto roadElement = roadElements->FirstChildElement(); roadElement; roadElement = roadElement->NextSiblingElement()) {
+			Coordinate start = xmlElementToCoord(*(roadElement->FirstChildElement("start")->FirstChildElement("coordinate")));
+			Coordinate end = xmlElementToCoord(*(roadElement->FirstChildElement("end")->FirstChildElement("coordinate")));
+			std::string ownerName = roadElement->FirstChildElement("owner")->FirstChild()->Value();
+			Player* owner = nullptr;
+			for(auto& playerUnique : players) {
+				if(playerUnique->getName() == ownerName) {
+					owner = playerUnique.get();
+				}
+			}
+			if(owner == nullptr) {
+				throw std::runtime_error("Road is owned by a nonexistant player.");
+			}
+			Road* newRoad = new Road(start, end, *owner);
+			roads[start].push_back(newRoad);
+			roads[end].push_back(newRoad);
+		}
+	}
 }
 
 GameBoard::~GameBoard() {
@@ -99,11 +120,9 @@ void GameBoard::freeRoads(){
  */
 void GameBoard::removeRoadEnd(Road * startRoad){
 	std::vector<Road*> endRoadVector = roads[startRoad->getEnd()];
-	for(std::vector<Road*>::iterator endRoad = endRoadVector.begin(); endRoad != endRoadVector.end(); ++endRoad){
+	for(std::vector<Road*>::iterator endRoad = endRoadVector.begin(); endRoad != endRoadVector.end(); endRoad++){
 		if((*endRoad) == startRoad){
-			endRoadVector.erase(endRoad);
-			//Need to decrement the iterator to account for the lost item
-			endRoad--;
+			(*endRoad) = nullptr;
 		}
 	}
 }
@@ -363,6 +382,11 @@ void GameBoard::accept(GameVisitor& visitor) {
 	for(auto& it : resources) {
 		it.second->accept(visitor);
 	}
+	for(auto& roadCoordVec : roads) {
+		for(auto& road : roadCoordVec.second) {
+			road->accept(visitor);
+		}
+	}
 	for(auto& it : players) {
 		it->accept(visitor);
 	}
@@ -388,6 +412,24 @@ bool GameBoard::operator==(const GameBoard& other) const {
 		}
 		if(!(*(it.second) == *(otherIt->second))) {
 			return false;
+		}
+	}
+	for(auto& roadCoordVec : roads) {
+		const auto& otherVecIt = other.roads.find(roadCoordVec.first);
+		if(otherVecIt == other.roads.end()) {
+			return false;
+		}
+		auto& otherCoordVec = *otherVecIt;
+		if(roadCoordVec.second.size() != otherCoordVec.second.size()) {
+			return false;
+		}
+		for(size_t i = 0; i < roadCoordVec.second.size(); i++) {
+			const Road& myRoad = *(roadCoordVec.second[i]);
+			const Road& otherRoad = *(otherCoordVec.second[i]);
+			if(myRoad == otherRoad) {}
+			else {
+				return false;
+			}
 		}
 	}
 	if(players.size() != other.players.size()) {

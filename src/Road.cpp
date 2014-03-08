@@ -44,7 +44,7 @@ void Road::accept(GameVisitor& visitor) {
 bool Road::operator==(const Road& other) const {
 	return getStart() == other.getStart() &&
 		getEnd() == other.getEnd() &&
-		owner == other.owner;
+		owner->getName() == other.owner->getName();
 }
 
 /**

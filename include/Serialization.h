@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <set>
 
 #include "GameVisitor.h"
 #include "Util.h"
@@ -13,6 +14,7 @@ class XMLVisitor : public GameVisitor {
 private:
 	tinyxml2::XMLDocument xmldoc;
 	std::map<std::string, tinyxml2::XMLElement*> playerElementMap;
+	std::set<Road*> serializedRoads;
 	
 	tinyxml2::XMLElement* coordinateElement(const Coordinate& c);
 public:

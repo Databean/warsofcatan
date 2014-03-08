@@ -35,23 +35,26 @@ void XMLVisitor::visit(Road& road) {
 	if(!xmldoc.RootElement()->FirstChildElement("roads")) {
 		xmldoc.RootElement()->InsertEndChild(xmldoc.NewElement("roads"));
 	}
-	XMLElement* roadsElement = xmldoc.RootElement()->FirstChildElement("roads");
-	XMLElement* newRoadElement = xmldoc.NewElement("road");
-	
-	XMLElement* ownerElement = xmldoc.NewElement("owner");
-	XMLText* ownerText = xmldoc.NewText(road.getOwner().getName().c_str());
-	ownerElement->InsertEndChild(ownerText);
-	newRoadElement->InsertEndChild(ownerElement);
-	
-	XMLElement* startElement = xmldoc.NewElement("start");
-	startElement->InsertEndChild(coordinateElement(road.getStart()));
-	newRoadElement->InsertEndChild(startElement);
-	
-	XMLElement* endElement = xmldoc.NewElement("end");
-	endElement->InsertEndChild(coordinateElement(road.getEnd()));
-	newRoadElement->InsertEndChild(endElement);
-	
-	roadsElement->InsertEndChild(newRoadElement);
+	if(serializedRoads.find(&road) == serializedRoads.end()) {
+		XMLElement* roadsElement = xmldoc.RootElement()->FirstChildElement("roads");
+		XMLElement* newRoadElement = xmldoc.NewElement("road");
+		
+		XMLElement* ownerElement = xmldoc.NewElement("owner");
+		XMLText* ownerText = xmldoc.NewText(road.getOwner().getName().c_str());
+		ownerElement->InsertEndChild(ownerText);
+		newRoadElement->InsertEndChild(ownerElement);
+		
+		XMLElement* startElement = xmldoc.NewElement("start");
+		startElement->InsertEndChild(coordinateElement(road.getStart()));
+		newRoadElement->InsertEndChild(startElement);
+		
+		XMLElement* endElement = xmldoc.NewElement("end");
+		endElement->InsertEndChild(coordinateElement(road.getEnd()));
+		newRoadElement->InsertEndChild(endElement);
+		
+		roadsElement->InsertEndChild(newRoadElement);
+		serializedRoads.insert(&road);
+	}
 }
 
 void XMLVisitor::visit(Settlement& settlement) {
