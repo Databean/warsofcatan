@@ -2,6 +2,9 @@
 #define ROAD_H
 
 #include "Util.h"
+#include "Player.h"
+#include <vector>
+#include <cmath>
 
 #include "Player.h"
 
@@ -9,21 +12,34 @@ class GameVisitor;
 
 class Road {
 private:
-	Player& owner;
+	bool checkRoad();
+	
 	Coordinate start;
 	Coordinate end;
+
+	bool marker;
 public:
-	Road(Player& owner, Coordinate start, Coordinate end);
+	Road(Coordinate start, Coordinate end, Player& Owner);
 	Road(Road&) = delete;
-	~Road();
+	virtual ~Road();
 	Road& operator=(Road&) = delete;
-	
-	virtual void accept(GameVisitor& visitor);
+
 	Coordinate getStart() const;
 	Coordinate getEnd() const;
+
+	bool equals(const Road& otherRoad);
+	bool equals(const Coordinate& otherStart, const Coordinate& otherEnd);
+
+	bool isMarked();
+	void mark();
+	void unmark();
+	
 	Player& getOwner();
 	const Player& getOwner() const;
+
+	Player* owner;
 	
+	virtual void accept(GameVisitor& visitor);
 	bool operator==(const Road&) const;
 };
 

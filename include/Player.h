@@ -52,6 +52,8 @@ public:
     int getDevCardsInHand();
 
     void buyCard(std::unique_ptr<DevelopmentCard> card);
+    std::string getName() const;
+
     void playCard(DevelopmentCard* card);
 
     int getWood() const;
@@ -66,8 +68,6 @@ public:
     void setWheat(int resource);
     void setWool(int resource);
 
-    std::string getName() const;
-	
 	void accept(GameVisitor& visitor);
 	bool operator==(const Player& player) const;
 };

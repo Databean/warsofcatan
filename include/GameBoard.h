@@ -22,14 +22,25 @@ class GameBoard {
 private:
 	std::map<Coordinate, std::unique_ptr<GamePiece>> corners;
 	std::map<Coordinate, std::unique_ptr<GamePiece>> resources;
-	
-	std::vector<std::unique_ptr<Road>> roads;
 	std::vector<std::unique_ptr<Player>> players;
 	
     void addResource(int x, int y, resourceType res, int val);
     bool checkRolls(int* rolls);
-    
 	
+	std::map<Coordinate, std::vector<Road*>> roads;
+	
+	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner);
+	bool outOfBounds(const Coordinate& coord);
+	bool roadExists(Coordinate start, Coordinate end);
+	bool isRoadConnectionPoint(Coordinate start, Coordinate end, Player& Owner);
+
+	int constructBoardFromFile(std::ifstream &file);
+	int constructFileFromBoard(std::ofstream &file);
+
+	void freeRoads();
+	void removeRoadEnd(Road * startRoad);
+	int FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::map<Coordinate, bool>& marked, int length);
+
 public:
 	GameBoard(std::vector<std::unique_ptr<Player>>&& players);
 	GameBoard(std::istream& in);
@@ -40,10 +51,15 @@ public:
 	void save(std::ostream& out);
 	
 	const std::map<Coordinate, std::unique_ptr<GamePiece>>& getResources() const;
+	Road * getRoad(Coordinate start, Coordinate end);
 	
+	int FindLongestRoad(Player & owner);
+
 	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location);
 
 	void PlaceSettlement(Coordinate location, Player& Owner);
+	void PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
+
 
 	void init_resources();
 	

@@ -99,8 +99,6 @@ void Player::playCard(DevelopmentCard *card)
     std::remove_if(developmentCards.begin(), developmentCards.end(), cardTester);
 }
 
-
-
 int Player::getWood() const
 {
     return resources[0];
