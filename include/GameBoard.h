@@ -30,6 +30,11 @@ private:
 
 	int constructBoardFromFile(std::ifstream &file);
 	int constructFileFromBoard(std::ofstream &file);
+
+	void freeRoads();
+	void removeRoadEnd(Road * startRoad);
+	int FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::map<Coordinate, bool>& marked, int length);
+
 public:
 	GameBoard();
 	GameBoard(GameBoard&) = delete;
@@ -39,8 +44,10 @@ public:
 	int save_Board(std::string filename);
 	int load_Board(std::string filename);
 	const std::map<Coordinate, std::unique_ptr<GamePiece>>& getResources() const;
-	const Road& getRoad(int start, int end);
+	Road * getRoad(Coordinate start, Coordinate end);
 	
+	int FindLongestRoad(Player & owner);
+
 	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location);
 
 	void PlaceSettlement(Coordinate location, Player& Owner);

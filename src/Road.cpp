@@ -10,9 +10,13 @@ Road::Road(Coordinate start, Coordinate end, Player& Owner) {
 	}
 	owner = &Owner;
 
+	marker = false;
+
 	//If the input is bad, throw an exception so bad roads won't be built
-	if(!checkRoad())
+	if(!checkRoad()){
 		throw -1;
+	}
+
 
 }
 
@@ -20,22 +24,27 @@ Road::Road(Coordinate start, Coordinate end, Player& Owner) {
  * Valid roads must start in one point and end in another point a distance of 1 away.
  */
 bool Road::checkRoad(){
+	if (start == end)
+		return false;
 
-	int dist = std::abs(start.first - end.first) + std::abs(start.second - end.second);
-	return dist == 1;
+	int dist = std::abs((start.first - end.first) + (start.second - end.second));
+	return (dist <= 1);
 }
 
 Road::~Road() {
 	
 }
 
-Coordinate Road::getStart(){
+Coordinate Road::getStart() const{
 	return start;
+}
+Coordinate Road::getEnd() const{
+	return end;
 }
 
 bool Road::equals(const Road& otherRoad){
-	Coordinate otherstart = otherRoad.start;
-	Coordinate otherend = otherRoad.end;
+	Coordinate otherstart = otherRoad.getStart();
+	Coordinate otherend = otherRoad.getEnd();
 	return equals(otherstart, otherend);
 }
 
@@ -44,4 +53,20 @@ bool Road::equals(const Coordinate& otherStart, const Coordinate& otherEnd){
 		return true;
 	return false;
 }
+
+
+
+bool Road::isMarked(){
+	return marker;
+}
+
+void Road::mark(){
+	marker = true;
+}
+
+void Road::unmark(){
+	marker = false;
+}
+
+
 

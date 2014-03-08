@@ -21,7 +21,46 @@ GameBoard::GameBoard() {
 }
 
 GameBoard::~GameBoard() {
+	freeRoads();
+}
 
+/*
+ * Frees the roads data structure to prevent memory leaks
+ */
+
+void GameBoard::freeRoads(){
+	//Iterate over all the points in the roads map
+	for (auto roadVector = roads.begin(); roadVector != roads.end(); ++roadVector)
+	{
+		//Iterate all the roads at a given point
+		for (std::vector<Road*>::iterator road = roadVector->second.begin(); road != roadVector->second.end(); ++road) {
+			Road * roadPtr = *road;
+
+			//If this is the start of the road we want to remove it, but we must first erase it the list at the other end of the road
+			//If we don't then we may try to access a road which has already been freed
+			if(roadPtr != NULL && roadPtr->getStart() == roadVector->first){
+				removeRoadEnd(roadPtr);
+				roadVector->second.erase(road);
+				//Need to decrement the iterator to account for the lost item
+				road--;
+				delete roadPtr;
+			}
+		}
+	}
+}
+
+/**
+ * Find and remove the road that matches startRoad
+ */
+void GameBoard::removeRoadEnd(Road * startRoad){
+	std::vector<Road*> endRoadVector = roads[startRoad->getEnd()];
+	for(std::vector<Road*>::iterator endRoad = endRoadVector.begin(); endRoad != endRoadVector.end(); ++endRoad){
+		if((*endRoad) == startRoad){
+			endRoadVector.erase(endRoad);
+			//Need to decrement the iterator to account for the lost item
+			endRoad--;
+		}
+	}
 }
 
 int GameBoard::save_Board(std::string filename) {
@@ -142,51 +181,57 @@ bool GameBoard::outOfBounds(const Coordinate& coord) {
 	/**
 	 * This code is embarrassing, but I couldn't really figure out how to easily check for out of bounds
 	 * I'm sure there is a simple algebraic function that does it, but I went for the hacky way.
+	 *
+	 * Discussed that we can just do a find in the map, and if it's not found then it's out of bounds
 	 */
+
 	switch (coord.second) {
 	case 0:
-		return (coord.first >= 0 && coord.first <= 4);
+		return !(coord.first >= 0 && coord.first <= 4);
 		break;
 	case 1:
-		return (coord.first >= -2 && coord.first <= 5);
+		return !(coord.first >= -2 && coord.first <= 5);
 		break;
 	case 2:
-		return (coord.first >= -3 && coord.first <= 5);
+		return !(coord.first >= -3 && coord.first <= 5);
 		break;
 	case 3:
-		return (coord.first >= -3 && coord.first <= 4);
+		return !(coord.first >= -3 && coord.first <= 4);
 		break;
 	case 4:
-		return (coord.first >= -4 && coord.first <= 4);
+		return !(coord.first >= -4 && coord.first <= 4);
 		break;
 	case 5:
-		return (coord.first >= -4 && coord.first <= 3);
+		return !(coord.first >= -4 && coord.first <= 3);
 		break;
 	case 6:
-		return (coord.first >= -5 && coord.first <= 3);
+		return !(coord.first >= -5 && coord.first <= 3);
 		break;
 	case 7:
-		return (coord.first >= -5 && coord.first <= 2);
+		return !(coord.first >= -5 && coord.first <= 2);
 		break;
 	case 8:
-		return (coord.first >= -4 && coord.first <= 0);
+		return !(coord.first >= -4 && coord.first <= 0);
 		break;
 	default:
 		break;
 	}
-	return false;
+	return true;
 }
 
+/**
+ * Checks to make sure the road doesn't already exist. If it does, then we don't want to add it again
+ */
 bool GameBoard::roadExists(Coordinate start, Coordinate end) {
-	std::vector<Road*> roadVector = roads[start];
-	for (std::vector<Road*>::iterator road = roadVector.begin();
-			road != roadVector.end(); ++road) {
-		if ((*road)->equals(start, end))
-			return true;
-	}
-	return false;
+	Road * isRoad = getRoad(start, end);
+	if (isRoad == NULL)
+		return false;
+	return true;
 }
 
+/**
+ * Checks to make sure the road being placed at a valid point according to the rules
+ */
 bool GameBoard::isRoadConnectionPoint(Coordinate start, Coordinate end, Player& Owner){
 	/** Need to figure out the CornerPiece/GamePiece predicament
 	CornerPiece * corner = corners[start];
@@ -199,6 +244,9 @@ bool GameBoard::isRoadConnectionPoint(Coordinate start, Coordinate end, Player& 
 	return true;
 }
 
+/**
+ * Runs a series of checks to make sure the road can be placed
+ */
 bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) {
 	if (outOfBounds(start) || outOfBounds(end))
 		return false;
@@ -208,11 +256,17 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
 
 	if (!isRoadConnectionPoint(start, end, Owner))
 		return false;
+
 	return true;
 }
 
+/**
+ * Places a road at the specified coordinates that will be owned by the given player
+ */
 void GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
-	verifyRoadPlacement(start, end, Owner);
+	if (!verifyRoadPlacement(start, end, Owner))
+		return;
+
 	Road * newRoad;
 	try {
 		newRoad = new Road(start, end, Owner);
@@ -220,11 +274,94 @@ void GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 		//Coordinates did not meet the criteria for a valid road
 		return;
 	}
-
 	std::vector<Road*> roadVector = roads[start];
 	roadVector.push_back(newRoad);
+	roads[start] = roadVector;
 
 	roadVector = roads[end];
 	roadVector.push_back(newRoad);
+	roads[end] = roadVector;
 }
+
+/**
+ * returns a pointer to the road located at the specified coordinates. Will return NULL if the road is not found
+ */
+Road * GameBoard::getRoad(Coordinate start, Coordinate end){
+	std::vector<Road*> roadVector = roads[start];
+	for (std::vector<Road*>::iterator road = roadVector.begin(); road != roadVector.end(); ++road) {
+		if ((*road)->equals(start, end))
+			return *road;
+	}
+	return NULL;
+}
+
+/**
+ * Parent function for the find longest road traversal. Note that longest path is NP-Hard, so there is no simple algorithm for this.
+ */
+int GameBoard::FindLongestRoad(Player & owner){
+	int longest_path = 0;
+	//for each road vertex v on the board
+	for (auto roadVector = roads.begin(); roadVector != roads.end(); ++roadVector){
+		//find the longest path from v
+		std::map<Coordinate, bool> marked;
+		Coordinate start = roadVector->first;
+		int temp_longest_path = FindLongestRoad_FromPoint(start, owner, marked, 0);
+
+		std::cout << "LONGEST PATH: " << start.first << ", " << start.second << ": " << temp_longest_path << "\n";
+
+		//if that path is longer than the current longest, set to the longest
+		if (temp_longest_path > longest_path)
+			longest_path = temp_longest_path;
+	}
+
+	return longest_path;
+}
+
+
+int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::map<Coordinate, bool>& marked, int length){
+
+	std::cout << "       " << curr.first << ", " << curr.second << ": " << length << "\n";
+
+	marked[curr] = true;
+	int longest_path = length;
+	//traverse all the surrounding edges and vertices
+	std::vector<Road*> roadVector = roads[curr];
+	for (std::vector<Road*>::iterator road = roadVector.begin(); road != roadVector.end(); ++road) {
+
+		int temp_longest_path = length;
+
+		//if the owner is correct and the road is unmarked
+		if ( !(*road)->isMarked() && (*road)->owner->getName().compare(owner.getName()) == 0){
+
+			temp_longest_path++;
+			(*road)->mark();
+			//Check if you can traverse to the next vertex and make that step if you can
+			if(curr != (*road)->getStart() && !marked[(*road)->getStart()]){
+				temp_longest_path = FindLongestRoad_FromPoint((*road)->getStart(), owner, marked, temp_longest_path);
+			}else if (curr != (*road)->getEnd() && !marked[(*road)->getEnd()]){
+				temp_longest_path = FindLongestRoad_FromPoint((*road)->getEnd(), owner, marked, temp_longest_path);
+			}
+			(*road)->unmark();
+		}
+
+		if(temp_longest_path > longest_path)
+			longest_path = temp_longest_path;
+	}
+	marked[curr] = false;
+	return longest_path;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

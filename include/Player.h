@@ -45,6 +45,8 @@ public:
 
     int getDevCardsInHand();
 
+    std::string getName();
+
     void buyCard(DevelopmentCard* card);
     void playCard(DevelopmentCard* card);
 

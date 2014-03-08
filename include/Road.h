@@ -9,19 +9,25 @@
 class Road {
 private:
 	bool checkRoad();
+	Coordinate start;
+	Coordinate end;
 
+	bool marker;
 public:
 	Road(Coordinate start, Coordinate end, Player& Owner);
 	Road(Road&) = delete;
 	~Road();
 	Road& operator=(Road&) = delete;
 
-	//Made these public because I couldn't get getters to work, maybe someone else knows how. Paul
-	Coordinate start;
-	Coordinate end;
+	Coordinate getStart() const;
+	Coordinate getEnd() const;
 
 	bool equals(const Road& otherRoad);
 	bool equals(const Coordinate& otherStart, const Coordinate& otherEnd);
+
+	bool isMarked();
+	void mark();
+	void unmark();
 
 	Player* owner;
 

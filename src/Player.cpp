@@ -61,6 +61,9 @@ void Player::playCard(DevelopmentCard *card)
 
 }
 
+std::string Player::getName(){
+	return name;
+}
 
 
 int Player::getWood()
