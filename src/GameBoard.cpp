@@ -11,6 +11,7 @@
 #include "Serialization.h"
 #include "tinyxml2.h"
 
+using std::shared_ptr;
 using std::random_shuffle;
 using std::time;
 using std::string;
@@ -79,7 +80,7 @@ GameBoard::GameBoard(istream& in) {
 			if(owner == nullptr) {
 				throw std::runtime_error("Road is owned by a nonexistant player.");
 			}
-			Road* newRoad = new Road(start, end, *owner);
+			std::shared_ptr<Road> newRoad(new Road(start, end, *owner));
 			roads[start].push_back(newRoad);
 			roads[end].push_back(newRoad);
 		}
@@ -87,40 +88,15 @@ GameBoard::GameBoard(istream& in) {
 }
 
 GameBoard::~GameBoard() {
-	freeRoads();
-}
-
-/*
- * Frees the roads data structure to prevent memory leaks
- */
-
-void GameBoard::freeRoads(){
-	//Iterate over all the points in the roads map
-	for (auto roadVector = roads.begin(); roadVector != roads.end(); ++roadVector)
-	{
-		//Iterate all the roads at a given point
-		for (std::vector<Road*>::iterator road = roadVector->second.begin(); road != roadVector->second.end(); ++road) {
-			Road * roadPtr = *road;
-
-			//If this is the start of the road we want to remove it, but we must first erase it the list at the other end of the road
-			//If we don't then we may try to access a road which has already been freed
-			if(roadPtr != NULL && roadPtr->getStart() == roadVector->first){
-				removeRoadEnd(roadPtr);
-				roadVector->second.erase(road);
-				//Need to decrement the iterator to account for the lost item
-				road--;
-				delete roadPtr;
-			}
-		}
-	}
+	
 }
 
 /**
  * Find and remove the road that matches startRoad
  */
-void GameBoard::removeRoadEnd(Road * startRoad){
-	std::vector<Road*> endRoadVector = roads[startRoad->getEnd()];
-	for(std::vector<Road*>::iterator endRoad = endRoadVector.begin(); endRoad != endRoadVector.end(); endRoad++){
+void GameBoard::removeRoadEnd(std::shared_ptr<Road> startRoad){
+	std::vector<shared_ptr<Road>> endRoadVector = roads[startRoad->getEnd()];
+	for(std::vector<shared_ptr<Road>>::iterator endRoad = endRoadVector.begin(); endRoad != endRoadVector.end(); endRoad++){
 		if((*endRoad) == startRoad){
 			(*endRoad) = nullptr;
 		}
@@ -209,7 +185,7 @@ bool GameBoard::outOfBounds(const Coordinate& coord) {
  * Checks to make sure the road doesn't already exist. If it does, then we don't want to add it again
  */
 bool GameBoard::roadExists(Coordinate start, Coordinate end) {
-	Road * isRoad = getRoad(start, end);
+	std::shared_ptr<Road> isRoad = getRoad(start, end);
 	if (isRoad == NULL)
 		return false;
 	return true;
@@ -253,14 +229,14 @@ void GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 	if (!verifyRoadPlacement(start, end, Owner))
 		return;
 
-	Road * newRoad;
+	std::shared_ptr<Road> newRoad;
 	try {
-		newRoad = new Road(start, end, Owner);
+		newRoad = std::shared_ptr<Road>(new Road(start, end, Owner));
 	} catch (int n) {
 		//Coordinates did not meet the criteria for a valid road
 		return;
 	}
-	std::vector<Road*> roadVector = roads[start];
+	std::vector<shared_ptr<Road>> roadVector = roads[start];
 	roadVector.push_back(newRoad);
 	roads[start] = roadVector;
 
@@ -272,9 +248,9 @@ void GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 /**
  * returns a pointer to the road located at the specified coordinates. Will return NULL if the road is not found
  */
-Road * GameBoard::getRoad(Coordinate start, Coordinate end){
-	std::vector<Road*> roadVector = roads[start];
-	for (std::vector<Road*>::iterator road = roadVector.begin(); road != roadVector.end(); ++road) {
+std::shared_ptr<Road> GameBoard::getRoad(Coordinate start, Coordinate end){
+	std::vector<shared_ptr<Road>> roadVector = roads[start];
+	for (std::vector<shared_ptr<Road>>::iterator road = roadVector.begin(); road != roadVector.end(); ++road) {
 		if ((*road)->equals(start, end))
 			return *road;
 	}
@@ -306,8 +282,8 @@ int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::m
 	marked[curr] = true;
 	int longest_path = length;
 	//traverse all the surrounding edges and vertices
-	std::vector<Road*> roadVector = roads[curr];
-	for (std::vector<Road*>::iterator road = roadVector.begin(); road != roadVector.end(); ++road) {
+	std::vector<shared_ptr<Road>> roadVector = roads[curr];
+	for (std::vector<shared_ptr<Road>>::iterator road = roadVector.begin(); road != roadVector.end(); ++road) {
 		int temp_longest_path = length;
 
 		//if the owner is correct and the road is unmarked
