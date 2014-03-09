@@ -10,6 +10,8 @@
 #include "GameVisitor.h"
 #include "Serialization.h"
 #include "tinyxml2.h"
+#include "CornerPiece.h"
+#include "City.h"
 
 using std::shared_ptr;
 using std::random_shuffle;
@@ -111,12 +113,12 @@ void GameBoard::save(ostream& out) {
 	out << printer.CStr();
 }
 
-const map<Coordinate, unique_ptr<GamePiece>>& GameBoard::getResources() const {
+const map<Coordinate, unique_ptr<ResourceTile>>& GameBoard::getResources() const {
 	return resources;
 }
 
 std::vector<Settlement*> GameBoard::GetNeighboringSettlements(
-		Coordinate location) {
+		Coordinate location) const {
 	static Coordinate adjacentCoordDiffs[] = { Coordinate(0, 1), Coordinate(1,
 			0), Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0),
 			Coordinate(-1, 1) };
@@ -125,8 +127,8 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(
 		const Coordinate& diff = adjacentCoordDiffs[i];
 		Coordinate adjacentPoint(location.first + diff.first,
 				location.second + diff.second);
-		auto it = resources.find(adjacentPoint);
-		if (it != resources.end()) {
+		auto it = corners.find(adjacentPoint);
+		if (it != corners.end()) {
 			GamePiece* piece = it->second.get();
 			if (dynamic_cast<Settlement*>(piece)) {
 				v.push_back(static_cast<Settlement*>(piece));
@@ -135,6 +137,28 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(
 	}
 	return v;
 }
+
+std::vector<CornerPiece*> GameBoard::GetNeighboringCorners(
+		Coordinate location) const{
+	static Coordinate adjacentCoordDiffs[] = { Coordinate(0, 1), Coordinate(1,
+			0), Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0),
+			Coordinate(-1, 1) };
+	std::vector<CornerPiece*> v;
+	for (unsigned int i = 0; i < 6; i++) {
+		const Coordinate& diff = adjacentCoordDiffs[i];
+		Coordinate adjacentPoint(location.first + diff.first,
+				location.second + diff.second);
+		auto it = resources.find(adjacentPoint);
+		if (it != resources.end()) {
+			GamePiece* piece = it->second.get();
+			if (dynamic_cast<CornerPiece*>(piece)) {
+				v.push_back(static_cast<CornerPiece*>(piece));
+			}
+		}
+	}
+	return v;
+}
+
 
 /**
  * Checks to make sure the coordinate is within bounds of the board
@@ -195,15 +219,15 @@ bool GameBoard::roadExists(Coordinate start, Coordinate end) {
  * Checks to make sure the road being placed at a valid point according to the rules
  */
 bool GameBoard::isRoadConnectionPoint(Coordinate start, Coordinate end, Player& Owner){
-	/** Need to figure out the CornerPiece/GamePiece predicament
-	CornerPiece * corner = corners[start];
-	if(corner != NULL){
-		if (corner->getOwner() == Owner)
+	
+	//std::unique_ptr<GamePiece> corner = corners[start];
+	if(corners[start] != NULL){
+		if (corners[start]->getOwner() == Owner)
 			return true;
 	}
 	return false;
-	**/
-	return true;
+	
+	
 }
 
 /**
@@ -347,8 +371,14 @@ void GameBoard::init_resources()
 }
 
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
-	corners[location] = std::unique_ptr<GamePiece>(new Settlement(*this, location, Owner));
+	corners[location] = std::unique_ptr<CornerPiece>(new Settlement(*this, location, Owner));
 }
+
+void GameBoard::UpgradeSettlement(Coordinate location){
+	corners[location] = std::unique_ptr<CornerPiece>(new City(*corners[location])); //TODO test for memory leak
+}
+
+
 
 void GameBoard::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
@@ -430,7 +460,7 @@ bool GameBoard::operator==(const GameBoard& other) const {
  */
 void GameBoard::addResource(int x, int y, resourceType res, int val)
 {
-    this->resources[Coordinate(x,y)] = std::unique_ptr<GamePiece>(new ResourceTile(*this, Coordinate(x,y), res, val));
+    this->resources[Coordinate(x,y)] = std::unique_ptr<ResourceTile>(new ResourceTile(*this, Coordinate(x,y), res, val));
 }
 
 /*

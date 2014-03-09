@@ -138,6 +138,47 @@ TEST(longest_road_simple){
 	delete (test_board);
 }
 
+TEST(payout_simple) {
+	/*std::vector<std::unique_ptr<Player>> players {};
+	players.emplace_back(new Player("tester"));
+	Player& test_player = *players[0];
+	GameBoard * test_board = new GameBoard(std::move(players));
+
+	test_board->PlaceSettlement(Coordinate(0,2), test_player);
+	
+
+	std::map<Coordinate, std::unique_ptr<ResourceTile>>::iterator it = 
+	test_board->getResources().find(Coordinate(0,1));
+	//test_board->getResources().at(Coordinate(0,1)).Payout(); WTF
+	CHECK(!(test_player.getWheat() || test_player.getWood() || 
+		test_player.getOre() || test_player.getBrick() || test_player.getWool()));
+	delete test_board;
+	delete &test_player;*/
+
+}
+
+TEST(upgrade_simple){
+	std::vector<std::unique_ptr<Player>> players {};
+	players.emplace_back(new Player("tester"));
+	Player& test_player = *players[0];
+	
+	GameBoard * test_board = new GameBoard(std::move(players));
+
+	test_board->PlaceSettlement(Coordinate(0,2), test_player);
+
+	test_board->PlaceSettlement(Coordinate(1,0), test_player);
+
+	test_board->UpgradeSettlement(Coordinate(1,0));
+
+	CHECK((test_board->GetNeighboringSettlements(Coordinate(0,1)).size()) == 1);
+
+	delete test_board;
+
+
+
+
+
+}
 
 TEST(longest_road_complex){
 	std::vector<std::unique_ptr<Player>> players {};

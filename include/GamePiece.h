@@ -13,6 +13,7 @@ class GameBoard;
 class GamePiece {
 private:
 	GameBoard& board;
+
 public:
 	GamePiece(GameBoard& board, Coordinate location);
 	GamePiece(GamePiece&) = delete;
@@ -29,6 +30,7 @@ public:
 	virtual bool operator==(const GamePiece& other) const = 0;
 	
 	Coordinate getLocation() const;
+
 };
 
 class ResourceTile : public GamePiece {
@@ -39,7 +41,7 @@ public:
 	//virtual ResourceTile& operator=(ResourceTile&) = delete;
 
 	//dispense resource cards to owning players
-	void Payout();
+	void Payout() const;
 
 	resourceType resource;
 	int value;

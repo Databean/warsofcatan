@@ -1,5 +1,5 @@
 #include "City.h"
-
+#include "Settlement.h"
 #include "GameVisitor.h"
 
 City::City(GameBoard& board, Coordinate location, Player& owner) : CornerPiece(board, location, owner) {
@@ -16,4 +16,16 @@ void City::accept(GameVisitor& visitor) {
 
 bool City::operator==(const GamePiece& p) const {
 	return false;
+}
+
+int City::getResourceModifier() {
+	return 2; //TODO: implement robber check here
+}
+
+int City::getVictoryPoints() {
+	return 2; //TODO: implement robber check here
+}
+
+City::City(CornerPiece& sett) : CornerPiece(sett.getBoard(), sett.getLocation(), sett.getOwner()) {
+
 }

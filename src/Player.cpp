@@ -252,6 +252,11 @@ std::string Player::getName() const
     return name;
 }
 
+void Player::addResource(int resourceType, int delta) {
+	resources[resourceType] += delta;
+	
+}
+
 void Player::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
 	for(auto& card : developmentCards) {
