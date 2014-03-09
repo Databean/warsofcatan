@@ -1,0 +1,6 @@
+language: cpp
+before_install: 
+ - sudo add-apt-repository ppa:antumdeluge/sdl2 -qq
+ - sudo apt-get update -qq
+ - sudo apt-get install sdl2 -qq
+script: make tests
