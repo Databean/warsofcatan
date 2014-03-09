@@ -44,7 +44,7 @@ void updateViewport(int width, int height) {
 }
 
 int main(int argc, char *argv[]) {
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE);
 	SDL_Window* displayWindow;
 	SDL_Renderer* displayRenderer;
 	SDL_RendererInfo displayRendererInfo;
