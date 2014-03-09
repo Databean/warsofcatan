@@ -1,14 +1,14 @@
 export OBJ_HOME := $(realpath obj)
 export SRC_HOME := $(realpath src)
 export INCL_HOME := $(realpath include)
-export TEST_LINK_FILES := $(realpath UnitTest++/libUnitTest++.a)
+export TEST_LINK_FILES := $(realpath UnitTest++)/libUnitTest++.a
 export TEST_INCLUDE := $(realpath UnitTest++/src)
 export EXECUTABLE := warsofcatan
 ALLFILES := $(wildcard $(SRC_HOME)/*) $(wildcard $(INCL_HOME)/*)
 export CXX := g++
 export LD := g++
-export CXXFLAGS := -g -I$(INCL_HOME) -std=c++0x -Wall -I/usr/local/include
-export LDFLAGS := -L/usr/local/lib -lSDL2 -lGL -lGLU -Wl,-R/usr/local/lib
+export CXXFLAGS := -g -I$(INCL_HOME) -std=c++0x -Wall
+export LDFLAGS := -L/usr/local/lib -lSDL2 -lGL -lGLU
 
 .PHONY: all
 all: $(EXECUTABLE)
