@@ -7,24 +7,46 @@
 
 #include <vector>
 #include <memory>
+#include <map>
+#include <stdexcept>
 
 #include "GameBoard.h"
+#include "GamePiece.h"
 #include "Util.h"
 #include "UnitTest++.h"
 
 TEST(randomize_rolls_fail)
 {
-    GameBoard test_board(std::vector<std::unique_ptr<Player>>{});
+	
+	int xcoords[] = {-2, 0, 2, -3, -1, 1, 3, -4, -2, 0, 2, 4, -3, -1, 1, 3, -2, 0, 2};
+    int ycoords[] = { 2, 1, 0,  4,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
     int badRolls[] = {0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
-    CHECK(test_board.testRollChecking(badRolls) == false);
+	resourceType resources[] = {DESERT, BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP};
+	std::map<Coordinate, std::pair<resourceType, int>> resourcesMap {};
+	for(int i = 0; i < 19; i++) {
+		resourcesMap[Coordinate{xcoords[i], ycoords[i]}] = std::pair<resourceType, int>(resources[i], badRolls[i]);
+	}
+	try {
+		GameBoard test_board(std::vector<std::unique_ptr<Player>>{}, resourcesMap);
+		CHECK(false);
+	} catch(const std::runtime_error& error) {
+		CHECK(true);
+	}
 }
 
 
 TEST(randomize_rolls_pass)
 {
-    GameBoard test_board(std::vector<std::unique_ptr<Player>>{});
+	int xcoords[] = {-2, 0, 2, -3, -1, 1, 3, -4, -2, 0, 2, 4, -3, -1, 1, 3, -2, 0, 2};
+    int ycoords[] = { 2, 1, 0,  4,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
     int goodRolls[] = {9, 11, 5, 4, 0, 3, 4, 2, 10, 8, 3, 6, 9, 11, 5, 10, 6, 12, 8};
-    CHECK(test_board.testRollChecking(goodRolls) == true);
+	resourceType resources[] = {BRICK, BRICK, BRICK, STONE, DESERT, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP};
+	std::map<Coordinate, std::pair<resourceType, int>> resourcesMap {};
+	for(int i = 0; i < 19; i++) {
+		resourcesMap[Coordinate{xcoords[i], ycoords[i]}] = std::pair<resourceType, int>(resources[i], goodRolls[i]);
+	}
+    GameBoard test_board(std::vector<std::unique_ptr<Player>>{}, resourcesMap);
+	CHECK(true); //constructor should not have thrown an exception
 }
 
 TEST(place_road_good){
