@@ -17,8 +17,10 @@ class Deck {
 
 private:
 	std::vector<DevelopmentCard*> deck;
+    std::vector<DevelopmentCard*> discardPile;
     
-    void shuffle();
+    void shuffleDeck();
+    void reshuffleDeck();
 
 public:
 	Deck();
@@ -26,6 +28,7 @@ public:
 
 	int getSize();
 	DevelopmentCard* drawCard();
+    void discard(DevelopmentCard* toDiscard);
 };
 
 #endif /* DECK_H_ */

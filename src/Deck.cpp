@@ -37,7 +37,7 @@ Deck::Deck()
 		this->deck.push_back(card);
 	}
     
-    shuffle();
+    shuffleDeck();
 }
 
 Deck::~Deck() {
@@ -61,14 +61,32 @@ int Deck::getSize()
 DevelopmentCard* Deck::drawCard()
 {
 	if(this->getSize() == 0)
-		return NULL;
+    {
+        reshuffleDeck();
+    }
+    
 	DevelopmentCard* card = this->deck.back();
 	this->deck.pop_back();
 	return card;
 }
 
-void Deck::shuffle()
+void Deck::shuffleDeck()
 {
     std::srand(std::time(0));
     random_shuffle(deck.begin(), deck.end());
+}
+
+void Deck::reshuffleDeck()
+{
+    while(!discardPile.empty())
+    {
+        deck.push_back(discardPile.back());
+        discardPile.pop_back();
+    }
+    shuffleDeck();
+}
+
+void Deck::discard(DevelopmentCard* toDiscard)
+{
+    discardPile.push_back(toDiscard);
 }
