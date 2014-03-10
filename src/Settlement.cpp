@@ -17,3 +17,13 @@ void Settlement::accept(GameVisitor& visitor) {
 bool Settlement::operator==(const GamePiece&) const {
 	return false;
 }
+
+int Settlement::getVictoryPoints() {
+	return 1;
+}
+
+int Settlement::getResourceModifier() {
+	//return (board.robber.location == location); projected implementation of 
+	return 1;
+}
+

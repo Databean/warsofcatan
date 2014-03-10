@@ -20,8 +20,8 @@ class GameVisitor;
 
 class GameBoard {
 private:
-	std::map<Coordinate, std::unique_ptr<GamePiece>> corners;
-	std::map<Coordinate, std::unique_ptr<GamePiece>> resources;
+	std::map<Coordinate, std::unique_ptr<CornerPiece>> corners;
+	std::map<Coordinate, std::unique_ptr<ResourceTile>> resources;
 	std::vector<std::unique_ptr<Player>> players;
 	
     void addResource(int x, int y, resourceType res, int val);
@@ -49,14 +49,17 @@ public:
 	
 	void save(std::ostream& out);
 	
-	const std::map<Coordinate, std::unique_ptr<GamePiece>>& getResources() const;
+	const std::map<Coordinate, std::unique_ptr<ResourceTile>>& getResources() const;
 	std::shared_ptr<Road> getRoad(Coordinate start, Coordinate end);
 	
 	int FindLongestRoad(Player & owner);
 
-	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location);
+	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location) const;
+	std::vector<CornerPiece*> GetNeighboringCorners(Coordinate location) const;
+
 
 	void PlaceSettlement(Coordinate location, Player& Owner);
+	void UpgradeSettlement(Coordinate location);
 	void PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
 
 

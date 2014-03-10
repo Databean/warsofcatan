@@ -15,3 +15,12 @@ Player& CornerPiece::getOwner() {
 const Player& CornerPiece::getOwner() const {
 	return owner;
 }
+
+
+int CornerPiece::getVictoryPoints() {
+	return 0;
+}
+
+int CornerPiece::getResourceModifier() {
+	return 0;
+}
