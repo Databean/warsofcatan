@@ -47,7 +47,14 @@ Deck::~Deck() {
 	{
 		delete this->deck.back();
 		this->deck.pop_back();
-		std::cout<<":";
+		//std::cout<<":";
+	}
+    
+    while(!this->discardPile.empty())
+	{
+		delete this->discardPile.back();
+		this->discardPile.pop_back();
+		//std::cout<<":";
 	}
 }
 
