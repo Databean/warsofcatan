@@ -8,7 +8,8 @@
 #include <iostream>
 #include "Deck.h"
 
-Deck::Deck() {
+Deck::Deck()
+{
 	// TODO Auto-generated constructor stub
 	for(int i = 0; i < 15; i++)
 	{
@@ -35,7 +36,8 @@ Deck::Deck() {
 		DevelopmentCard* card = new RoadBuildingCard(NULL);
 		this->deck.push_back(card);
 	}
-
+    
+    shuffle();
 }
 
 Deck::~Deck() {
@@ -63,4 +65,10 @@ DevelopmentCard* Deck::drawCard()
 	DevelopmentCard* card = this->deck.back();
 	this->deck.pop_back();
 	return card;
+}
+
+void Deck::shuffle()
+{
+    std::srand(std::time(0));
+    random_shuffle(deck.begin(), deck.end());
 }
