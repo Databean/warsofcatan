@@ -10,6 +10,7 @@
 #include "GameVisitor.h"
 #include "Serialization.h"
 #include "tinyxml2.h"
+#include "City.h"
 
 using std::shared_ptr;
 using std::random_shuffle;
@@ -145,6 +146,25 @@ GameBoard::GameBoard(istream& in) {
 				throw std::runtime_error("Road is owned by a nonexistant player.");
 			}
 			PlaceSettlement(location, *owner);
+		}
+	}
+	
+	auto cityElements = doc.RootElement()->FirstChildElement("cities");
+	if(cityElements) {
+		for(auto cityElement = cityElements->FirstChildElement(); cityElement; cityElement = cityElement->NextSiblingElement()) {
+			Coordinate location = xmlElementToCoord(*(cityElement->FirstChildElement("coordinate")));
+			
+			std::string ownerName = cityElement->FirstChildElement("owner")->FirstChild()->Value();
+			Player* owner = nullptr;
+			for(auto& playerUnique : players) {
+				if(playerUnique->getName() == ownerName) {
+					owner = playerUnique.get();
+				}
+			}
+			if(owner == nullptr) {
+				throw std::runtime_error("Road is owned by a nonexistant player.");
+			}
+			PlaceCity(location, *owner);
 		}
 	}
 	
@@ -375,6 +395,10 @@ int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::m
 
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 	corners[location] = std::unique_ptr<GamePiece>(new Settlement(*this, location, Owner));
+}
+
+void GameBoard::PlaceCity(Coordinate location, Player& Owner){
+	corners[location] = std::unique_ptr<GamePiece>(new City(*this, location, Owner));
 }
 
 void GameBoard::accept(GameVisitor& visitor) {

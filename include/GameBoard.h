@@ -59,6 +59,7 @@ public:
 	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location);
 
 	void PlaceSettlement(Coordinate location, Player& Owner);
+	void PlaceCity(Coordinate location, Player& Owner);
 	void PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
 	
 	void accept(GameVisitor& visitor);
