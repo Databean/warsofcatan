@@ -65,6 +65,11 @@ DevelopmentCard* Deck::drawCard()
         reshuffleDeck();
     }
     
+    if(this->getSize() == 0)
+    {
+        return NULL;
+    }
+    
 	DevelopmentCard* card = this->deck.back();
 	this->deck.pop_back();
 	return card;
