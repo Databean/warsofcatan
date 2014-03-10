@@ -131,10 +131,10 @@ GameBoard::GameBoard(istream& in) {
 	
 	auto settlementElements = doc.RootElement()->FirstChildElement("settlements");
 	if(settlementElements) {
-		for(auto settlementElement = settlementElements->FirstChildElement(); settlementElement; settlementElement = settlement->NextSiblingElement()) {
+		for(auto settlementElement = settlementElements->FirstChildElement(); settlementElement; settlementElement = settlementElement->NextSiblingElement()) {
 			Coordinate location = xmlElementToCoord(*(settlementElement->FirstChildElement("coordinate")));
 			
-			std::string ownerName = roadElement->FirstChildElement("owner")->FirstChild()->Value();
+			std::string ownerName = settlementElement->FirstChildElement("owner")->FirstChild()->Value();
 			Player* owner = nullptr;
 			for(auto& playerUnique : players) {
 				if(playerUnique->getName() == ownerName) {
@@ -144,7 +144,7 @@ GameBoard::GameBoard(istream& in) {
 			if(owner == nullptr) {
 				throw std::runtime_error("Road is owned by a nonexistant player.");
 			}
-			PlaceSettlement(location, &owner);
+			PlaceSettlement(location, *owner);
 		}
 	}
 	
@@ -446,10 +446,10 @@ bool GameBoard::operator==(const GameBoard& other) const {
 		}
 	}
 	for(auto& it : corners) {
-		auto& otherIt = other.corners.find(it.first);
+		auto otherIt = other.corners.find(it.first);
 		if(otherIt == other.corners.end()) {
 			return false;
-		} else if(!(*it.second == *otherIt.second)) {
+		} else if(!(*it.second == *otherIt->second)) {
 			return false;
 		}
 	}
