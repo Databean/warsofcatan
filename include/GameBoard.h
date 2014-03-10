@@ -22,12 +22,13 @@ class GameBoard {
 private:
 	std::map<Coordinate, std::unique_ptr<GamePiece>> corners;
 	std::map<Coordinate, std::unique_ptr<GamePiece>> resources;
+	std::map<Coordinate, std::vector<std::shared_ptr<Road>>> roads;
 	std::vector<std::unique_ptr<Player>> players;
 	
     void addResource(int x, int y, resourceType res, int val);
     bool checkRolls(int* rolls);
 	
-	std::map<Coordinate, std::vector<std::shared_ptr<Road>>> roads;
+	bool isValidBoard() const;
 	
 	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner);
 	bool outOfBounds(const Coordinate& coord);
@@ -42,6 +43,7 @@ private:
 
 public:
 	GameBoard(std::vector<std::unique_ptr<Player>>&& players);
+	GameBoard(std::vector<std::unique_ptr<Player>>&& players, const std::map<Coordinate, std::pair<resourceType, int>>& resourceLocations);
 	GameBoard(std::istream& in);
 	GameBoard(GameBoard&) = delete;
 	~GameBoard();
@@ -57,10 +59,8 @@ public:
 	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location);
 
 	void PlaceSettlement(Coordinate location, Player& Owner);
+	void PlaceCity(Coordinate location, Player& Owner);
 	void PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
-
-
-	void init_resources();
 	
 	void accept(GameVisitor& visitor);
 	
