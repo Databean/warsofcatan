@@ -18,9 +18,9 @@
 TEST(randomize_rolls_fail)
 {
 	
-	int xcoords[] = {-2, 0, 2, -3, -1, 1, 3, -4, -2, 0, 2, 4, -3, -1, 1, 3, -2, 0, 2};
-    int ycoords[] = { 2, 1, 0,  4,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
-    int badRolls[] = {0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
+	int xcoords[] = {-2, 0, 2, -3, -1, 1, 3, -4, -2, 0, 2, 4, -3, -1,  1,  3, -2, 0, 2};
+    int ycoords[] = { 2, 1, 0,  4,  3, 2, 1,  6,  5, 4, 3, 2,  7,  6,  5,  4,  8, 7, 6};
+    int badRolls[] = {0, 2, 3, 3, 4, 4, 5, 5, 6,  6, 8, 8, 9,  9, 10, 10, 11, 11, 12};
 	resourceType resources[] = {DESERT, BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP};
 	std::map<Coordinate, std::pair<resourceType, int>> resourcesMap {};
 	for(int i = 0; i < 19; i++) {
