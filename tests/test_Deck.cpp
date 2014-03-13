@@ -12,7 +12,10 @@
 TEST(deck_draw)
 {
     Deck* testDeck= new Deck();
-    CHECK(testDeck->drawCard()!=NULL);
+    DevelopmentCard* temp = testDeck->drawCard();
+    CHECK(temp!=NULL);
+    testDeck->discard(temp);
+    temp = NULL;
     delete testDeck;
 }
 
