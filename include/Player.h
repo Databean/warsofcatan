@@ -65,12 +65,14 @@ public:
 
     void playCard(DevelopmentCard* card);
 
+    bool canBuyRoad();
+    bool buyRoad();
+
     bool offerTrade(Player* p, int offer[], int demand[]);
     bool recieveOffer(Player* p, int offer[], int demand[]);
     bool acceptOffer(Player* p, int offer[], int demand[]);
 
     bool checkResources(int resourceList[]);
-
 
     int getWood() const;
     int getBrick() const;
@@ -78,11 +80,11 @@ public:
     int getWheat() const;
     int getWool() const;
 
-    void setWood(int resource);
-    void setBrick(int resource);
-    void setOre(int resource);
-    void setWheat(int resource);
-    void setWool(int resource);
+    void addWood(int resource);
+    void addBrick(int resource);
+    void addOre(int resource);
+    void addWheat(int resource);
+    void addWool(int resource);
 
 	void accept(GameVisitor& visitor);
 	bool operator==(const Player& player) const;

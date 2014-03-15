@@ -39,11 +39,11 @@ Player::Player(XMLElement* elem)
 		r = 0;
 	}
 	name = elem->FirstChildElement("name")->FirstChild()->Value();
-	setWood(fromString<int>(elem->FirstChildElement("wood")->FirstChild()->Value()));
-	setBrick(fromString<int>(elem->FirstChildElement("brick")->FirstChild()->Value()));
-	setOre(fromString<int>(elem->FirstChildElement("ore")->FirstChild()->Value()));
-	setWheat(fromString<int>(elem->FirstChildElement("wheat")->FirstChild()->Value()));
-	setWool(fromString<int>(elem->FirstChildElement("wool")->FirstChild()->Value()));
+	addWood(fromString<int>(elem->FirstChildElement("wood")->FirstChild()->Value()));
+	addBrick(fromString<int>(elem->FirstChildElement("brick")->FirstChild()->Value()));
+	addOre(fromString<int>(elem->FirstChildElement("ore")->FirstChild()->Value()));
+	addWheat(fromString<int>(elem->FirstChildElement("wheat")->FirstChild()->Value()));
+	addWool(fromString<int>(elem->FirstChildElement("wool")->FirstChild()->Value()));
 	XMLElement* cardsElement = elem->FirstChildElement("cards");
 	for(auto cardElem = cardsElement->FirstChildElement("card"); cardElem; cardElem = cardElem->NextSiblingElement("card")) {
 		static const map<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>> typeToCard = {
@@ -71,6 +71,27 @@ Player::~Player() {
 int Player::getDevCardsInHand()
 {
 	return developmentCards.size();
+}
+
+/**
+ * Returns true if the player has enough resources to buy a road, false otherwise
+ */
+bool Player::canBuyRoad(){
+	return getWood() > 0 && getBrick() > 0;
+}
+
+/**
+ * Subtracts the cost of a road from a player's resources if they have enough
+ * returns true if the resources were subtracted, false otherwise
+ */
+bool Player::buyRoad(){
+	if(canBuyRoad()){
+		addWood(-1);
+		addBrick(-1);
+		return true;
+	}
+	//insufficient funds
+	return false;
 }
 
 
@@ -150,17 +171,17 @@ bool Player::recieveOffer(Player* p, int offer[], int demand[])
 
 bool Player::acceptOffer(Player* p, int offer[], int demand[])
 {
-	p->setWood(demand[WOOD_INDEX] - offer[WOOD_INDEX]);
-	p->setBrick(demand[BRICK_INDEX] - offer[BRICK_INDEX]);
-	p->setOre(demand[ORE_INDEX] - offer[ORE_INDEX]);
-	p->setWheat(demand[WHEAT_INDEX] - offer[WHEAT_INDEX]);
-	p->setWool(demand[WOOL_INDEX] - offer[WOOL_INDEX]);
+	p->addWood(demand[WOOD_INDEX] - offer[WOOD_INDEX]);
+	p->addBrick(demand[BRICK_INDEX] - offer[BRICK_INDEX]);
+	p->addOre(demand[ORE_INDEX] - offer[ORE_INDEX]);
+	p->addWheat(demand[WHEAT_INDEX] - offer[WHEAT_INDEX]);
+	p->addWool(demand[WOOL_INDEX] - offer[WOOL_INDEX]);
 
-	this->setWood(offer[WOOD_INDEX] - demand[WOOD_INDEX]);
-	this->setBrick(offer[BRICK_INDEX] - demand[BRICK_INDEX]);
-	this->setOre(offer[ORE_INDEX] - demand[ORE_INDEX]);
-	this->setWheat(offer[WHEAT_INDEX] - demand[WHEAT_INDEX]);
-	this->setWool(offer[WOOL_INDEX] - demand[WOOL_INDEX]);
+	this->addWood(offer[WOOD_INDEX] - demand[WOOD_INDEX]);
+	this->addBrick(offer[BRICK_INDEX] - demand[BRICK_INDEX]);
+	this->addOre(offer[ORE_INDEX] - demand[ORE_INDEX]);
+	this->addWheat(offer[WHEAT_INDEX] - demand[WHEAT_INDEX]);
+	this->addWool(offer[WOOL_INDEX] - demand[WOOL_INDEX]);
 
 	return true;
 }
@@ -207,7 +228,7 @@ int Player::getWool() const
 
 
 
-void Player::setWood(int resource)
+void Player::addWood(int resource)
 {
 	if(resources[WOOD_INDEX] < (0-resource))
 		resources[WOOD_INDEX] = 0;
@@ -215,7 +236,7 @@ void Player::setWood(int resource)
 		resources[WOOD_INDEX] += resource;
 }
 
-void Player::setBrick(int resource)
+void Player::addBrick(int resource)
 {
 	if(resources[BRICK_INDEX] < (0-resource))
 			resources[BRICK_INDEX] = 0;
@@ -223,7 +244,7 @@ void Player::setBrick(int resource)
 		resources[BRICK_INDEX] += resource;
 }
 
-void Player::setOre(int resource)
+void Player::addOre(int resource)
 {
 	if(resources[ORE_INDEX] < (0-resource))
 			resources[ORE_INDEX] = 0;
@@ -231,7 +252,7 @@ void Player::setOre(int resource)
 		resources[ORE_INDEX] += resource;
 }
 
-void Player::setWheat(int resource)
+void Player::addWheat(int resource)
 {
 	if(resources[WHEAT_INDEX] < (0-resource))
 		resources[WHEAT_INDEX] = 0;
@@ -239,7 +260,7 @@ void Player::setWheat(int resource)
 		resources[WHEAT_INDEX] += resource;
 }
 
-void Player::setWool(int resource)
+void Player::addWool(int resource)
 {
 	if(resources[WOOL_INDEX] < (0-resource))
 		resources[WOOL_INDEX] = 0;

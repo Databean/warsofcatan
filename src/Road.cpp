@@ -104,6 +104,6 @@ Player& Road::getOwner() {
 	return *owner;
 }
 
-const Player& Road::getOwner() const {
+Player& Road::getOwner() const {
 	return *owner;
 }

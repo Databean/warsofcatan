@@ -20,7 +20,7 @@ class GameVisitor;
 
 class GameBoard {
 private:
-	std::map<Coordinate, std::unique_ptr<GamePiece>> corners;
+	std::map<Coordinate, std::unique_ptr<CornerPiece>> corners;
 	std::map<Coordinate, std::unique_ptr<GamePiece>> resources;
 	std::map<Coordinate, std::vector<std::shared_ptr<Road>>> roads;
 	std::vector<std::unique_ptr<Player>> players;
@@ -33,7 +33,7 @@ private:
 	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner);
 	bool outOfBounds(const Coordinate& coord);
 	bool roadExists(Coordinate start, Coordinate end);
-	bool isRoadConnectionPoint(Coordinate start, Coordinate end, Player& Owner);
+	bool isRoadConnectionPoint(Coordinate point, Player& Owner);
 
 	int constructBoardFromFile(std::ifstream &file);
 	int constructFileFromBoard(std::ofstream &file);
@@ -58,9 +58,11 @@ public:
 
 	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location);
 
+	bool buyRoad(Coordinate start, Coordinate end, Player& Owner);
+
 	void PlaceSettlement(Coordinate location, Player& Owner);
 	void PlaceCity(Coordinate location, Player& Owner);
-	void PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
+	bool PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
 	
 	void accept(GameVisitor& visitor);
 	

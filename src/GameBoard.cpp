@@ -233,6 +233,8 @@ bool GameBoard::outOfBounds(const Coordinate& coord) {
 	 * Discussed that we can just do a find in the map, and if it's not found then it's out of bounds
 	 */
 
+
+
 	switch (coord.second) {
 	case 0:
 		return !(coord.first >= 0 && coord.first <= 4);
@@ -277,23 +279,34 @@ bool GameBoard::roadExists(Coordinate start, Coordinate end) {
 	return true;
 }
 
+
 /**
  * Checks to make sure the road being placed at a valid point according to the rules
  */
-bool GameBoard::isRoadConnectionPoint(Coordinate start, Coordinate end, Player& Owner){
-	/** Need to figure out the CornerPiece/GamePiece predicament
-	CornerPiece * corner = corners[start];
-	if(corner != NULL){
-		if (corner->getOwner() == Owner)
+bool GameBoard::isRoadConnectionPoint(Coordinate point, Player& Owner){
+	//is there a settlement we can build off of
+	if(corners.count(point) > 0){
+		CornerPiece * corner = corners[point].get();
+		if(corner != NULL){
+			if (corner->getOwner() == Owner)
+				return true;
+		}
+	}
+
+	//is there a road we can build off of
+	std::vector<shared_ptr<Road>> roadVector = roads[point];
+	for (std::vector<shared_ptr<Road>>::iterator road = roadVector.begin(); road != roadVector.end(); ++road) {
+		if ((*road)->getOwner() == Owner)
 			return true;
 	}
+
 	return false;
-	**/
-	return true;
+
 }
 
 /**
  * Runs a series of checks to make sure the road can be placed
+ * new Roads must be in bounds, unique, and connected to an existing road or settlement
  */
 bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) {
 	if (outOfBounds(start) || outOfBounds(end))
@@ -302,7 +315,7 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
 	if (roadExists(start, end))
 		return false;
 
-	if (!isRoadConnectionPoint(start, end, Owner))
+	if (!isRoadConnectionPoint(start, Owner) && !isRoadConnectionPoint(end, Owner)) //need to XOR
 		return false;
 
 	return true;
@@ -310,26 +323,43 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
 
 /**
  * Places a road at the specified coordinates that will be owned by the given player
+ * returns true if the road was placed, false otherwise
  */
-void GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
+bool GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 	if (!verifyRoadPlacement(start, end, Owner))
-		return;
+		return false;
 
 	std::shared_ptr<Road> newRoad;
 	try {
 		newRoad = std::shared_ptr<Road>(new Road(start, end, Owner));
 	} catch (int n) {
 		//Coordinates did not meet the criteria for a valid road
-		return;
+		return false;
 	}
+
 	std::vector<shared_ptr<Road>> roadVector = roads[start];
 	roadVector.push_back(newRoad);
 	roads[start] = roadVector;
-
 	roadVector = roads[end];
 	roadVector.push_back(newRoad);
 	roads[end] = roadVector;
+	return true;
+
+
 }
+
+/**
+ * Will purchase a road for the given Player if it is possible.
+ * returns true if the road was purchased and placed, false otherwise
+ */
+bool GameBoard::buyRoad(Coordinate start, Coordinate end, Player& Owner){
+	if(Owner.canBuyRoad() && PlaceRoad(start, end, Owner)){
+		Owner.buyRoad();
+		return true;
+	}
+	return false;
+}
+
 
 /**
  * returns a pointer to the road located at the specified coordinates. Will return NULL if the road is not found
@@ -394,11 +424,11 @@ int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::m
 }
 
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
-	corners[location] = std::unique_ptr<GamePiece>(new Settlement(*this, location, Owner));
+	corners[location] = std::unique_ptr<CornerPiece>(new Settlement(*this, location, Owner));
 }
 
 void GameBoard::PlaceCity(Coordinate location, Player& Owner){
-	corners[location] = std::unique_ptr<GamePiece>(new City(*this, location, Owner));
+	corners[location] = std::unique_ptr<CornerPiece>(new City(*this, location, Owner));
 }
 
 void GameBoard::accept(GameVisitor& visitor) {
