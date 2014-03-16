@@ -16,8 +16,6 @@ private:
 	
 	Coordinate start;
 	Coordinate end;
-
-	bool marker;
 public:
 	Road(Coordinate start, Coordinate end, Player& Owner);
 	Road(Road&) = delete;
@@ -29,10 +27,6 @@ public:
 
 	bool equals(const Road& otherRoad);
 	bool equals(const Coordinate& otherStart, const Coordinate& otherEnd);
-
-	bool isMarked();
-	void mark();
-	void unmark();
 	
 	Player& getOwner();
 	Player& getOwner() const;

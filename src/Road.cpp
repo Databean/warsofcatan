@@ -11,9 +11,7 @@ Road::Road(Coordinate start, Coordinate end, Player& Owner) {
 		this->start = end;
 	}
 	owner = &Owner;
-
-	marker = false;
-
+	
 	//If the input is bad, throw an exception so bad roads won't be built
 	if(!checkRoad()){
 		throw -1;
@@ -77,27 +75,6 @@ bool Road::equals(const Coordinate& otherStart, const Coordinate& otherEnd){
 	if((otherStart == start && otherEnd == end) || (otherStart == end && otherEnd == start))
 		return true;
 	return false;
-}
-
-/**
- * Returns true if the road is marked, false otherwise
- */
-bool Road::isMarked(){
-	return marker;
-}
-
-/**
- * Marks the road
- */
-void Road::mark(){
-	marker = true;
-}
-
-/**
- * Unmarks the road
- */
-void Road::unmark(){
-	marker = false;
 }
 
 Player& Road::getOwner() {

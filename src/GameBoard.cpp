@@ -361,8 +361,9 @@ int GameBoard::FindLongestRoad(Player & owner){
 	for (auto roadVector = roads.begin(); roadVector != roads.end(); ++roadVector){
 		//find the longest path from v
 		std::map<Coordinate, bool> marked;
+		std::map<Road*, bool> markedRoads;
 		Coordinate start = roadVector->first;
-		int temp_longest_path = FindLongestRoad_FromPoint(start, owner, marked, 0);
+		int temp_longest_path = FindLongestRoad_FromPoint(start, owner, marked, markedRoads, 0);
 
 		//if that path is longer than the current longest, set to the longest
 		if (temp_longest_path > longest_path)
@@ -373,7 +374,7 @@ int GameBoard::FindLongestRoad(Player & owner){
 }
 
 
-int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::map<Coordinate, bool>& marked, int length){
+int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::map<Coordinate, bool>& marked, std::map<Road*, bool>& markedRoads, int length){
 	marked[curr] = true;
 	int longest_path = length;
 	//traverse all the surrounding edges and vertices
@@ -382,17 +383,17 @@ int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::m
 		int temp_longest_path = length;
 
 		//if the owner is correct and the road is unmarked
-		if ( !(*road)->isMarked() && (*road)->owner->getName().compare(owner.getName()) == 0){
+		if ( !markedRoads[road->get()] && (*road)->owner->getName() == owner.getName()){
 
 			temp_longest_path++;
-			(*road)->mark();
+			markedRoads[road->get()] = true;
 			//Check if you can traverse to the next vertex and make that step if you can
 			if(curr != (*road)->getStart() && !marked[(*road)->getStart()]){
-				temp_longest_path = FindLongestRoad_FromPoint((*road)->getStart(), owner, marked, temp_longest_path);
+				temp_longest_path = FindLongestRoad_FromPoint((*road)->getStart(), owner, marked, markedRoads, temp_longest_path);
 			}else if (curr != (*road)->getEnd() && !marked[(*road)->getEnd()]){
-				temp_longest_path = FindLongestRoad_FromPoint((*road)->getEnd(), owner, marked, temp_longest_path);
+				temp_longest_path = FindLongestRoad_FromPoint((*road)->getEnd(), owner, marked, markedRoads, temp_longest_path);
 			}
-			(*road)->unmark();
+			markedRoads[road->get()] = false;
 		}
 
 		if(temp_longest_path > longest_path)

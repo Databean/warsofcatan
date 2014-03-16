@@ -39,7 +39,7 @@ private:
 	int constructFileFromBoard(std::ofstream &file);
 
 	void removeRoadEnd(std::shared_ptr<Road> startRoad);
-	int FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::map<Coordinate, bool>& marked, int length);
+	int FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::map<Coordinate, bool>& marked, std::map<Road*, bool>& markedRoads, int length);
 	
 	void createRing(Coordinate topRight, int sideLength, std::vector<resourceType>& resources, std::vector<int>& rolls);
 	void insertTile(Coordinate location, std::vector<resourceType>& resources, std::vector<int>& rolls);
