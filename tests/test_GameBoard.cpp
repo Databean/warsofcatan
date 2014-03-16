@@ -51,7 +51,7 @@ TEST(randomize_rolls_pass)
 
 TEST(place_road_good){
 	Coordinate start(0,0);
-	Coordinate end(0,1);
+	Coordinate end(1,0);
 	
 	std::vector<std::unique_ptr<Player>> players {};
 	players.emplace_back(new Player("tester"));
@@ -59,6 +59,7 @@ TEST(place_road_good){
 	
 	GameBoard * test_board = new GameBoard(std::move(players));
 
+	test_board->PlaceSettlement(start, test_player);
 	test_board->PlaceRoad(start, end, test_player);
 	std::shared_ptr<Road> test_road = test_board->getRoad(start, end);
 	if (test_road == NULL)
@@ -79,6 +80,7 @@ TEST(place_road_badroad){
 	Coordinate start(0,0);
 	Coordinate end(0,2);
 
+	test_board->PlaceSettlement(start, test_player);
 	test_board->PlaceRoad(start, end, test_player);
 	std::shared_ptr<Road> test_road = test_board->getRoad(start, end);
 
@@ -97,6 +99,7 @@ TEST(place_road_outofbounds){
 	Coordinate start(0,0);
 	Coordinate end(-1,0);
 
+	test_board->PlaceSettlement(start, test_player);
 	test_board->PlaceRoad(start, end, test_player);
 	std::shared_ptr<Road> test_road = test_board->getRoad(start, end);
 
@@ -113,8 +116,9 @@ TEST(place_road_roadexists){
 	GameBoard * test_board = new GameBoard(std::move(players));
 
 	Coordinate start(0,0);
-	Coordinate end(0,1);
+	Coordinate end(1,0);
 
+	test_board->PlaceSettlement(start, test_player);
 	test_board->PlaceRoad(start, end, test_player);
 	std::shared_ptr<Road> test_road = test_board->getRoad(start, end);
 	if (test_road == NULL)
@@ -133,6 +137,23 @@ TEST(place_road_roadexists){
 
 }
 
+TEST(place_road_noConnectionPoint){
+	Coordinate start(0,0);
+	Coordinate end(1,0);
+
+	std::vector<std::unique_ptr<Player>> players {};
+	players.emplace_back(new Player("tester"));
+	Player& test_player = *players[0];
+
+	GameBoard * test_board = new GameBoard(std::move(players));
+
+	test_board->PlaceRoad(start, end, test_player);
+	std::shared_ptr<Road> test_road = test_board->getRoad(start, end);
+	CHECK(test_road == NULL);
+
+	delete (test_board);
+}
+
 TEST(longest_road_simple){
 	std::vector<std::unique_ptr<Player>> players {};
 	players.emplace_back(new Player("tester"));
@@ -146,6 +167,7 @@ TEST(longest_road_simple){
 
 	Coordinate start(0,0);
 	Coordinate end(-1,1);
+	test_board->PlaceSettlement(start, test_player);
 	test_board->PlaceRoad(start, end, test_player);
 	longest_path = test_board->FindLongestRoad(test_player);
 	CHECK(longest_path == 1);
@@ -171,6 +193,7 @@ TEST(longest_road_complex){
 	//(0,0), (-1,1), (-1, 2), (0, 2) (0, 3) (1, 3) (2, 2) (2, 1) (1, 1) (1, 0) (0, 0)
 	//						  (-2,3) (-2,4) (-1,5) (0, 5)        (0, 2)
 
+	test_board->PlaceSettlement(Coordinate(0,0), test_player);
 	test_board->PlaceRoad(Coordinate(0,0), Coordinate(-1,1), test_player);
 	test_board->PlaceRoad(Coordinate(-1,1), Coordinate(-1,2), test_player);
 	test_board->PlaceRoad(Coordinate(-1,2), Coordinate(0,2), test_player);
@@ -194,4 +217,43 @@ TEST(longest_road_complex){
 
 	delete (test_board);
 }
+
+TEST(buy_road_good){
+	Coordinate start(0,0);
+	Coordinate end(1,0);
+
+	std::vector<std::unique_ptr<Player>> players {};
+	players.emplace_back(new Player("tester"));
+	Player& test_player = *players[0];
+	test_player.addWood(1);
+	test_player.addBrick(1);
+
+	GameBoard * test_board = new GameBoard(std::move(players));
+
+	test_board->PlaceSettlement(start, test_player);
+	test_board->buyRoad(start, end, test_player);
+	std::shared_ptr<Road> test_road = test_board->getRoad(start, end);
+	if (test_road == NULL)
+		CHECK(false);
+	else{
+		CHECK(test_road->equals(start, end));
+		CHECK(test_player.getWood() == 0);
+		CHECK(test_player.getBrick() == 0);
+	}
+
+	delete (test_board);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 

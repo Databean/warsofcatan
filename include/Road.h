@@ -35,7 +35,7 @@ public:
 	void unmark();
 	
 	Player& getOwner();
-	const Player& getOwner() const;
+	Player& getOwner() const;
 
 	Player* owner;
 	
