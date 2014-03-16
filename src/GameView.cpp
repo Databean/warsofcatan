@@ -1,5 +1,7 @@
 #include "GameView.h"
 
+#include <stdexcept>
+
 #include "GameBoard.h"
 #include "GameController.h"
 #include "Renderer.h"
