@@ -243,48 +243,15 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(
 }
 
 /**
- * Checks to make sure the coordinate is within bounds of the board
+ * Checks to make sure the coordinate is within bounds of the board and not a resource tile.
  */
 bool GameBoard::outOfBounds(const Coordinate& coord) {
-	/**
-	 * This code is embarrassing, but I couldn't really figure out how to easily check for out of bounds
-	 * I'm sure there is a simple algebraic function that does it, but I went for the hacky way.
-	 *
-	 * Discussed that we can just do a find in the map, and if it's not found then it's out of bounds
-	 */
-
-
-
-	switch (coord.second) {
-	case 0:
-		return !(coord.first >= 0 && coord.first <= 4);
-		break;
-	case 1:
-		return !(coord.first >= -2 && coord.first <= 5);
-		break;
-	case 2:
-		return !(coord.first >= -3 && coord.first <= 5);
-		break;
-	case 3:
-		return !(coord.first >= -3 && coord.first <= 4);
-		break;
-	case 4:
-		return !(coord.first >= -4 && coord.first <= 4);
-		break;
-	case 5:
-		return !(coord.first >= -4 && coord.first <= 3);
-		break;
-	case 6:
-		return !(coord.first >= -5 && coord.first <= 3);
-		break;
-	case 7:
-		return !(coord.first >= -5 && coord.first <= 2);
-		break;
-	case 8:
-		return !(coord.first >= -4 && coord.first <= 0);
-		break;
-	default:
-		break;
+	//All valid coordinates are adjacent to resource tiles.
+	static Coordinate adjacentCoordDiffs[] = {Coordinate(0, 1), Coordinate(1, 0), Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0), Coordinate(-1, 1)};
+	for(auto& diff : adjacentCoordDiffs) {
+		if(resources.find(Coordinate{coord.first + diff.first, coord.second + diff.second}) != resources.end()) {
+			return false;
+		}
 	}
 	return true;
 }
@@ -293,10 +260,7 @@ bool GameBoard::outOfBounds(const Coordinate& coord) {
  * Checks to make sure the road doesn't already exist. If it does, then we don't want to add it again
  */
 bool GameBoard::roadExists(Coordinate start, Coordinate end) {
-	std::shared_ptr<Road> isRoad = getRoad(start, end);
-	if (isRoad == NULL)
-		return false;
-	return true;
+	return bool(getRoad(start, end)); // shared_ptr can convert to bool
 }
 
 
@@ -356,16 +320,11 @@ bool GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 		//Coordinates did not meet the criteria for a valid road
 		return false;
 	}
-
-	std::vector<shared_ptr<Road>> roadVector = roads[start];
-	roadVector.push_back(newRoad);
-	roads[start] = roadVector;
-	roadVector = roads[end];
-	roadVector.push_back(newRoad);
-	roads[end] = roadVector;
+	
+	roads[start].push_back(newRoad);
+	roads[end].push_back(newRoad);
+	
 	return true;
-
-
 }
 
 /**
