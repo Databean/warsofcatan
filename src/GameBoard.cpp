@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
+#include <set>
 
 #include "GameVisitor.h"
 #include "Serialization.h"
@@ -29,34 +30,53 @@ using std::vector;
  */
 GameBoard::GameBoard(vector<unique_ptr<Player>>&& players) : players(std::move(players)) {
 	std::srand(std::time(0));
-    
-    resourceType resources[] = {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP, DESERT};
-    random_shuffle(&resources[0], &resources[19]);
-    
-    int rolls[] = {0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
-    
-    int xcoords[] = {-2, 0, 2, -3, -1, 1, 3, -4, -2, 0, 2, 4, -3, -1, 1, 3, -2, 0, 2};
-    int ycoords[] = { 2, 1, 0,  4,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
+	
+	const static vector<resourceType> boardResources {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP};
+	const static vector<int> boardRolls = {0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
 	
 	bool valid = false;
 	
-    while(!valid) {
+	const static Coordinate center {0, 4};
+	
+	while(!valid) {
 		this->resources.clear();
-		random_shuffle(&rolls[0], &rolls[18]);
-		int resourceCount = 0;
-		for (int i = 0; i<19; i++)
-		{
-			if (rolls[i] == 0)
-			{
-				addResource(xcoords[i], ycoords[i], resources[18], 0);
-			}
-			else
-			{
-				addResource(xcoords[i], ycoords[i], resources[resourceCount], rolls[i]);
-				resourceCount++;
-			}
+		
+		vector<resourceType> resources = boardResources;
+		random_shuffle(resources.begin(), resources.end());
+		
+		vector<int> rolls = boardRolls;
+		random_shuffle(rolls.begin(), rolls.end());
+		
+		insertTile(center, resources, rolls);
+		for(int i = 1; i < 3; i++) {
+			createRing({center.first + i, center.second + i}, i, resources, rolls);
 		}
 		valid = isValidBoard();
+	}
+}
+
+void GameBoard::createRing(Coordinate topRight, int sideLength, vector<resourceType>& resources, vector<int>& rolls) {
+	//static const Coordinate adjacentTileOffsets[] = {Coordinate(1, -2), Coordinate(2, -1), Coordinate(-1, -1), Coordinate(-2, 1), Coordinate(2, -1), Coordinate(1, 1)};
+	static const Coordinate adjacentTileOffsets[] = {Coordinate{1, -2}, Coordinate{-1, -1}, Coordinate{-2, 1}, Coordinate{-1, 2}, Coordinate{1, 1}, Coordinate{2, -1}};
+	
+	Coordinate coord{topRight};
+	for(const Coordinate& offset : adjacentTileOffsets) {
+		for(int i = 0; i < sideLength; i++) {
+			insertTile(coord, resources, rolls);
+			coord.first += offset.first;
+			coord.second += offset.second;
+		}
+	}
+}
+
+void GameBoard::insertTile(Coordinate location, vector<resourceType>& resources, vector<int>& rolls) {
+	if(rolls.back() == 0) {
+		addResource(location.first, location.second, DESERT, rolls.back());
+		rolls.pop_back();
+	} else {
+		addResource(location.first, location.second, resources.back(), rolls.back());
+		resources.pop_back();
+		rolls.pop_back();
 	}
 }
 
