@@ -23,7 +23,7 @@ public:
 	Coordinate getCoordinates() const;
 	GameBoard& getBoard();
 	const GameBoard& getBoard() const;
-	
+
 	Coordinate location;
 	
 	virtual void accept(GameVisitor&) = 0;

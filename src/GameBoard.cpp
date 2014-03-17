@@ -6,11 +6,14 @@
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
+#include <set>
 
 #include "GameVisitor.h"
 #include "Serialization.h"
 #include "tinyxml2.h"
+
 #include "CornerPiece.h"
+
 #include "City.h"
 
 using std::shared_ptr;
@@ -23,8 +26,70 @@ using std::istream;
 using std::ostream;
 using std::vector;
 
+/* 
+ *   Initialize board with a set of resources. 
+ *   Currently only the standard configuration (no custom shapes or expansion packs) is implemented.
+ *   Board tiles and roll numbers are randomized.
+ */
 GameBoard::GameBoard(vector<unique_ptr<Player>>&& players) : players(std::move(players)) {
-	init_resources();
+	std::srand(std::time(0));
+	
+	const static vector<resourceType> boardResources {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP};
+	const static vector<int> boardRolls = {0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
+	
+	bool valid = false;
+	
+	const static Coordinate center {0, 4};
+	
+	while(!valid) {
+		this->resources.clear();
+		
+		vector<resourceType> resources = boardResources;
+		random_shuffle(resources.begin(), resources.end());
+		
+		vector<int> rolls = boardRolls;
+		random_shuffle(rolls.begin(), rolls.end());
+		
+		insertTile(center, resources, rolls);
+		for(int i = 1; i < 3; i++) {
+			createRing({center.first + i, center.second + i}, i, resources, rolls);
+		}
+		valid = isValidBoard();
+	}
+}
+
+void GameBoard::createRing(Coordinate topRight, int sideLength, vector<resourceType>& resources, vector<int>& rolls) {
+	//static const Coordinate adjacentTileOffsets[] = {Coordinate(1, -2), Coordinate(2, -1), Coordinate(-1, -1), Coordinate(-2, 1), Coordinate(2, -1), Coordinate(1, 1)};
+	static const Coordinate adjacentTileOffsets[] = {Coordinate{1, -2}, Coordinate{-1, -1}, Coordinate{-2, 1}, Coordinate{-1, 2}, Coordinate{1, 1}, Coordinate{2, -1}};
+	
+	Coordinate coord{topRight};
+	for(const Coordinate& offset : adjacentTileOffsets) {
+		for(int i = 0; i < sideLength; i++) {
+			insertTile(coord, resources, rolls);
+			coord.first += offset.first;
+			coord.second += offset.second;
+		}
+	}
+}
+
+void GameBoard::insertTile(Coordinate location, vector<resourceType>& resources, vector<int>& rolls) {
+	if(rolls.back() == 0) {
+		addResource(location.first, location.second, DESERT, rolls.back());
+		rolls.pop_back();
+	} else {
+		addResource(location.first, location.second, resources.back(), rolls.back());
+		resources.pop_back();
+		rolls.pop_back();
+	}
+}
+
+GameBoard::GameBoard(std::vector<std::unique_ptr<Player>>&& players, const std::map<Coordinate, std::pair<resourceType, int>>& resourceLocations) : players(std::move(players)) {
+	for(auto& resource : resourceLocations) {
+		resources[resource.first] = std::unique_ptr<ResourceTile>(new ResourceTile(*this, resource.first, resource.second.first, resource.second.second));
+	}
+	if(!isValidBoard()) {
+		throw std::runtime_error("Board is invalid.");
+	}
 }
 
 GameBoard::GameBoard(istream& in) {
@@ -86,6 +151,48 @@ GameBoard::GameBoard(istream& in) {
 			roads[start].push_back(newRoad);
 			roads[end].push_back(newRoad);
 		}
+	}
+	
+	auto settlementElements = doc.RootElement()->FirstChildElement("settlements");
+	if(settlementElements) {
+		for(auto settlementElement = settlementElements->FirstChildElement(); settlementElement; settlementElement = settlementElement->NextSiblingElement()) {
+			Coordinate location = xmlElementToCoord(*(settlementElement->FirstChildElement("coordinate")));
+			
+			std::string ownerName = settlementElement->FirstChildElement("owner")->FirstChild()->Value();
+			Player* owner = nullptr;
+			for(auto& playerUnique : players) {
+				if(playerUnique->getName() == ownerName) {
+					owner = playerUnique.get();
+				}
+			}
+			if(owner == nullptr) {
+				throw std::runtime_error("Road is owned by a nonexistant player.");
+			}
+			PlaceSettlement(location, *owner);
+		}
+	}
+	
+	auto cityElements = doc.RootElement()->FirstChildElement("cities");
+	if(cityElements) {
+		for(auto cityElement = cityElements->FirstChildElement(); cityElement; cityElement = cityElement->NextSiblingElement()) {
+			Coordinate location = xmlElementToCoord(*(cityElement->FirstChildElement("coordinate")));
+			
+			std::string ownerName = cityElement->FirstChildElement("owner")->FirstChild()->Value();
+			Player* owner = nullptr;
+			for(auto& playerUnique : players) {
+				if(playerUnique->getName() == ownerName) {
+					owner = playerUnique.get();
+				}
+			}
+			if(owner == nullptr) {
+				throw std::runtime_error("Road is owned by a nonexistant player.");
+			}
+			PlaceCity(location, *owner);
+		}
+	}
+	
+	if(!isValidBoard()) {
+		throw std::runtime_error("Board is invalid.");
 	}
 }
 
@@ -161,46 +268,15 @@ std::vector<CornerPiece*> GameBoard::GetNeighboringCorners(
 
 
 /**
- * Checks to make sure the coordinate is within bounds of the board
+ * Checks to make sure the coordinate is within bounds of the board and not a resource tile.
  */
-bool GameBoard::outOfBounds(const Coordinate& coord) {
-	/**
-	 * This code is embarrassing, but I couldn't really figure out how to easily check for out of bounds
-	 * I'm sure there is a simple algebraic function that does it, but I went for the hacky way.
-	 *
-	 * Discussed that we can just do a find in the map, and if it's not found then it's out of bounds
-	 */
-
-	switch (coord.second) {
-	case 0:
-		return !(coord.first >= 0 && coord.first <= 4);
-		break;
-	case 1:
-		return !(coord.first >= -2 && coord.first <= 5);
-		break;
-	case 2:
-		return !(coord.first >= -3 && coord.first <= 5);
-		break;
-	case 3:
-		return !(coord.first >= -3 && coord.first <= 4);
-		break;
-	case 4:
-		return !(coord.first >= -4 && coord.first <= 4);
-		break;
-	case 5:
-		return !(coord.first >= -4 && coord.first <= 3);
-		break;
-	case 6:
-		return !(coord.first >= -5 && coord.first <= 3);
-		break;
-	case 7:
-		return !(coord.first >= -5 && coord.first <= 2);
-		break;
-	case 8:
-		return !(coord.first >= -4 && coord.first <= 0);
-		break;
-	default:
-		break;
+bool GameBoard::outOfBounds(const Coordinate& coord) const {
+	//All valid coordinates are adjacent to resource tiles.
+	static Coordinate adjacentCoordDiffs[] = {Coordinate(0, 1), Coordinate(1, 0), Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0), Coordinate(-1, 1)};
+	for(auto& diff : adjacentCoordDiffs) {
+		if(resources.find(Coordinate{coord.first + diff.first, coord.second + diff.second}) != resources.end()) {
+			return false;
+		}
 	}
 	return true;
 }
@@ -208,42 +284,53 @@ bool GameBoard::outOfBounds(const Coordinate& coord) {
 /**
  * Checks to make sure the road doesn't already exist. If it does, then we don't want to add it again
  */
-bool GameBoard::roadExists(Coordinate start, Coordinate end) {
-	std::shared_ptr<Road> isRoad = getRoad(start, end);
-	if (isRoad == NULL)
-		return false;
-	return true;
+bool GameBoard::roadExists(Coordinate start, Coordinate end) const {
+	return bool(getRoad(start, end)); // shared_ptr can convert to bool
 }
+
 
 /**
  * Checks to make sure the road being placed at a valid point according to the rules
  */
-bool GameBoard::isRoadConnectionPoint(Coordinate start, Coordinate end, Player& Owner){
-	
-	//std::unique_ptr<GamePiece> corner = corners[start];
-	if(corners[start] != NULL){
-		if (corners[start]->getOwner() == Owner)
-			return true;
 
+bool GameBoard::isRoadConnectionPoint(Coordinate point, Player& Owner) const {
+	//is there a settlement we can build off of
+	auto cornerIt = corners.find(point);
+	if(cornerIt != corners.end()){
+		const CornerPiece * corner = cornerIt->second.get();
+		if(corner != NULL){
+			if (corner->getOwner() == Owner)
+				return true;
+		}
 	}
 	
+	//is there a road we can build off of
+	auto roadIt = roads.find(point);
+	if(roadIt != roads.end()) {
+		const std::vector<shared_ptr<Road>>& roadVector = roadIt->second;
+		for (auto road = roadVector.begin(); road != roadVector.end(); ++road) {
+			if ((*road)->getOwner() == Owner)
+				return true;
+		}
+	}
 
-	return true;
-	
-	
+	return false;
+
+
 }
 
 /**
  * Runs a series of checks to make sure the road can be placed
+ * new Roads must be in bounds, unique, and connected to an existing road or settlement
  */
-bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) {
+bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const {
 	if (outOfBounds(start) || outOfBounds(end))
 		return false;
 
 	if (roadExists(start, end))
 		return false;
 
-	if (!isRoadConnectionPoint(start, end, Owner))
+	if (!isRoadConnectionPoint(start, Owner) && !isRoadConnectionPoint(end, Owner)) //need to XOR
 		return false;
 
 	return true;
@@ -263,35 +350,49 @@ Coordinate GameBoard::getRobber() const {
 
 /**
  * Places a road at the specified coordinates that will be owned by the given player
+ * returns true if the road was placed, false otherwise
  */
-void GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
+bool GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 	if (!verifyRoadPlacement(start, end, Owner))
-		return;
+		return false;
 
 	std::shared_ptr<Road> newRoad;
 	try {
 		newRoad = std::shared_ptr<Road>(new Road(start, end, Owner));
 	} catch (int n) {
 		//Coordinates did not meet the criteria for a valid road
-		return;
+		return false;
 	}
-	std::vector<shared_ptr<Road>> roadVector = roads[start];
-	roadVector.push_back(newRoad);
-	roads[start] = roadVector;
-
-	roadVector = roads[end];
-	roadVector.push_back(newRoad);
-	roads[end] = roadVector;
+	
+	roads[start].push_back(newRoad);
+	roads[end].push_back(newRoad);
+	
+	return true;
 }
+
+/**
+ * Will purchase a road for the given Player if it is possible.
+ * returns true if the road was purchased and placed, false otherwise
+ */
+bool GameBoard::buyRoad(Coordinate start, Coordinate end, Player& Owner){
+	if(Owner.canBuyRoad() && PlaceRoad(start, end, Owner)){
+		Owner.buyRoad();
+		return true;
+	}
+	return false;
+}
+
 
 /**
  * returns a pointer to the road located at the specified coordinates. Will return NULL if the road is not found
  */
-std::shared_ptr<Road> GameBoard::getRoad(Coordinate start, Coordinate end){
-	std::vector<shared_ptr<Road>> roadVector = roads[start];
-	for (std::vector<shared_ptr<Road>>::iterator road = roadVector.begin(); road != roadVector.end(); ++road) {
-		if ((*road)->equals(start, end))
-			return *road;
+const std::shared_ptr<Road> GameBoard::getRoad(Coordinate start, Coordinate end) const {
+	auto roadVecIt = roads.find(start);
+	if(roadVecIt != roads.end()) {
+		for (auto road = roadVecIt->second.begin(); road != roadVecIt->second.end(); road++) {
+			if ((*road)->equals(start, end))
+				return *road;
+		}
 	}
 	return NULL;
 }
@@ -299,14 +400,15 @@ std::shared_ptr<Road> GameBoard::getRoad(Coordinate start, Coordinate end){
 /**
  * Parent function for the find longest road traversal. Note that longest path is NP-Hard, so there is no simple algorithm for this.
  */
-int GameBoard::FindLongestRoad(Player & owner){
+int GameBoard::FindLongestRoad(const Player & owner) const {
 	int longest_path = 0;
 	//for each road vertex v on the board
 	for (auto roadVector = roads.begin(); roadVector != roads.end(); ++roadVector){
 		//find the longest path from v
 		std::map<Coordinate, bool> marked;
+		std::map<Road*, bool> markedRoads;
 		Coordinate start = roadVector->first;
-		int temp_longest_path = FindLongestRoad_FromPoint(start, owner, marked, 0);
+		int temp_longest_path = FindLongestRoad_FromPoint(start, owner, marked, markedRoads, 0);
 
 		//if that path is longer than the current longest, set to the longest
 		if (temp_longest_path > longest_path)
@@ -317,76 +419,47 @@ int GameBoard::FindLongestRoad(Player & owner){
 }
 
 
-int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::map<Coordinate, bool>& marked, int length){
+int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, const Player & owner, std::map<Coordinate, bool>& marked, std::map<Road*, bool>& markedRoads, int length) const {
 	marked[curr] = true;
 	int longest_path = length;
 	//traverse all the surrounding edges and vertices
-	std::vector<shared_ptr<Road>> roadVector = roads[curr];
-	for (std::vector<shared_ptr<Road>>::iterator road = roadVector.begin(); road != roadVector.end(); ++road) {
+	auto roadVectorIt = roads.find(curr);
+	if(roadVectorIt != roads.end()) {
+	auto& roadVector = roadVectorIt->second;
+	for (auto road = roadVector.begin(); road != roadVector.end(); ++road) {
 		int temp_longest_path = length;
 
 		//if the owner is correct and the road is unmarked
-		if ( !(*road)->isMarked() && (*road)->owner->getName().compare(owner.getName()) == 0){
+		if ( !markedRoads[road->get()] && (*road)->getOwner().getName() == owner.getName()){
 
 			temp_longest_path++;
-			(*road)->mark();
+			markedRoads[road->get()] = true;
 			//Check if you can traverse to the next vertex and make that step if you can
 			if(curr != (*road)->getStart() && !marked[(*road)->getStart()]){
-				temp_longest_path = FindLongestRoad_FromPoint((*road)->getStart(), owner, marked, temp_longest_path);
+				temp_longest_path = FindLongestRoad_FromPoint((*road)->getStart(), owner, marked, markedRoads, temp_longest_path);
 			}else if (curr != (*road)->getEnd() && !marked[(*road)->getEnd()]){
-				temp_longest_path = FindLongestRoad_FromPoint((*road)->getEnd(), owner, marked, temp_longest_path);
+				temp_longest_path = FindLongestRoad_FromPoint((*road)->getEnd(), owner, marked, markedRoads, temp_longest_path);
 			}
-			(*road)->unmark();
+			markedRoads[road->get()] = false;
 		}
 
 		if(temp_longest_path > longest_path)
 			longest_path = temp_longest_path;
+		}
 	}
 	marked[curr] = false;
 	return longest_path;
 }
 
-/* 
- *   Initialize board with a set of resources. 
- *   Currently only the standard configuration (no custom shapes or expansion packs) is implemented.
- *   Board tiles and roll numbers are randomized.
- */
-void GameBoard::init_resources()
-{
-    std::srand(std::time(0));
-    
-    resourceType resources[] = {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP, DESERT};
-    random_shuffle(&resources[0], &resources[19]);
-    
-    int rolls[] = {0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
-    while (!checkRolls(rolls))
-    {
-        random_shuffle(&rolls[0], &rolls[18]);
-    }
-    
-    int xcoords[] = {-2, 0, 2, -3, -1, 1, 3, -4, -2, 0, 2, 4, -3, -1, 1, 3, -2, 0, 2};
-    int ycoords[] = { 2, 1, 0,  4,  3, 2, 1,  6, 5,  4, 3, 2,  7,  6, 5, 4,  8, 7, 6};
-	
-    
-    
-    int resourceCount = 0;
-    for (int i = 0; i<19; i++)
-    {
-        if (rolls[i] == 0)
-        {
-            addResource(xcoords[i], ycoords[i], resources[18], 0);
-        }
-        else
-        {
-            addResource(xcoords[i], ycoords[i], resources[resourceCount], rolls[i]);
-            resourceCount++;
-        }
-    }
-    
-}
+
 
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 	corners[location] = std::unique_ptr<CornerPiece>(new Settlement(*this, location, Owner));
+}
+
+void GameBoard::PlaceCity(Coordinate location, Player& Owner){
+	corners[location] = std::unique_ptr<CornerPiece>(new City(*this, location, Owner));
+
 }
 
 void GameBoard::UpgradeSettlement(Coordinate location){
@@ -397,15 +470,16 @@ void GameBoard::UpgradeSettlement(Coordinate location){
 
 void GameBoard::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
-	for(auto& it : corners) {
-		if(it.second.get()) {
-			it.second->accept(visitor);
-		}
-	}
+
+
+	// Drawing needs this to happen in this order. Visitors technically should be order-independent, but this was an easy fix at the moment.
+	// Keep that in mind when modifying this.
 	for(auto& it : resources) {
-		if(it.second.get()) {
-			it.second->accept(visitor);
-		}
+		it.second->accept(visitor);
+	}
+	for(auto& it : corners) {
+		it.second->accept(visitor);
+
 	}
 	for(auto& roadCoordVec : roads) {
 		for(auto& road : roadCoordVec.second) {
@@ -467,6 +541,14 @@ bool GameBoard::operator==(const GameBoard& other) const {
 			return false;
 		}
 	}
+	for(auto& it : corners) {
+		auto otherIt = other.corners.find(it.first);
+		if(otherIt == other.corners.end()) {
+			return false;
+		} else if(!(*it.second == *otherIt->second)) {
+			return false;
+		}
+	}
 	return true;
 }
 /*
@@ -482,177 +564,25 @@ void GameBoard::addResource(int x, int y, resourceType res, int val)
     this->resources[Coordinate(x,y)] = std::unique_ptr<ResourceTile>(new ResourceTile(*this, Coordinate(x,y), res, val));
 }
 
-/*
- *  This method checks the array of roll tiles
- *  and makes sure that there are no 6s or 8s next to eachother
- *  for the placement scheme defined in init_resources.
- *
- *  P.S. It's a giant clusterf...well, if you have any ideas on refactoring, please do
- *
- *  @param rolls The array to check
- */
-bool GameBoard::checkRolls(int* rolls)
-{
-    if (rolls[0] == 6 || rolls[0] == 8)
-    {
-        if (rolls[1] == 6 || rolls[1] == 8)
-            return false;
-        if (rolls[3] == 6 || rolls[3] == 8)
-            return false;
-        if (rolls[4] == 6 || rolls[4] == 8)
-            return false;
-    }
-    
-    if (rolls[1] == 6 || rolls[1] == 8)
-    {
-        if (rolls[2] == 6 || rolls[2] == 8)
-            return false;
-        if (rolls[4] == 6 || rolls[4] == 8)
-            return false;
-        if (rolls[5] == 6 || rolls[5] == 8)
-            return false;
-    }
-    
-    if (rolls[2] == 6 || rolls[2] == 8)
-    {
-        if (rolls[5] == 6 || rolls[5] == 8)
-            return false;
-        if (rolls[6] == 6 || rolls[6] == 8)
-            return false;
-    }
-    
-    if (rolls[3] == 6 || rolls[3] == 8)
-    {
-        if (rolls[7] == 6 || rolls[7] == 8)
-            return false;
-        if (rolls[8] == 6 || rolls[8] == 8)
-            return false;
-        if (rolls[4] == 6 || rolls[4] == 8)
-            return false;
-    }
-    
-    if (rolls[4] == 6 || rolls[4] == 8)
-    {
-        if (rolls[8] == 6 || rolls[8] == 8)
-            return false;
-        if (rolls[9] == 6 || rolls[9] == 8)
-            return false;
-        if (rolls[5] == 6 || rolls[5] == 8)
-            return false;
-    }
-    
-    if (rolls[5] == 6 || rolls[5] == 8)
-    {
-        if (rolls[9] == 6 || rolls[9] == 8)
-            return false;
-        if (rolls[10] == 6 || rolls[10] == 8)
-            return false;
-        if (rolls[6] == 6 || rolls[6] == 8)
-            return false;
-    }
-    
-    if (rolls[6] == 6 || rolls[6] == 8)
-    {
-        if (rolls[10] == 6 || rolls[10] == 8)
-            return false;
-        if (rolls[11] == 6 || rolls[11] == 8)
-            return false;
-    }
-    
-    if (rolls[7] == 6 || rolls[7] == 8)
-    {
-        if (rolls[12] == 6 || rolls[12] == 8)
-            return false;
-        if (rolls[8] == 6 || rolls[8] == 8)
-            return false;
-    }
-    
-    if (rolls[8] == 6 || rolls[8] == 8)
-    {
-        if (rolls[12] == 6 || rolls[12] == 8)
-            return false;
-        if (rolls[13] == 6 || rolls[13] == 8)
-            return false;
-        if (rolls[9] == 6 || rolls[9] == 8)
-            return false;
-    }
-    
-    if (rolls[9] == 6 || rolls[9] == 8)
-    {
-        if (rolls[13] == 6 || rolls[13] == 8)
-            return false;
-        if (rolls[14] == 6 || rolls[14] == 8)
-            return false;
-        if (rolls[10] == 6 || rolls[10] == 8)
-            return false;
-    }
-    
-    if (rolls[10] == 6 || rolls[10] == 8)
-    {
-        if (rolls[14] == 6 || rolls[14] == 8)
-            return false;
-        if (rolls[15] == 6 || rolls[15] == 8)
-            return false;
-        if (rolls[11] == 6 || rolls[11] == 8)
-            return false;
-    }
-    
-    if (rolls[11] == 6 || rolls[11] == 8)
-    {
-        if (rolls[15] == 6 || rolls[15] == 8)
-            return false;
-    }
-    
-    if (rolls[12] == 6 || rolls[12] == 8)
-    {
-        if (rolls[16] == 6 || rolls[16] == 8)
-            return false;
-        if (rolls[13] == 6 || rolls[13] == 8)
-            return false;
-    }
-    
-    if (rolls[13] == 6 || rolls[13] == 8)
-    {
-        if (rolls[16] == 6 || rolls[16] == 8)
-            return false;
-        if (rolls[17] == 6 || rolls[17] == 8)
-            return false;
-        if (rolls[14] == 6 || rolls[14] == 8)
-            return false;
-    }
-    
-    if (rolls[14] == 6 || rolls[14] == 8)
-    {
-        if (rolls[17] == 6 || rolls[17] == 8)
-            return false;
-        if (rolls[18] == 6 || rolls[18] == 8)
-            return false;
-        if (rolls[15] == 6 || rolls[15] == 8)
-            return false;
-    }
-    
-    if (rolls[15] == 6 || rolls[15] == 8)
-    {
-        if (rolls[18] == 6 || rolls[18] == 8)
-            return false;
-    }
-    
-    if (rolls[16] == 6 || rolls[16] == 8)
-    {
-        if (rolls[17] == 6 || rolls[17] == 8)
-            return false;
-    }
-    
-    if (rolls[17] == 6 || rolls[17] == 8)
-    {
-        if (rolls[18] == 6 || rolls[18] == 8)
-            return false;
-    }
-    
-    return true;
-}
-
-bool GameBoard::testRollChecking(int* rolls)
-{
-    return checkRolls(rolls);
+bool GameBoard::isValidBoard() const {
+	for(auto& resourcePair : resources) {
+		const ResourceTile& tile = dynamic_cast<const ResourceTile&>(*resourcePair.second);
+		
+		if(tile.getDiceValue() != 6 && tile.getDiceValue() != 8) {
+			continue;
+		}
+		
+		static const Coordinate adjacentTileOffsets[] = {Coordinate(1, 1), Coordinate(2, -1), Coordinate(1, -2), Coordinate(-1, -1), Coordinate(-2, 1), Coordinate(2, -1)};
+		for(const Coordinate& offset : adjacentTileOffsets) {
+			Coordinate adjacentTileCoord(tile.getLocation().first + offset.first, tile.getLocation().second + offset.second);
+			auto otherCoordinateIt = resources.find(adjacentTileCoord);
+			if(otherCoordinateIt != resources.end() && otherCoordinateIt->second) {
+				const ResourceTile& otherTile = dynamic_cast<const ResourceTile&>(*otherCoordinateIt->second);
+				if(otherTile.getDiceValue() == 6 || otherTile.getDiceValue() == 8) {
+					return false;
+				}
+			}
+		}
+	}
+	return true;
 }

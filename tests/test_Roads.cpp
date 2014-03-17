@@ -78,19 +78,6 @@ TEST(road_equals_Coordinate){
 	CHECK(!test_road_1.equals(start_3, end_3));
 }
 
-TEST(road_marker){
-	Coordinate start(0,0);
-	Coordinate end(1,0);
-	Player test_player("tester");
-	Road test_road(start, end, test_player);
-
-	CHECK(test_road.isMarked() == false);
-	test_road.mark();
-	CHECK(test_road.isMarked() == true);
-	test_road.unmark();
-	CHECK(test_road.isMarked() == false);
-}
-
 
 
 

@@ -74,8 +74,29 @@ TEST(roadSerialization) {
 	
 	GameBoard testBoard(std::move(players));
 	
+	testBoard.PlaceSettlement(Coordinate(0,0), firstPlayer);
+	testBoard.PlaceSettlement(Coordinate(-1,1), secondPlayer);
 	testBoard.PlaceRoad(Coordinate(0,0), Coordinate(-1,1), firstPlayer);
 	testBoard.PlaceRoad(Coordinate(-1,1), Coordinate(-1,2), secondPlayer);
+	
+	stringstream stream;
+	testBoard.save(stream);
+	
+	GameBoard copyBoard(stream);
+	
+	CHECK(testBoard == copyBoard);
+}
+
+TEST(settlementSerialization) {
+	vector<unique_ptr<Player>> players;
+	players.emplace_back(unique_ptr<Player>(new Player("test")));
+	
+	Player& player = *players[0];
+	
+	GameBoard testBoard(std::move(players));
+	
+	testBoard.PlaceSettlement(Coordinate(0, 0), player);
+	testBoard.PlaceSettlement(Coordinate(1, 1), player);
 	
 	stringstream stream;
 	testBoard.save(stream);

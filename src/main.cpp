@@ -13,9 +13,9 @@
 #include <memory>
 
 #include "GameBoard.h"
-#include "UserInput.h"
 #include "Player.h"
-#include "Renderer.h"
+#include "GameView.h"
+#include "GameController.h"
 
 using std::vector;
 using std::unique_ptr;
@@ -25,12 +25,11 @@ void initGame() {
 }
 
 void initOpenGL() {
-	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND); 
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glClearColor(1.f, 1.f, 1.f, 1.f);
-	//glDepthFunc(GL_NEVER);
+	glDepthFunc(GL_NEVER);
 }
 
 /* function to reset our viewport after a window resize */
@@ -44,7 +43,7 @@ void updateViewport(int width, int height) {
 }
 
 int main(int argc, char *argv[]) {
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE);
 	SDL_Window* displayWindow;
 	SDL_Renderer* displayRenderer;
 	SDL_RendererInfo displayRendererInfo;
@@ -66,24 +65,33 @@ int main(int argc, char *argv[]) {
 	vector<unique_ptr<Player>> players;
 	players.emplace_back(unique_ptr<Player>(new Player("test")));
 	
-	Player& testPlayer = *(players[0]);
+	Player& firstPlayer = *players[0];
 	
-	GameBoard testBoard(std::move(players));
+	GameBoard model(std::move(players));
+	GameController controller(model);
+	GameView view(model, controller);
+	
+	model.PlaceSettlement(Coordinate{0, 0}, firstPlayer);
+	model.PlaceRoad(Coordinate{0, 0}, Coordinate{1, 0}, firstPlayer);
+	model.PlaceRoad(Coordinate{1, 0}, Coordinate{1, 1}, firstPlayer);
+	model.PlaceRoad(Coordinate{1, 1}, Coordinate{0, 2}, firstPlayer);
 	
 	bool running = true;
 	while(running) {
 		SDL_Event event;
 		while(SDL_PollEvent(&event)) {
-			running = acceptInput(testBoard, testPlayer, event);
+			running = view.acceptInput(event);
 		}
 		
-		renderBoard(testBoard, testPlayer);
+		view.render();
 		
 		SDL_GL_SwapWindow(displayWindow);
 		SDL_Delay(100);
 	}
 	
 	SDL_GL_DeleteContext(glContext);
+	SDL_DestroyWindow(displayWindow);
+	SDL_DestroyRenderer(displayRenderer);
 	SDL_Quit();
 	
 	return 0;

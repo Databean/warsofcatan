@@ -8,7 +8,8 @@
 #include <iostream>
 #include "Deck.h"
 
-Deck::Deck() {
+Deck::Deck()
+{
 	// TODO Auto-generated constructor stub
 	for(int i = 0; i < 15; i++)
 	{
@@ -35,7 +36,8 @@ Deck::Deck() {
 		DevelopmentCard* card = new RoadBuildingCard(NULL);
 		this->deck.push_back(card);
 	}
-
+    
+    shuffleDeck();
 }
 
 Deck::~Deck() {
@@ -45,7 +47,14 @@ Deck::~Deck() {
 	{
 		delete this->deck.back();
 		this->deck.pop_back();
-		std::cout<<":";
+		//std::cout<<":";
+	}
+    
+    while(!this->discardPile.empty())
+	{
+		delete this->discardPile.back();
+		this->discardPile.pop_back();
+		//std::cout<<":";
 	}
 }
 
@@ -59,8 +68,37 @@ int Deck::getSize()
 DevelopmentCard* Deck::drawCard()
 {
 	if(this->getSize() == 0)
-		return NULL;
+    {
+        reshuffleDeck();
+    }
+    
+    if(this->getSize() == 0)
+    {
+        return NULL;
+    }
+    
 	DevelopmentCard* card = this->deck.back();
 	this->deck.pop_back();
 	return card;
+}
+
+void Deck::shuffleDeck()
+{
+    std::srand(std::time(0));
+    random_shuffle(deck.begin(), deck.end());
+}
+
+void Deck::reshuffleDeck()
+{
+    while(!discardPile.empty())
+    {
+        deck.push_back(discardPile.back());
+        discardPile.pop_back();
+    }
+    shuffleDeck();
+}
+
+void Deck::discard(DevelopmentCard* toDiscard)
+{
+    discardPile.push_back(toDiscard);
 }
