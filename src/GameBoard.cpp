@@ -391,7 +391,7 @@ int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, const Player & owner, 
 		int temp_longest_path = length;
 
 		//if the owner is correct and the road is unmarked
-		if ( !markedRoads[road->get()] && (*road)->owner->getName() == owner.getName()){
+		if ( !markedRoads[road->get()] && (*road)->getOwner().getName() == owner.getName()){
 
 			temp_longest_path++;
 			markedRoads[road->get()] = true;

@@ -12,10 +12,11 @@ class GameVisitor;
 
 class Road {
 private:
-	bool checkRoad();
-	
+	Player& owner;
 	Coordinate start;
 	Coordinate end;
+	
+	bool checkRoad();
 public:
 	Road(Coordinate start, Coordinate end, Player& Owner);
 	Road(Road&) = delete;
@@ -29,9 +30,7 @@ public:
 	bool equals(const Coordinate& otherStart, const Coordinate& otherEnd);
 	
 	Player& getOwner();
-	Player& getOwner() const;
-
-	Player* owner;
+	const Player& getOwner() const;
 	
 	virtual void accept(GameVisitor& visitor);
 	bool operator==(const Road&) const;

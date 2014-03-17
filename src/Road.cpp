@@ -2,7 +2,7 @@
 
 #include "GameVisitor.h"
 
-Road::Road(Coordinate start, Coordinate end, Player& Owner) {
+Road::Road(Coordinate start, Coordinate end, Player& Owner) : owner(Owner) {
 	if(start < end) {
 		this->start = start;
 		this->end = end;
@@ -10,14 +10,11 @@ Road::Road(Coordinate start, Coordinate end, Player& Owner) {
 		this->end = start;
 		this->start = end;
 	}
-	owner = &Owner;
 	
 	//If the input is bad, throw an exception so bad roads won't be built
 	if(!checkRoad()){
 		throw -1;
 	}
-
-
 }
 
 /**
@@ -42,7 +39,7 @@ void Road::accept(GameVisitor& visitor) {
 bool Road::operator==(const Road& other) const {
 	return getStart() == other.getStart() &&
 		getEnd() == other.getEnd() &&
-		owner->getName() == other.owner->getName();
+		owner.getName() == other.owner.getName();
 }
 
 /**
@@ -78,9 +75,9 @@ bool Road::equals(const Coordinate& otherStart, const Coordinate& otherEnd){
 }
 
 Player& Road::getOwner() {
-	return *owner;
+	return owner;
 }
 
-Player& Road::getOwner() const {
-	return *owner;
+const Player& Road::getOwner() const {
+	return owner;
 }
