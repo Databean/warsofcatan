@@ -83,7 +83,18 @@ void DrawingGameVisitor::visit(Road& road) {
 }
 
 void DrawingGameVisitor::visit(Settlement& settlement) {
+	static const auto settlementRadius = 0.03;
 	
+	auto centerScreenPos = coordToScreen(settlement.getLocation());
+	
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3d(0., 0., 0.);
+	glBegin(GL_QUADS);
+	glVertex2d(centerScreenPos.first, centerScreenPos.second + settlementRadius);
+	glVertex2d(centerScreenPos.first + settlementRadius, centerScreenPos.second);
+	glVertex2d(centerScreenPos.first, centerScreenPos.second - settlementRadius);
+	glVertex2d(centerScreenPos.first - settlementRadius, centerScreenPos.second);
+	glEnd();
 }
 
 void DrawingGameVisitor::visit(City& city) {
