@@ -398,31 +398,37 @@ void GameBoard::UpgradeSettlement(Coordinate location){
 void GameBoard::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
 	for(auto& it : corners) {
-		it.second->accept(visitor);
+		if(it.second.get()) {
+			it.second->accept(visitor);
+		}
 	}
 	for(auto& it : resources) {
-		it.second->accept(visitor);
+		if(it.second.get()) {
+			it.second->accept(visitor);
+		}
 	}
 	for(auto& roadCoordVec : roads) {
 		for(auto& road : roadCoordVec.second) {
-			road->accept(visitor);
+			if(road.get()) {
+				road->accept(visitor);
+			}
 		}
 	}
 	for(auto& it : players) {
-		it->accept(visitor);
+		if(it.get()) {
+			it->accept(visitor);
+		}
 	}
 }
 
 bool GameBoard::operator==(const GameBoard& other) const {
-	if(corners.size() != other.corners.size()) {
-		return false;
-	}
 	for(auto& it : corners) {
 		auto otherIt = other.corners.find(it.first);
 		if(otherIt == other.corners.end()) {
-			return false; // This location isn't in the other array
-		}
-		if(!(*(it.second) == *(otherIt->second))) {
+			if(it.second.get()) {
+				return false; // This location isn't in the other array
+			}
+		} else if(!(*(it.second) == *(otherIt->second))) {
 			return false;
 		}
 	}
@@ -454,12 +460,10 @@ bool GameBoard::operator==(const GameBoard& other) const {
 		}
 	}
 	if(players.size() != other.players.size()) {
-		std::cout << "sizes differ" << std::endl;
 		return false;
 	}
 	for(unsigned int i = 0; i < players.size(); i++) {
 		if(!(*(players[i]) == *(other.players[i]))) {
-			std::cout << "player " << i << " differs" << std::endl;
 			return false;
 		}
 	}

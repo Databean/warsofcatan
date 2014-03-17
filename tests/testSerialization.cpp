@@ -76,14 +76,11 @@ TEST(roadSerialization) {
 	
 	testBoard.PlaceRoad(Coordinate(0,0), Coordinate(-1,1), firstPlayer);
 	testBoard.PlaceRoad(Coordinate(-1,1), Coordinate(-1,2), secondPlayer);
-	std::cout << __LINE__ << "\n";
 	
 	stringstream stream;
 	testBoard.save(stream);
-	std::cout << __LINE__ << "\n";
 	
 	GameBoard copyBoard(stream);
-	std::cout << __LINE__ << "\n";
 	
 	CHECK(testBoard == copyBoard);
 }
