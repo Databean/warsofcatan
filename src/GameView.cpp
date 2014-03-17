@@ -1,6 +1,9 @@
 #include "GameView.h"
 
+#define _USE_MATH_DEFINES
+
 #include <stdexcept>
+#include <cmath>
 
 #include "GameBoard.h"
 #include "GameController.h"
@@ -48,7 +51,35 @@ void DrawingGameVisitor::visit(GameBoard& model) {
 }
 
 void DrawingGameVisitor::visit(Road& road) {
+	static const auto roadWidth = 0.01;
 	
+	auto startScreenPos = coordToScreen(road.getStart());
+	auto endScreenPos = coordToScreen(road.getEnd());
+	
+	auto roadAngle = 0.;
+	/*
+	 * Fixes a bug in road rendering of horizontal road. My best guess is that
+	 * this is necessary because small floating point errors in the conversion from game coordinates to screen coordinates
+	 * mess up the angle calculation.
+	 */
+	if(road.getEnd().second == road.getStart().second) {
+		roadAngle = 0;
+	} else {
+		roadAngle = std::atan2(endScreenPos.first - startScreenPos.first, endScreenPos.second - startScreenPos.second);\
+	}
+	auto roadPerpAngle = roadAngle + (M_PI / 2.);
+	
+	auto cosPerp = std::cos(roadPerpAngle);
+	auto sinPerp = std::sin(roadPerpAngle);
+	
+	glColor3d(0., 0., 0.);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBegin(GL_QUADS);
+	glVertex2d(startScreenPos.first - cosPerp * roadWidth, startScreenPos.second - sinPerp * roadWidth);
+	glVertex2d(startScreenPos.first + cosPerp * roadWidth, startScreenPos.second + sinPerp * roadWidth);
+	glVertex2d(endScreenPos.first + cosPerp * roadWidth, endScreenPos.second + sinPerp * roadWidth);
+	glVertex2d(endScreenPos.first - cosPerp * roadWidth, endScreenPos.second - sinPerp * roadWidth);
+	glEnd();
 }
 
 void DrawingGameVisitor::visit(Settlement& settlement) {
@@ -87,6 +118,7 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 		throw runtime_error("Cannot draw this tile; it is invalid.");
 	}
 	const texCoordList& texCoords = resourceTexCoords.find(tile.resource)->second;
+	glColor3d(1.0, 1.0, 1.0);
 	glBegin(GL_TRIANGLE_FAN);
 	texCoordPair(averagePoint(texCoords));
 	vertexPair(coord);
