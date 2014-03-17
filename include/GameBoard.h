@@ -30,16 +30,16 @@ private:
 	
 	bool isValidBoard() const;
 	
-	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner);
-	bool outOfBounds(const Coordinate& coord);
-	bool roadExists(Coordinate start, Coordinate end);
-	bool isRoadConnectionPoint(Coordinate point, Player& Owner);
+	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const;
+	bool outOfBounds(const Coordinate& coord) const;
+	bool roadExists(Coordinate start, Coordinate end) const;
+	bool isRoadConnectionPoint(Coordinate point, Player& Owner) const;
 
 	int constructBoardFromFile(std::ifstream &file);
 	int constructFileFromBoard(std::ofstream &file);
 
 	void removeRoadEnd(std::shared_ptr<Road> startRoad);
-	int FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::map<Coordinate, bool>& marked, std::map<Road*, bool>& markedRoads, int length);
+	int FindLongestRoad_FromPoint(Coordinate curr, const Player & owner, std::map<Coordinate, bool>& marked, std::map<Road*, bool>& markedRoads, int length) const;
 	
 	void createRing(Coordinate topRight, int sideLength, std::vector<resourceType>& resources, std::vector<int>& rolls);
 	void insertTile(Coordinate location, std::vector<resourceType>& resources, std::vector<int>& rolls);
@@ -54,9 +54,9 @@ public:
 	void save(std::ostream& out);
 	
 	const std::map<Coordinate, std::unique_ptr<GamePiece>>& getResources() const;
-	std::shared_ptr<Road> getRoad(Coordinate start, Coordinate end);
+	const std::shared_ptr<Road> getRoad(Coordinate start, Coordinate end) const;
 	
-	int FindLongestRoad(Player & owner);
+	int FindLongestRoad(const Player & owner) const;
 
 	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location);
 
