@@ -23,7 +23,8 @@ int Settlement::getVictoryPoints() {
 }
 
 int Settlement::getResourceModifier() {
-	//return (board.robber.location == location); projected implementation of 
+	//return (board.getRobber() == location); projected implementation of 
 	return 1;
+	
 }
 

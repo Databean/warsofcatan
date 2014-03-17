@@ -61,6 +61,9 @@ bool ResourceTile::operator==(const GamePiece& other) const {
 //pay resource cards to owners of this tile
 
 void ResourceTile::Payout() const{
+	if (getBoard().getRobber() == location) //no need to pay out
+		return;
+
 	std::vector<CornerPiece*> neighbors = getBoard().GetNeighboringCorners(location);
 	std::vector<CornerPiece*>::iterator it = neighbors.begin();
 	while (it != neighbors.end())

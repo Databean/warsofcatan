@@ -16,6 +16,7 @@
 #include "tinyxml2.h"
 #include "Road.h"
 
+
 class GameVisitor;
 
 class GameBoard {
@@ -23,6 +24,8 @@ private:
 	std::map<Coordinate, std::unique_ptr<CornerPiece>> corners;
 	std::map<Coordinate, std::unique_ptr<ResourceTile>> resources;
 	std::vector<std::unique_ptr<Player>> players;
+	Coordinate robber;
+
 	
     void addResource(int x, int y, resourceType res, int val);
     bool checkRolls(int* rolls);
@@ -70,6 +73,10 @@ public:
 	bool operator==(const GameBoard& other) const;
     
     bool testRollChecking(int* rolls);
+
+    void moveRobber(Coordinate newRobber);
+    Coordinate getRobber() const;
+
 };
 
 #endif

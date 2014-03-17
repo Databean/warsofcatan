@@ -224,8 +224,11 @@ bool GameBoard::isRoadConnectionPoint(Coordinate start, Coordinate end, Player& 
 	if(corners[start] != NULL){
 		if (corners[start]->getOwner() == Owner)
 			return true;
+
 	}
-	return false;
+	
+
+	return true;
 	
 	
 }
@@ -244,6 +247,18 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
 		return false;
 
 	return true;
+}
+
+void GameBoard::moveRobber(Coordinate newRobber) {
+
+	robber = newRobber;
+
+	//force trade	
+}
+
+Coordinate GameBoard::getRobber() const {
+	return robber;
+
 }
 
 /**

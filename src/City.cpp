@@ -19,7 +19,7 @@ bool City::operator==(const GamePiece& p) const {
 }
 
 int City::getResourceModifier() {
-	return 2; //TODO: implement robber check here
+	return 2;
 }
 
 int City::getVictoryPoints() {
