@@ -13,9 +13,9 @@
 #include <memory>
 
 #include "GameBoard.h"
-#include "UserInput.h"
 #include "Player.h"
-#include "Renderer.h"
+#include "GameView.h"
+#include "GameController.h"
 
 using std::vector;
 using std::unique_ptr;
@@ -66,18 +66,18 @@ int main(int argc, char *argv[]) {
 	vector<unique_ptr<Player>> players;
 	players.emplace_back(unique_ptr<Player>(new Player("test")));
 	
-	Player& testPlayer = *(players[0]);
-	
-	GameBoard testBoard(std::move(players));
+	GameBoard model(std::move(players));
+	GameController controller(model);
+	GameView view(model, controller);
 	
 	bool running = true;
 	while(running) {
 		SDL_Event event;
 		while(SDL_PollEvent(&event)) {
-			running = acceptInput(testBoard, testPlayer, event);
+			running = view.acceptInput(event);
 		}
 		
-		renderBoard(testBoard, testPlayer);
+		view.render();
 		
 		SDL_GL_SwapWindow(displayWindow);
 		SDL_Delay(100);

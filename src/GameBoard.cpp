@@ -243,48 +243,15 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(
 }
 
 /**
- * Checks to make sure the coordinate is within bounds of the board
+ * Checks to make sure the coordinate is within bounds of the board and not a resource tile.
  */
-bool GameBoard::outOfBounds(const Coordinate& coord) {
-	/**
-	 * This code is embarrassing, but I couldn't really figure out how to easily check for out of bounds
-	 * I'm sure there is a simple algebraic function that does it, but I went for the hacky way.
-	 *
-	 * Discussed that we can just do a find in the map, and if it's not found then it's out of bounds
-	 */
-
-
-
-	switch (coord.second) {
-	case 0:
-		return !(coord.first >= 0 && coord.first <= 4);
-		break;
-	case 1:
-		return !(coord.first >= -2 && coord.first <= 5);
-		break;
-	case 2:
-		return !(coord.first >= -3 && coord.first <= 5);
-		break;
-	case 3:
-		return !(coord.first >= -3 && coord.first <= 4);
-		break;
-	case 4:
-		return !(coord.first >= -4 && coord.first <= 4);
-		break;
-	case 5:
-		return !(coord.first >= -4 && coord.first <= 3);
-		break;
-	case 6:
-		return !(coord.first >= -5 && coord.first <= 3);
-		break;
-	case 7:
-		return !(coord.first >= -5 && coord.first <= 2);
-		break;
-	case 8:
-		return !(coord.first >= -4 && coord.first <= 0);
-		break;
-	default:
-		break;
+bool GameBoard::outOfBounds(const Coordinate& coord) const {
+	//All valid coordinates are adjacent to resource tiles.
+	static Coordinate adjacentCoordDiffs[] = {Coordinate(0, 1), Coordinate(1, 0), Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0), Coordinate(-1, 1)};
+	for(auto& diff : adjacentCoordDiffs) {
+		if(resources.find(Coordinate{coord.first + diff.first, coord.second + diff.second}) != resources.end()) {
+			return false;
+		}
 	}
 	return true;
 }
@@ -292,32 +259,33 @@ bool GameBoard::outOfBounds(const Coordinate& coord) {
 /**
  * Checks to make sure the road doesn't already exist. If it does, then we don't want to add it again
  */
-bool GameBoard::roadExists(Coordinate start, Coordinate end) {
-	std::shared_ptr<Road> isRoad = getRoad(start, end);
-	if (isRoad == NULL)
-		return false;
-	return true;
+bool GameBoard::roadExists(Coordinate start, Coordinate end) const {
+	return bool(getRoad(start, end)); // shared_ptr can convert to bool
 }
 
 
 /**
  * Checks to make sure the road being placed at a valid point according to the rules
  */
-bool GameBoard::isRoadConnectionPoint(Coordinate point, Player& Owner){
+bool GameBoard::isRoadConnectionPoint(Coordinate point, Player& Owner) const {
 	//is there a settlement we can build off of
-	if(corners.count(point) > 0){
-		CornerPiece * corner = corners[point].get();
+	auto cornerIt = corners.find(point);
+	if(cornerIt != corners.end()){
+		const CornerPiece * corner = cornerIt->second.get();
 		if(corner != NULL){
 			if (corner->getOwner() == Owner)
 				return true;
 		}
 	}
-
+	
 	//is there a road we can build off of
-	std::vector<shared_ptr<Road>> roadVector = roads[point];
-	for (std::vector<shared_ptr<Road>>::iterator road = roadVector.begin(); road != roadVector.end(); ++road) {
-		if ((*road)->getOwner() == Owner)
-			return true;
+	auto roadIt = roads.find(point);
+	if(roadIt != roads.end()) {
+		const std::vector<shared_ptr<Road>>& roadVector = roadIt->second;
+		for (auto road = roadVector.begin(); road != roadVector.end(); ++road) {
+			if ((*road)->getOwner() == Owner)
+				return true;
+		}
 	}
 
 	return false;
@@ -328,7 +296,7 @@ bool GameBoard::isRoadConnectionPoint(Coordinate point, Player& Owner){
  * Runs a series of checks to make sure the road can be placed
  * new Roads must be in bounds, unique, and connected to an existing road or settlement
  */
-bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) {
+bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const {
 	if (outOfBounds(start) || outOfBounds(end))
 		return false;
 
@@ -356,16 +324,11 @@ bool GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 		//Coordinates did not meet the criteria for a valid road
 		return false;
 	}
-
-	std::vector<shared_ptr<Road>> roadVector = roads[start];
-	roadVector.push_back(newRoad);
-	roads[start] = roadVector;
-	roadVector = roads[end];
-	roadVector.push_back(newRoad);
-	roads[end] = roadVector;
+	
+	roads[start].push_back(newRoad);
+	roads[end].push_back(newRoad);
+	
 	return true;
-
-
 }
 
 /**
@@ -384,11 +347,13 @@ bool GameBoard::buyRoad(Coordinate start, Coordinate end, Player& Owner){
 /**
  * returns a pointer to the road located at the specified coordinates. Will return NULL if the road is not found
  */
-std::shared_ptr<Road> GameBoard::getRoad(Coordinate start, Coordinate end){
-	std::vector<shared_ptr<Road>> roadVector = roads[start];
-	for (std::vector<shared_ptr<Road>>::iterator road = roadVector.begin(); road != roadVector.end(); ++road) {
-		if ((*road)->equals(start, end))
-			return *road;
+const std::shared_ptr<Road> GameBoard::getRoad(Coordinate start, Coordinate end) const {
+	auto roadVecIt = roads.find(start);
+	if(roadVecIt != roads.end()) {
+		for (auto road = roadVecIt->second.begin(); road != roadVecIt->second.end(); road++) {
+			if ((*road)->equals(start, end))
+				return *road;
+		}
 	}
 	return NULL;
 }
@@ -396,14 +361,15 @@ std::shared_ptr<Road> GameBoard::getRoad(Coordinate start, Coordinate end){
 /**
  * Parent function for the find longest road traversal. Note that longest path is NP-Hard, so there is no simple algorithm for this.
  */
-int GameBoard::FindLongestRoad(Player & owner){
+int GameBoard::FindLongestRoad(const Player & owner) const {
 	int longest_path = 0;
 	//for each road vertex v on the board
 	for (auto roadVector = roads.begin(); roadVector != roads.end(); ++roadVector){
 		//find the longest path from v
 		std::map<Coordinate, bool> marked;
+		std::map<Road*, bool> markedRoads;
 		Coordinate start = roadVector->first;
-		int temp_longest_path = FindLongestRoad_FromPoint(start, owner, marked, 0);
+		int temp_longest_path = FindLongestRoad_FromPoint(start, owner, marked, markedRoads, 0);
 
 		//if that path is longer than the current longest, set to the longest
 		if (temp_longest_path > longest_path)
@@ -414,30 +380,33 @@ int GameBoard::FindLongestRoad(Player & owner){
 }
 
 
-int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, Player & owner, std::map<Coordinate, bool>& marked, int length){
+int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, const Player & owner, std::map<Coordinate, bool>& marked, std::map<Road*, bool>& markedRoads, int length) const {
 	marked[curr] = true;
 	int longest_path = length;
 	//traverse all the surrounding edges and vertices
-	std::vector<shared_ptr<Road>> roadVector = roads[curr];
-	for (std::vector<shared_ptr<Road>>::iterator road = roadVector.begin(); road != roadVector.end(); ++road) {
+	auto roadVectorIt = roads.find(curr);
+	if(roadVectorIt != roads.end()) {
+	auto& roadVector = roadVectorIt->second;
+	for (auto road = roadVector.begin(); road != roadVector.end(); ++road) {
 		int temp_longest_path = length;
 
 		//if the owner is correct and the road is unmarked
-		if ( !(*road)->isMarked() && (*road)->owner->getName().compare(owner.getName()) == 0){
+		if ( !markedRoads[road->get()] && (*road)->getOwner().getName() == owner.getName()){
 
 			temp_longest_path++;
-			(*road)->mark();
+			markedRoads[road->get()] = true;
 			//Check if you can traverse to the next vertex and make that step if you can
 			if(curr != (*road)->getStart() && !marked[(*road)->getStart()]){
-				temp_longest_path = FindLongestRoad_FromPoint((*road)->getStart(), owner, marked, temp_longest_path);
+				temp_longest_path = FindLongestRoad_FromPoint((*road)->getStart(), owner, marked, markedRoads, temp_longest_path);
 			}else if (curr != (*road)->getEnd() && !marked[(*road)->getEnd()]){
-				temp_longest_path = FindLongestRoad_FromPoint((*road)->getEnd(), owner, marked, temp_longest_path);
+				temp_longest_path = FindLongestRoad_FromPoint((*road)->getEnd(), owner, marked, markedRoads, temp_longest_path);
 			}
-			(*road)->unmark();
+			markedRoads[road->get()] = false;
 		}
 
 		if(temp_longest_path > longest_path)
 			longest_path = temp_longest_path;
+		}
 	}
 	marked[curr] = false;
 	return longest_path;
