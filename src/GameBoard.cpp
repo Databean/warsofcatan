@@ -422,10 +422,12 @@ void GameBoard::PlaceCity(Coordinate location, Player& Owner){
 
 void GameBoard::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
-	for(auto& it : corners) {
+	// Drawing needs this to happen in this order. Visitors technically should be order-independent, but this was an easy fix at the moment.
+	// Keep that in mind when modifying this.
+	for(auto& it : resources) {
 		it.second->accept(visitor);
 	}
-	for(auto& it : resources) {
+	for(auto& it : corners) {
 		it.second->accept(visitor);
 	}
 	for(auto& roadCoordVec : roads) {
