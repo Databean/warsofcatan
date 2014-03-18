@@ -2,16 +2,19 @@
 #define GAME_CONTROLLER_H
 
 class GameBoard;
+class ClickCoordinateEvent;
 
 class GameController {
 private:
-	GameBoard& board;
+	GameBoard& model;
 	
-	GameController(const GameController& o) : board(o.board) {} //deleted
+	GameController(const GameController& o) : model(o.model) {} //deleted
 	GameController& operator=(const GameController& o) { return *this; } //deleted
 public:
 	GameController(GameBoard&);
 	~GameController();
+	
+	void handleEvent(const ClickCoordinateEvent&);
 };
 
 #endif

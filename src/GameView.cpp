@@ -8,6 +8,7 @@
 #include "GameBoard.h"
 #include "GameController.h"
 #include "Renderer.h"
+#include "City.h"
 
 using std::make_pair;
 using std::pair;
@@ -34,6 +35,8 @@ void GameView::render() {
 bool GameView::acceptInput(SDL_Event& event) {
 	if(event.type == SDL_QUIT) {
 		return false;
+	} else if(event.type == SDL_MOUSEBUTTONUP) {
+		controller.handleEvent(ClickCoordinateEvent(screenToCoord({(float) event.button.x / 900.f, 1.f - (float) event.button.y / 800.f})));
 	}
 	return true;
 }
@@ -98,7 +101,18 @@ void DrawingGameVisitor::visit(Settlement& settlement) {
 }
 
 void DrawingGameVisitor::visit(City& city) {
+	static const auto cityRadius = 0.03;
 	
+	auto centerScreenPos = coordToScreen(city.getLocation());
+	
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3d(0., 0., 0.);
+	glBegin(GL_QUADS);
+	glVertex2d(centerScreenPos.first + cityRadius, centerScreenPos.second + cityRadius);
+	glVertex2d(centerScreenPos.first + cityRadius, centerScreenPos.second - cityRadius);
+	glVertex2d(centerScreenPos.first - cityRadius, centerScreenPos.second - cityRadius);
+	glVertex2d(centerScreenPos.first - cityRadius, centerScreenPos.second + cityRadius);
+	glEnd();
 }
 
 void DrawingGameVisitor::visit(Player& player) {
@@ -179,4 +193,25 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 
 void DrawingGameVisitor::visit(DevelopmentCard& card) {
 	
+}
+
+ClickCoordinateEvent::ClickCoordinateEvent(const Coordinate& clicked) : clicked(clicked) {
+	
+}
+
+ClickCoordinateEvent::ClickCoordinateEvent(const ClickCoordinateEvent& event) : clicked(event.clicked) {
+	
+}
+
+ClickCoordinateEvent::~ClickCoordinateEvent() {
+	
+}
+
+ClickCoordinateEvent& ClickCoordinateEvent::operator=(const ClickCoordinateEvent& event) {
+	clicked = event.clicked;
+	return *this;
+}
+
+Coordinate ClickCoordinateEvent::getCoordinate() const {
+	return clicked;
 }

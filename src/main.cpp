@@ -75,6 +75,8 @@ int main(int argc, char *argv[]) {
 	model.PlaceRoad(Coordinate{0, 0}, Coordinate{1, 0}, firstPlayer);
 	model.PlaceRoad(Coordinate{1, 0}, Coordinate{1, 1}, firstPlayer);
 	model.PlaceRoad(Coordinate{1, 1}, Coordinate{0, 2}, firstPlayer);
+	model.PlaceSettlement(Coordinate{0, 2}, firstPlayer);
+	model.UpgradeSettlement(Coordinate{0, 2});
 	
 	bool running = true;
 	while(running) {
