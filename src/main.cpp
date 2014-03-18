@@ -25,12 +25,11 @@ void initGame() {
 }
 
 void initOpenGL() {
-	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND); 
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glClearColor(1.f, 1.f, 1.f, 1.f);
-	//glDepthFunc(GL_NEVER);
+	glDepthFunc(GL_NEVER);
 }
 
 /* function to reset our viewport after a window resize */
@@ -66,9 +65,16 @@ int main(int argc, char *argv[]) {
 	vector<unique_ptr<Player>> players;
 	players.emplace_back(unique_ptr<Player>(new Player("test")));
 	
+	Player& firstPlayer = *players[0];
+	
 	GameBoard model(std::move(players));
 	GameController controller(model);
 	GameView view(model, controller);
+	
+	model.PlaceSettlement(Coordinate{0, 0}, firstPlayer);
+	model.PlaceRoad(Coordinate{0, 0}, Coordinate{1, 0}, firstPlayer);
+	model.PlaceRoad(Coordinate{1, 0}, Coordinate{1, 1}, firstPlayer);
+	model.PlaceRoad(Coordinate{1, 1}, Coordinate{0, 2}, firstPlayer);
 	
 	bool running = true;
 	while(running) {
@@ -84,6 +90,8 @@ int main(int argc, char *argv[]) {
 	}
 	
 	SDL_GL_DeleteContext(glContext);
+	SDL_DestroyWindow(displayWindow);
+	SDL_DestroyRenderer(displayRenderer);
 	SDL_Quit();
 	
 	return 0;
