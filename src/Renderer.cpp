@@ -60,7 +60,7 @@ void vertexPair(const Coordinate& coord) {
 }
 
 void texCoordPair(const pair<float, float>& p) {
-	glTexCoord2f(p.first / 2048., p.second / 2048.);
+	glTexCoord2f(p.first / 2048., p.second / 1024.);
 }
 
 pair<float, float> averagePoint(const std::vector<pair<float, float>>& points) {
