@@ -14,6 +14,8 @@ public:
 	
 	virtual void accept(GameVisitor&);
 	virtual bool operator==(const GamePiece&) const;
+	int getResourceModifier();
+	int getVictoryPoints();
 };
 
 #endif

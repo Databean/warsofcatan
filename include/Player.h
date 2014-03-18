@@ -86,6 +86,8 @@ public:
     void addWheat(int resource);
     void addWool(int resource);
 
+    void addResource(int resourceType, int delta);
+
 	void accept(GameVisitor& visitor);
 	bool operator==(const Player& player) const;
 };

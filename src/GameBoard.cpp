@@ -11,6 +11,9 @@
 #include "GameVisitor.h"
 #include "Serialization.h"
 #include "tinyxml2.h"
+
+#include "CornerPiece.h"
+
 #include "City.h"
 
 using std::shared_ptr;
@@ -82,7 +85,7 @@ void GameBoard::insertTile(Coordinate location, vector<resourceType>& resources,
 
 GameBoard::GameBoard(std::vector<std::unique_ptr<Player>>&& players, const std::map<Coordinate, std::pair<resourceType, int>>& resourceLocations) : players(std::move(players)) {
 	for(auto& resource : resourceLocations) {
-		resources[resource.first] = std::unique_ptr<GamePiece>(new ResourceTile(*this, resource.first, resource.second.first, resource.second.second));
+		resources[resource.first] = std::unique_ptr<ResourceTile>(new ResourceTile(*this, resource.first, resource.second.first, resource.second.second));
 	}
 	if(!isValidBoard()) {
 		throw std::runtime_error("Board is invalid.");
@@ -217,12 +220,12 @@ void GameBoard::save(ostream& out) {
 	out << printer.CStr();
 }
 
-const map<Coordinate, unique_ptr<GamePiece>>& GameBoard::getResources() const {
+const map<Coordinate, unique_ptr<ResourceTile>>& GameBoard::getResources() const {
 	return resources;
 }
 
 std::vector<Settlement*> GameBoard::GetNeighboringSettlements(
-		Coordinate location) {
+		Coordinate location) const {
 	static Coordinate adjacentCoordDiffs[] = { Coordinate(0, 1), Coordinate(1,
 			0), Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0),
 			Coordinate(-1, 1) };
@@ -231,8 +234,8 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(
 		const Coordinate& diff = adjacentCoordDiffs[i];
 		Coordinate adjacentPoint(location.first + diff.first,
 				location.second + diff.second);
-		auto it = resources.find(adjacentPoint);
-		if (it != resources.end()) {
+		auto it = corners.find(adjacentPoint);
+		if (it != corners.end()) {
 			GamePiece* piece = it->second.get();
 			if (dynamic_cast<Settlement*>(piece)) {
 				v.push_back(static_cast<Settlement*>(piece));
@@ -241,6 +244,28 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(
 	}
 	return v;
 }
+
+std::vector<CornerPiece*> GameBoard::GetNeighboringCorners(
+		Coordinate location) const{
+	static Coordinate adjacentCoordDiffs[] = { Coordinate(0, 1), Coordinate(1,
+			0), Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0),
+			Coordinate(-1, 1) };
+	std::vector<CornerPiece*> v;
+	for (unsigned int i = 0; i < 6; i++) {
+		const Coordinate& diff = adjacentCoordDiffs[i];
+		Coordinate adjacentPoint(location.first + diff.first,
+				location.second + diff.second);
+		auto it = resources.find(adjacentPoint);
+		if (it != resources.end()) {
+			GamePiece* piece = it->second.get();
+			if (dynamic_cast<CornerPiece*>(piece)) {
+				v.push_back(static_cast<CornerPiece*>(piece));
+			}
+		}
+	}
+	return v;
+}
+
 
 /**
  * Checks to make sure the coordinate is within bounds of the board and not a resource tile.
@@ -267,6 +292,7 @@ bool GameBoard::roadExists(Coordinate start, Coordinate end) const {
 /**
  * Checks to make sure the road being placed at a valid point according to the rules
  */
+
 bool GameBoard::isRoadConnectionPoint(Coordinate point, Player& Owner) const {
 	//is there a settlement we can build off of
 	auto cornerIt = corners.find(point);
@@ -290,6 +316,7 @@ bool GameBoard::isRoadConnectionPoint(Coordinate point, Player& Owner) const {
 
 	return false;
 
+
 }
 
 /**
@@ -307,6 +334,18 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
 		return false;
 
 	return true;
+}
+
+void GameBoard::moveRobber(Coordinate newRobber) {
+
+	robber = newRobber;
+
+	//force trade	
+}
+
+Coordinate GameBoard::getRobber() const {
+	return robber;
+
 }
 
 /**
@@ -412,16 +451,27 @@ int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, const Player & owner, 
 	return longest_path;
 }
 
+
+
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 	corners[location] = std::unique_ptr<CornerPiece>(new Settlement(*this, location, Owner));
 }
 
 void GameBoard::PlaceCity(Coordinate location, Player& Owner){
 	corners[location] = std::unique_ptr<CornerPiece>(new City(*this, location, Owner));
+
 }
+
+void GameBoard::UpgradeSettlement(Coordinate location){
+	corners[location] = std::unique_ptr<CornerPiece>(new City(*corners[location])); //TODO test for memory leak
+}
+
+
 
 void GameBoard::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
+
+
 	// Drawing needs this to happen in this order. Visitors technically should be order-independent, but this was an easy fix at the moment.
 	// Keep that in mind when modifying this.
 	for(auto& it : resources) {
@@ -429,27 +479,30 @@ void GameBoard::accept(GameVisitor& visitor) {
 	}
 	for(auto& it : corners) {
 		it.second->accept(visitor);
+
 	}
 	for(auto& roadCoordVec : roads) {
 		for(auto& road : roadCoordVec.second) {
-			road->accept(visitor);
+			if(road.get()) {
+				road->accept(visitor);
+			}
 		}
 	}
 	for(auto& it : players) {
-		it->accept(visitor);
+		if(it.get()) {
+			it->accept(visitor);
+		}
 	}
 }
 
 bool GameBoard::operator==(const GameBoard& other) const {
-	if(corners.size() != other.corners.size()) {
-		return false;
-	}
 	for(auto& it : corners) {
 		auto otherIt = other.corners.find(it.first);
 		if(otherIt == other.corners.end()) {
-			return false; // This location isn't in the other array
-		}
-		if(!(*(it.second) == *(otherIt->second))) {
+			if(it.second.get()) {
+				return false; // This location isn't in the other array
+			}
+		} else if(!(*(it.second) == *(otherIt->second))) {
 			return false;
 		}
 	}
@@ -481,12 +534,10 @@ bool GameBoard::operator==(const GameBoard& other) const {
 		}
 	}
 	if(players.size() != other.players.size()) {
-		std::cout << "sizes differ" << std::endl;
 		return false;
 	}
 	for(unsigned int i = 0; i < players.size(); i++) {
 		if(!(*(players[i]) == *(other.players[i]))) {
-			std::cout << "player " << i << " differs" << std::endl;
 			return false;
 		}
 	}
@@ -510,7 +561,7 @@ bool GameBoard::operator==(const GameBoard& other) const {
  */
 void GameBoard::addResource(int x, int y, resourceType res, int val)
 {
-    this->resources[Coordinate(x,y)] = std::unique_ptr<GamePiece>(new ResourceTile(*this, Coordinate(x,y), res, val));
+    this->resources[Coordinate(x,y)] = std::unique_ptr<ResourceTile>(new ResourceTile(*this, Coordinate(x,y), res, val));
 }
 
 bool GameBoard::isValidBoard() const {

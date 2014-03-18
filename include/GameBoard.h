@@ -16,14 +16,21 @@
 #include "tinyxml2.h"
 #include "Road.h"
 
+
 class GameVisitor;
 
 class GameBoard {
 private:
 	std::map<Coordinate, std::unique_ptr<CornerPiece>> corners;
-	std::map<Coordinate, std::unique_ptr<GamePiece>> resources;
+
+	std::map<Coordinate, std::unique_ptr<ResourceTile>> resources;
+
+
 	std::map<Coordinate, std::vector<std::shared_ptr<Road>>> roads;
+
 	std::vector<std::unique_ptr<Player>> players;
+	Coordinate robber;
+
 	
     void addResource(int x, int y, resourceType res, int val);
     bool checkRolls(int* rolls);
@@ -53,16 +60,30 @@ public:
 	
 	void save(std::ostream& out);
 	
-	const std::map<Coordinate, std::unique_ptr<GamePiece>>& getResources() const;
+
+	const std::map<Coordinate, std::unique_ptr<ResourceTile>>& getResources() const;
+
+
+
 	const std::shared_ptr<Road> getRoad(Coordinate start, Coordinate end) const;
+
 	
 	int FindLongestRoad(const Player & owner) const;
 
-	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location);
+	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location) const;
+	std::vector<CornerPiece*> GetNeighboringCorners(Coordinate location) const;
+
+
+
+	void PlaceSettlement(Coordinate location, Player& Owner);
+	void UpgradeSettlement(Coordinate location);
+	//void PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
+
 
 	bool buyRoad(Coordinate start, Coordinate end, Player& Owner);
 
-	void PlaceSettlement(Coordinate location, Player& Owner);
+
+	//void PlaceSettlement(Coordinate location, Player& Owner);
 	void PlaceCity(Coordinate location, Player& Owner);
 	bool PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
 	
@@ -71,6 +92,10 @@ public:
 	bool operator==(const GameBoard& other) const;
     
     bool testRollChecking(int* rolls);
+
+    void moveRobber(Coordinate newRobber);
+    Coordinate getRobber() const;
+
 };
 
 #endif
