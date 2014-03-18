@@ -35,6 +35,8 @@ void GameView::render() {
 bool GameView::acceptInput(SDL_Event& event) {
 	if(event.type == SDL_QUIT) {
 		return false;
+	} else if(event.type == SDL_MOUSEBUTTONUP) {
+		controller.handleEvent(ClickCoordinateEvent(screenToCoord({(float) event.button.x / 900.f, 1.f - (float) event.button.y / 800.f})));
 	}
 	return true;
 }
@@ -191,4 +193,25 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 
 void DrawingGameVisitor::visit(DevelopmentCard& card) {
 	
+}
+
+ClickCoordinateEvent::ClickCoordinateEvent(const Coordinate& clicked) : clicked(clicked) {
+	
+}
+
+ClickCoordinateEvent::ClickCoordinateEvent(const ClickCoordinateEvent& event) : clicked(event.clicked) {
+	
+}
+
+ClickCoordinateEvent::~ClickCoordinateEvent() {
+	
+}
+
+ClickCoordinateEvent& ClickCoordinateEvent::operator=(const ClickCoordinateEvent& event) {
+	clicked = event.clicked;
+	return *this;
+}
+
+Coordinate ClickCoordinateEvent::getCoordinate() const {
+	return clicked;
 }

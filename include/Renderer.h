@@ -13,6 +13,7 @@ void renderBoard(const GameBoard& board, const Player& perspective);
 GLuint loadImageAsTexture(const std::string& name);
 
 std::pair<float, float> coordToScreen(const Coordinate& coord);
+Coordinate screenToCoord(const std::pair<float, float>&);
 
 void vertexPair(const Coordinate& coord);
 
