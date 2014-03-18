@@ -105,6 +105,19 @@ void DrawingGameVisitor::visit(Player& player) {
 	
 }
 
+void drawTexturedCircle(std::pair<float, float> texCenter, float texRadius, std::pair<float, float> screenCenter, float screenRadius, int articulation = 20) {
+	glBegin(GL_TRIANGLE_FAN);
+	texCoordPair(texCenter);
+	glVertex2f(screenCenter.first, screenCenter.second);
+	for(int i = 0; i < articulation + 1; i++) {
+		double angle = ((double) i) * (2. * M_PI) / (double)articulation;
+		double tangle = ((double) -i) * (2. * M_PI) / (double)articulation;
+		texCoordPair({texCenter.first + texRadius * std::cos(tangle), texCenter.second + texRadius * std::sin(tangle)});
+		glVertex2d(screenCenter.first + (screenRadius * std::cos(angle)), screenCenter.second + (screenRadius * std::sin(angle)));
+	}
+	glEnd();
+}
+
 void DrawingGameVisitor::visit(ResourceTile& tile) {
 	Coordinate coord = tile.getLocation();
 	static const GLuint tileTextures = loadImageAsTexture("resources/catan_sprite_sheet.bmp");
@@ -125,12 +138,26 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 		make_pair(-260.f, 130.f),
 		make_pair(-175, -1)
 	};
+	static const std::map<int, pair<float, float>> numberTexPoints = {
+		make_pair(2, make_pair(1238.5f, 70.5f)),
+		make_pair(3, make_pair(1365.5f, 70.5f)),
+		make_pair(4, make_pair(1238.5f, 178.5f)),
+		make_pair(5, make_pair(1365.5f, 178.5f)),
+		make_pair(6, make_pair(1238.5f, 286.5f)),
+		make_pair(8, make_pair(1365.5f, 286.5f)),
+		make_pair(9, make_pair(1238.5f, 404.5f)),
+		make_pair(10, make_pair(1365.5f, 404.5f)),
+		make_pair(11, make_pair(1238.5f, 515.5f)),
+		make_pair(12, make_pair(1365.5f, 515.5f))
+	};
+	static const float radius = 59.5f;
 	static Coordinate adjacentCoordDiffs[] = {Coordinate(0, 1), Coordinate(1, 0), Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0), Coordinate(-1, 1)};
 	auto topRightPoint = topRightPoints.find(tile.getType());
 	if(topRightPoint == topRightPoints.end()) {
 		throw runtime_error("Cannot draw this tile; it is invalid.");
 	}
 	glColor3d(1.0, 1.0, 1.0);
+	
 	glBegin(GL_TRIANGLE_FAN);
 	auto average = averagePoint(resourceTexOffsets);
 	texCoordPair({average.first + topRightPoint->second.first, average.second + topRightPoint->second.second});
@@ -143,6 +170,10 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 	texCoordPair(topRightPoint->second);
 	vertexPair(Coordinate(coord.first + adjacentCoordDiffs[0].first, coord.second + adjacentCoordDiffs[0].second));
 	glEnd();
+	
+	if(tile.getDiceValue() != 0) {
+		drawTexturedCircle(numberTexPoints.find(tile.getDiceValue())->second, radius, coordToScreen(coord), 0.04);
+	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
