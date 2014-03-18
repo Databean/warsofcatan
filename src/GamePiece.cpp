@@ -3,7 +3,8 @@
 #include "GameBoard.h"
 #include "GameVisitor.h"
 
-GamePiece::GamePiece(GameBoard& board, Coordinate location) : board(board), location(location) {
+GamePiece::GamePiece(GameBoard& board, Coordinate location) :
+board(board), location(location){
 	
 }
 
@@ -58,12 +59,17 @@ bool ResourceTile::operator==(const GamePiece& other) const {
 }
 
 //pay resource cards to owners of this tile
-/*
-void ResourceTile::Payout() {
-	std::vector<GamePiece> neighbors = board.GetNeighbors(location);
-	for (int i = 0; i < neighbors.size; i++) //someone tell me how to traverse a vector less stupidly
+
+void ResourceTile::Payout() const{
+	if (getBoard().getRobber() == location) //no need to pay out
+		return;
+
+	std::vector<CornerPiece*> neighbors = getBoard().GetNeighboringCorners(location);
+	std::vector<CornerPiece*>::iterator it = neighbors.begin();
+	while (it != neighbors.end())
 	{
-		neighbors[i].owner.addresource(resource, 1 + neighbors[i].city)
+		(*it)->getOwner().addResource(resource, (*it)->getResourceModifier());
+		it++;
 	}
 }
-*/
+

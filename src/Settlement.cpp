@@ -14,6 +14,19 @@ void Settlement::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
 }
 
+
+
+int Settlement::getVictoryPoints() {
+	return 1;
+}
+
+int Settlement::getResourceModifier() {
+	//return (board.getRobber() == location); projected implementation of 
+	return 1;
+	
+}
+
+
 bool Settlement::operator==(const GamePiece& other) const {
 	auto settlement = dynamic_cast<const Settlement*>(&other);
 	if(settlement) {
@@ -22,3 +35,4 @@ bool Settlement::operator==(const GamePiece& other) const {
 		return false;
 	}
 }
+

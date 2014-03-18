@@ -15,6 +15,10 @@ public:
 	
 	Player& getOwner();
 	const Player& getOwner() const;
+
+	virtual int getResourceModifier();
+
+	virtual int getVictoryPoints();
 };
 
 #endif
