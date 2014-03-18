@@ -67,9 +67,10 @@ TEST(roadSerialization) {
 	vector<unique_ptr<Player>> players;
 	players.emplace_back(unique_ptr<Player>(new Player("test")));
 	players.emplace_back(unique_ptr<Player>(new Player("test2")));
-	
+	std::cout << __LINE__ << "\n";
 	Player& firstPlayer = *players[0];
 	Player& secondPlayer = *players[1];
+	std::cout << __LINE__ << "\n";
 	
 	GameBoard testBoard(std::move(players));
 	
