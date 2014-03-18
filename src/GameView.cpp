@@ -8,6 +8,7 @@
 #include "GameBoard.h"
 #include "GameController.h"
 #include "Renderer.h"
+#include "City.h"
 
 using std::make_pair;
 using std::pair;
@@ -98,7 +99,18 @@ void DrawingGameVisitor::visit(Settlement& settlement) {
 }
 
 void DrawingGameVisitor::visit(City& city) {
+	static const auto cityRadius = 0.03;
 	
+	auto centerScreenPos = coordToScreen(city.getLocation());
+	
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3d(0., 0., 0.);
+	glBegin(GL_QUADS);
+	glVertex2d(centerScreenPos.first + cityRadius, centerScreenPos.second + cityRadius);
+	glVertex2d(centerScreenPos.first + cityRadius, centerScreenPos.second - cityRadius);
+	glVertex2d(centerScreenPos.first - cityRadius, centerScreenPos.second - cityRadius);
+	glVertex2d(centerScreenPos.first - cityRadius, centerScreenPos.second + cityRadius);
+	glEnd();
 }
 
 void DrawingGameVisitor::visit(Player& player) {
