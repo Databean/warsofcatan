@@ -15,6 +15,38 @@ using std::pair;
 using std::runtime_error;
 using std::string;
 
+ViewElement::ViewElement(GameView& view, decltype(rect) rect) : view(view) {
+	using std::min;
+	using std::max;
+	
+	//rect.first is the min x/min y corner
+	//rect.second is the max x/max y corner
+	this->rect.first = {min(rect.first.first, rect.second.first), min(rect.first.second, rect.second.second)};
+	this->rect.second = {max(rect.first.first, rect.second.first), max(rect.first.second, rect.second.second)};
+}
+
+ViewElement::~ViewElement() {
+	
+}
+
+decltype(ViewElement::rect) ViewElement::getRect() const {
+	return rect;
+}
+
+bool ViewElement::containsPoint(ScreenCoordinate coord) const {
+	return rect.first.first < coord.first &&
+		rect.first.second < coord.second &&
+		coord.first < rect.second.first &&
+		coord.second < rect.second.second;
+}
+
+bool ViewElement::handleClick(ScreenCoordinate coord) {
+	if(containsPoint(coord)) {
+		return clicked(coord);
+	}
+	return false;
+}
+
 GameView::GameView(GameBoard& model, GameController& controller) : model(model), controller(controller) {
 	
 }
@@ -29,6 +61,10 @@ void GameView::render() {
 	DrawingGameVisitor visitor(*this);
 	model.accept(visitor);
 	
+	for(auto& it : viewElements) {
+		it->render();
+	}
+	
 	glFlush();
 }
 
@@ -36,7 +72,13 @@ bool GameView::acceptInput(SDL_Event& event) {
 	if(event.type == SDL_QUIT) {
 		return false;
 	} else if(event.type == SDL_MOUSEBUTTONUP) {
-		controller.handleEvent(ClickCoordinateEvent(screenToCoord({(float) event.button.x / 900.f, 1.f - (float) event.button.y / 800.f})));
+		ScreenCoordinate screen = {(float) event.button.x / 900.f, 1.f - (float) event.button.y / 800.f};
+		for(auto& it : viewElements) {
+			if(it->handleClick(screen)) {
+				return true;
+			}
+		}
+		controller.handleEvent(ClickCoordinateEvent(screenToCoord(screen)));
 	}
 	return true;
 }

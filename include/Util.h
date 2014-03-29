@@ -5,6 +5,7 @@
 #include <sstream>
 
 typedef std::pair<int, int> Coordinate;
+typedef std::pair<float, float> ScreenCoordinate;
 
 template<class T> 
 T fromString(const std::string& s) {
