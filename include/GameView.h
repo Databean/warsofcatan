@@ -114,7 +114,7 @@ private:
 	ViewButtonColor(const ViewButtonColor& vb) : ViewElement(vb) {} //deleted
 	ViewButtonColor& operator=(const ViewButtonColor& vb) { return *this; }
 public:
-	ViewButtonColor(Fn action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::tuple<float, float, float> color) : ViewElement(rect, action), color(color) {}
+	ViewButtonColor(Fn action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::tuple<float, float, float> color) : ViewButton<Fn>(action, rect), color(color) {}
 	virtual ~ViewButtonColor() {}
 	
 	virtual void render() {
@@ -123,10 +123,10 @@ public:
 		auto topLeft = ViewElement::getRect().first;
 		auto bottomRight = ViewElement::getRect().second;
 		glBegin(GL_QUADS);
-		glVertex3f(topLeft.first, topLeft.second);
-		glVertex3f(bottomRight.first, topLeft.second);
-		glVertex3f(bottomRight.first, bottomRight.second);
-		glVertex3f(topLeft.first, bottomRight.second);
+		glVertex2f(topLeft.first, topLeft.second);
+		glVertex2f(bottomRight.first, topLeft.second);
+		glVertex2f(bottomRight.first, bottomRight.second);
+		glVertex2f(topLeft.first, bottomRight.second);
 		glEnd();
 	}
 };
