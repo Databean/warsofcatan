@@ -18,15 +18,14 @@ class GameView;
 
 class ViewElement {
 private:
-	GameView& view;
 	std::pair<ScreenCoordinate, ScreenCoordinate> rect;
 	
-	ViewElement(const ViewElement& vw) : view(vw.view) {} //deleted
+	ViewElement(const ViewElement& vw) {} //deleted
 	ViewElement& operator=(const ViewElement&) { return *this; } // deleted
 protected:
 	virtual bool clicked(ScreenCoordinate coord) = 0;
 public:
-	ViewElement(GameView& view, decltype(rect) rect);
+	ViewElement(decltype(rect) rect);
 	virtual ~ViewElement();
 	
 	virtual decltype(rect) getRect() const;
@@ -38,18 +37,19 @@ public:
 class GameView {
 private:
 	GameBoard& model;
-	GameController& controller;
 	
 	std::vector<std::unique_ptr<ViewElement>> viewElements;
 	
-	GameView(const GameView& o) : model(o.model), controller(o.controller) {} //deleted
+	GameView(const GameView& o) : model(o.model) {} //deleted
 	GameView& operator=(const GameView& o) { return *this; } //deleted
 public:
-	GameView(GameBoard&, GameController&);
+	GameView(GameBoard&);
 	~GameView();
 	
 	void render();
 	bool acceptInput(SDL_Event& event);
+	
+	void addElement(std::unique_ptr<ViewElement>);
 };
 
 class DrawingGameVisitor : public GameVisitor {
@@ -87,23 +87,41 @@ template<class Fn>
 class ViewButton : public ViewElement {
 private:
 	Fn action;
-	std::tuple<float, float, float> color;
 	
 	ViewButton(const ViewButton& vb) : ViewElement(vb) {} //deleted
-	ViewButton& operator=(const ViewButton& vb) { return *this; }
+	ViewButton& operator=(const ViewButton&) { return *this; } //deleted
 protected:
 	virtual bool clicked(ScreenCoordinate coord) {
 		return action(coord);
 	}
 public:
-	ViewButton(Fn& action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::tuple<float, float, float> color) : ViewElement(rect), action(action), color(color) {}
-	~ViewButton() {}
+	ViewButton(Fn action, std::pair<ScreenCoordinate, ScreenCoordinate> rect) : ViewElement(rect), action(action) {}
+	virtual ~ViewButton() {}
 	
-	void render() {
+	virtual void render() {}
+};
+
+template<class Fn>
+std::unique_ptr<ViewElement> makeViewButton(Fn fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect) {
+	return std::unique_ptr<ViewElement>(new ViewButton<Fn>(fn, rect));
+}
+
+template<class Fn>
+class ViewButtonColor : public ViewButton<Fn> {
+private:
+	std::tuple<float, float, float> color;
+	
+	ViewButtonColor(const ViewButtonColor& vb) : ViewElement(vb) {} //deleted
+	ViewButtonColor& operator=(const ViewButtonColor& vb) { return *this; }
+public:
+	ViewButtonColor(Fn action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::tuple<float, float, float> color) : ViewElement(rect, action), color(color) {}
+	virtual ~ViewButtonColor() {}
+	
+	virtual void render() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
-		auto topLeft = getRect().first;
-		auto bottomRight = getRect().second;
+		auto topLeft = ViewElement::getRect().first;
+		auto bottomRight = ViewElement::getRect().second;
 		glBegin(GL_QUADS);
 		glVertex3f(topLeft.first, topLeft.second);
 		glVertex3f(bottomRight.first, topLeft.second);
@@ -112,5 +130,10 @@ public:
 		glEnd();
 	}
 };
+
+template<class Fn>
+std::unique_ptr<ViewElement> makeViewButtonColor(Fn fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::tuple<float, float, float> color) {
+	return std::unique_ptr<ViewElement>(new ViewButtonColor<Fn>(fn, rect, color));
+}
 
 #endif

@@ -3,15 +3,17 @@
 
 class GameBoard;
 class ClickCoordinateEvent;
+class GameView;
 
 class GameController {
 private:
 	GameBoard& model;
+	GameView& view;
 	
-	GameController(const GameController& o) : model(o.model) {} //deleted
+	GameController(const GameController& o) : model(o.model), view(o.view) {} //deleted
 	GameController& operator=(const GameController& o) { return *this; } //deleted
 public:
-	GameController(GameBoard&);
+	GameController(GameBoard&, GameView& view);
 	~GameController();
 	
 	void handleEvent(const ClickCoordinateEvent&);

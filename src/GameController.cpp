@@ -4,9 +4,10 @@
 
 #include "GameBoard.h"
 #include "GameView.h"
+#include "Renderer.h"
 
-GameController::GameController(GameBoard& model) : model(model) {
-	
+GameController::GameController(GameBoard& model, GameView& view) : model(model), view(view) {
+	view.addElement(makeViewButton([this](ScreenCoordinate coord) { this->handleEvent(ClickCoordinateEvent(screenToCoord(coord))); return true; }, {{0, 0}, {1, 1}}));
 }
 
 GameController::~GameController() {

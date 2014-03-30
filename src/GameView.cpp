@@ -15,7 +15,7 @@ using std::pair;
 using std::runtime_error;
 using std::string;
 
-ViewElement::ViewElement(GameView& view, decltype(rect) rect) : view(view) {
+ViewElement::ViewElement(decltype(rect) rect) {
 	using std::min;
 	using std::max;
 	
@@ -47,7 +47,7 @@ bool ViewElement::handleClick(ScreenCoordinate coord) {
 	return false;
 }
 
-GameView::GameView(GameBoard& model, GameController& controller) : model(model), controller(controller) {
+GameView::GameView(GameBoard& model) : model(model) {
 	
 }
 
@@ -75,12 +75,15 @@ bool GameView::acceptInput(SDL_Event& event) {
 		ScreenCoordinate screen = {(float) event.button.x / 900.f, 1.f - (float) event.button.y / 800.f};
 		for(auto& it : viewElements) {
 			if(it->handleClick(screen)) {
-				return true;
+				break;
 			}
 		}
-		controller.handleEvent(ClickCoordinateEvent(screenToCoord(screen)));
 	}
 	return true;
+}
+
+void GameView::addElement(std::unique_ptr<ViewElement> element) {
+	viewElements.emplace_back(std::move(element));
 }
 
 DrawingGameVisitor::DrawingGameVisitor(GameView& view) : view(view) {
