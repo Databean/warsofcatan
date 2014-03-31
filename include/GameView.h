@@ -71,18 +71,6 @@ public:
 	virtual void visit(DevelopmentCard&);
 };
 
-class ClickCoordinateEvent {
-private:
-	Coordinate clicked;
-public:
-	ClickCoordinateEvent(const Coordinate& clicked);
-	ClickCoordinateEvent(const ClickCoordinateEvent&);
-	~ClickCoordinateEvent();
-	ClickCoordinateEvent& operator=(const ClickCoordinateEvent&);
-	
-	Coordinate getCoordinate() const;
-};
-
 template<class Fn>
 class ViewButton : public ViewElement {
 private:

@@ -22,7 +22,9 @@ public:
 	GameController(GameBoard&, GameView& view);
 	~GameController();
 	
-	void handleEvent(const ClickCoordinateEvent&);
+	bool handleBoardEvent(ScreenCoordinate);
+	bool handleRoadButtonEvent(ScreenCoordinate);
+	bool handleSettlementButtonEvent(ScreenCoordinate);
 };
 
 #endif

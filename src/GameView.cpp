@@ -239,24 +239,3 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 void DrawingGameVisitor::visit(DevelopmentCard& card) {
 	
 }
-
-ClickCoordinateEvent::ClickCoordinateEvent(const Coordinate& clicked) : clicked(clicked) {
-	
-}
-
-ClickCoordinateEvent::ClickCoordinateEvent(const ClickCoordinateEvent& event) : clicked(event.clicked) {
-	
-}
-
-ClickCoordinateEvent::~ClickCoordinateEvent() {
-	
-}
-
-ClickCoordinateEvent& ClickCoordinateEvent::operator=(const ClickCoordinateEvent& event) {
-	clicked = event.clicked;
-	return *this;
-}
-
-Coordinate ClickCoordinateEvent::getCoordinate() const {
-	return clicked;
-}
