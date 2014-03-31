@@ -50,6 +50,11 @@ private:
 	
 	void createRing(Coordinate topRight, int sideLength, std::vector<resourceType>& resources, std::vector<int>& rolls);
 	void insertTile(Coordinate location, std::vector<resourceType>& resources, std::vector<int>& rolls);
+    
+    void startTurn();
+    void enableRobber();
+    void payoutResources(int roll);
+    
 public:
 	GameBoard(std::vector<std::unique_ptr<Player>>&& players);
 	GameBoard(std::vector<std::unique_ptr<Player>>&& players, const std::map<Coordinate, std::pair<resourceType, int>>& resourceLocations);
