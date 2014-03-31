@@ -358,7 +358,7 @@ bool GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 	std::shared_ptr<Road> newRoad;
 	try {
 		newRoad = std::shared_ptr<Road>(new Road(start, end, Owner));
-	} catch (int n) {
+	} catch (std::invalid_argument& e) {
 		//Coordinates did not meet the criteria for a valid road
 		return false;
 	}

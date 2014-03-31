@@ -5,6 +5,7 @@
 #include "Player.h"
 #include <vector>
 #include <cmath>
+#include <stdexcept>
 
 #include "Player.h"
 

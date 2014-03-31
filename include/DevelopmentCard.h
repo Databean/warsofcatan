@@ -14,6 +14,8 @@
 #include "Player.h"
 #include "GameVisitor.h"
 
+#include <stdexcept>
+
 
 enum DevCardType { KNIGHT, VICTORYPOINT, YEAROFPLENTY, MONOPOLY, ROADBUILDING };
 
@@ -97,6 +99,7 @@ public:
 
     virtual DevCardType getType() const;
     virtual void playCard();
+    void playCard(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2);
 };
 
 

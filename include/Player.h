@@ -27,7 +27,7 @@ const int WOOL_INDEX = 4;
 
 class DevelopmentCard;
 class Deck;
-
+class GameBoard;
 
 
 
@@ -40,7 +40,7 @@ private:
     int armySize;
     int longestRoad;
     int victoryPoints;
-//    GameBoard *board;
+    GameBoard* board;
     int resources[5];
 
 
@@ -62,6 +62,9 @@ public:
 
     void buyCard(std::unique_ptr<DevelopmentCard> card);
     std::string getName() const;
+
+    GameBoard* getBoard();
+    void setBoard(GameBoard* newboard);
 
     void playCard(DevelopmentCard* card);
 

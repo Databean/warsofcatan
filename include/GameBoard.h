@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstddef>
+#include <stdexcept>
 
 #include "Util.h"
 #include "GamePiece.h"
@@ -37,6 +38,7 @@ private:
 	
 	bool isValidBoard() const;
 	
+
 	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const;
 	bool outOfBounds(const Coordinate& coord) const;
 	bool roadExists(Coordinate start, Coordinate end) const;
@@ -81,7 +83,6 @@ public:
 
 
 	bool buyRoad(Coordinate start, Coordinate end, Player& Owner);
-
 
 	//void PlaceSettlement(Coordinate location, Player& Owner);
 	void PlaceCity(Coordinate location, Player& Owner);

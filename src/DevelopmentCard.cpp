@@ -8,6 +8,7 @@
 
 #include "DevelopmentCard.h"
 #include "Util.h"
+#include "GameBoard.h"
 
 
 //Base Class
@@ -104,8 +105,17 @@ DevCardType RoadBuildingCard::getType() const
 void RoadBuildingCard::playCard()
 {
     //Call function to build a road twice
+	//Perhaps this function could signal to the controller how it should receive input next.
 }
 
+void RoadBuildingCard::playCard(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2){
+	if (!(getOwner()->getBoard()->PlaceRoad(start1, end1, *getOwner()))){
+		throw std::invalid_argument("The first road passed was not valid, no roads placed");
+	}
+	if ((!getOwner()->getBoard()->PlaceRoad(start2, end2, *getOwner()))){
+		throw std::invalid_argument("The second road passed was not valid, only the first road was placed");
+	}
+}
 
 
 
