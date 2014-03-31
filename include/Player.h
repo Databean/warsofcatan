@@ -40,7 +40,7 @@ private:
     int armySize;
     int longestRoad;
     int victoryPoints;
-//    GameBoard *board;
+    std::shared_ptr<GameBoard> board;
     int resources[5];
 
 
@@ -87,6 +87,8 @@ public:
     void addWool(int resource);
 
     void addResource(int resourceType, int delta);
+
+    std::shared_ptr<GameBoard> getBoard();
 
 	void accept(GameVisitor& visitor);
 	bool operator==(const Player& player) const;

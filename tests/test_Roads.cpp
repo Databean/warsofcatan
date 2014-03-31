@@ -27,15 +27,15 @@ TEST(road_constuctor_bad){
 	try {
 		Road test_road_1(start, start, test_player);
 		CHECK(false);
-	} catch (int n) {
-		CHECK(n == -1);
+	} catch (const std::invalid_argument& e) {
+		CHECK(true);
 	}
 	//test road too long
 	try {
 		Road test_road_2(start, end, test_player);
 		CHECK(false);
-	} catch (int n) {
-		CHECK(n == -1);
+	} catch (const std::invalid_argument& e) {
+		CHECK(true);
 	}
 
 }

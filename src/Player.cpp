@@ -273,6 +273,11 @@ std::string Player::getName() const
     return name;
 }
 
+std::shared_ptr<GameBoard> Player::getBoard(){
+	return board;
+}
+
+
 void Player::addResource(int resourceType, int delta) {
 	resources[resourceType] += delta;
 	

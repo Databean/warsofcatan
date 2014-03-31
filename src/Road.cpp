@@ -13,7 +13,7 @@ Road::Road(Coordinate start, Coordinate end, Player& Owner) : owner(Owner) {
 	
 	//If the input is bad, throw an exception so bad roads won't be built
 	if(!checkRoad()){
-		throw -1;
+		throw std::invalid_argument("Road start on one corner and go to a corner exactly 1 away");
 	}
 }
 
