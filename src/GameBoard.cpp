@@ -224,6 +224,13 @@ const map<Coordinate, unique_ptr<ResourceTile>>& GameBoard::getResources() const
 	return resources;
 }
 
+ResourceTile& GameBoard::getResourceTile(Coordinate location) const
+{
+	//return resources.at(location);
+
+	return *(resources.find(location)->second);
+}
+
 std::vector<Settlement*> GameBoard::GetNeighboringSettlements(
 		Coordinate location) const {
 	static Coordinate adjacentCoordDiffs[] = { Coordinate(0, 1), Coordinate(1,

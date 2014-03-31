@@ -60,6 +60,7 @@ public:
 	
 	void save(std::ostream& out);
 	
+	ResourceTile& getResourceTile(Coordinate location) const;
 
 	const std::map<Coordinate, std::unique_ptr<ResourceTile>>& getResources() const;
 

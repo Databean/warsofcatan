@@ -191,13 +191,14 @@ TEST(payout_simple) {
 	test_board->PlaceSettlement(Coordinate(0,2), test_player);
 	
 
-	std::map<Coordinate, std::unique_ptr<ResourceTile>>::iterator it = 
-	test_board->getResources().find(Coordinate(0,1));
-	//test_board->getResources().at(Coordinate(0,1)).Payout(); WTF
+	
+	test_board->getResourceTile(Coordinate(0,1)).Payout();
+
+
 	CHECK(!(test_player.getWheat() || test_player.getWood() || 
 		test_player.getOre() || test_player.getBrick() || test_player.getWool()));
 	delete test_board;
-	delete &test_player;
+	//delete &test_player;
 
 }
 
