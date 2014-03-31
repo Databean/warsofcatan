@@ -10,13 +10,11 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	view.addElement(makeViewButtonColor([&](ScreenCoordinate coord) { 
 		placingRoads = true; 
 		placingCities = false;
-		std::cout << __PRETTY_FUNCTION__ << std::endl;
 		return true;
 	}, {{0, 0}, {0.1, 0.1}}, std::make_tuple(1.f, 0.f, 0.f)));
 	view.addElement(makeViewButtonColor([&](ScreenCoordinate coord) { 
 		placingRoads = false; 
 		placingCities = true;
-		std::cout << __PRETTY_FUNCTION__ << std::endl;
 		return true;
 	}, {{0, 0.1}, {0.1, 0.2}}, std::make_tuple(0.f, 1.0f, 0.f)));
 	view.addElement(makeViewButton([this](ScreenCoordinate coord) { this->handleEvent(ClickCoordinateEvent(screenToCoord(coord))); return true; }, {{0, 0}, {1, 1}}));
@@ -41,7 +39,6 @@ void GameController::handleEvent(const ClickCoordinateEvent& event) {
 			}
 		}
 	}*/
-	std::cout << placingRoads << " " << placingCities << std::endl;
 	if(placingRoads) {
 		if(lastCoordClick.first == -100 && lastCoordClick.second == -100) {
 			lastCoordClick = event.getCoordinate();
