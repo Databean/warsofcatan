@@ -109,10 +109,10 @@ void RoadBuildingCard::playCard()
 }
 
 void RoadBuildingCard::playCard(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2){
-	if (!getOwner()->getBoard()->PlaceRoad(start1, end1, *getOwner())){
+	if (!(getOwner()->getBoard()->PlaceRoad(start1, end1, *getOwner()))){
 		throw std::invalid_argument("The first road passed was not valid, no roads placed");
 	}
-	if (!getOwner()->getBoard()->PlaceRoad(start2, end2, *getOwner())){
+	if ((!getOwner()->getBoard()->PlaceRoad(start2, end2, *getOwner()))){
 		throw std::invalid_argument("The second road passed was not valid, only the first road was placed");
 	}
 }
