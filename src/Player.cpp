@@ -118,6 +118,13 @@ int Player::getVictoryPoints()
     return victoryPoints;
 }
 
+GameBoard* Player::getBoard(){
+	return board;
+}
+
+void Player::setBoard(GameBoard * newboard){
+	board = newboard;
+}
 
 void Player::buyCard(std::unique_ptr<DevelopmentCard> card)
 {
@@ -272,11 +279,6 @@ std::string Player::getName() const
 {
     return name;
 }
-
-std::shared_ptr<GameBoard> Player::getBoard(){
-	return board;
-}
-
 
 void Player::addResource(int resourceType, int delta) {
 	resources[resourceType] += delta;

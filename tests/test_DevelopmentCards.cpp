@@ -15,6 +15,8 @@ TEST(RoadBuildingCard_good){
 	players.emplace_back(new Player("tester"));
 	Player& test_player = *players[0];
 	GameBoard * test_board = new GameBoard(std::move(players));
+	test_player.setBoard(test_board);
+
 
 
 	RoadBuildingCard test_card(&test_player);
@@ -23,6 +25,7 @@ TEST(RoadBuildingCard_good){
 		test_card.playCard(Coordinate(0,0), Coordinate(-1,1), Coordinate(0,0), Coordinate(1,0));
 		CHECK(true);
 	} catch (std::invalid_argument& e){
+		std::cout << e.what();
 		CHECK(false);
 	}
 
@@ -33,7 +36,7 @@ TEST(RoadBuildingCard_bad){
 	players.emplace_back(new Player("tester"));
 	Player& test_player = *players[0];
 	GameBoard * test_board = new GameBoard(std::move(players));
-
+	test_player.setBoard(test_board);
 
 	RoadBuildingCard test_card(&test_player);
 
