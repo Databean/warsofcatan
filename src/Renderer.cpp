@@ -47,11 +47,21 @@ pair<float, float> coordToScreen(const Coordinate& coord) {
 	using std::sin;
 	using std::cos;
 	// TODO not magic numbers
-	float scale = 0.1f;
-	float angle = M_PI / 3.f;
-	float x = .5f + (scale * coord.first) + (scale * coord.second) * cos(angle);
-	float y = .5f + (scale * coord.second) * sin(angle);
-	return std::make_pair(x - 0.25f, y - 0.4f);
+	static const float scale = 0.1f;
+	static const float angle = M_PI / 3.f;
+	float x = .25f + (scale * coord.first) + ((scale * coord.second) * cos(angle));
+	float y = .1f + (scale * coord.second) * sin(angle);
+	return std::make_pair(x, y);
+}
+
+Coordinate screenToCoord(const pair<float, float>& screen) {
+	static const float scale = 0.1;
+	static const float angle = M_PI / 3.f;
+	Coordinate ret;
+	float y_approx = (screen.second - 0.1f) / std::sin(angle) / scale;
+	ret.second = std::round(y_approx);
+	ret.first = std::round((screen.first - 0.2f) / scale - (screen.second - 0.1f) / scale / std::sin(angle) * std::cos(angle)) - 1;
+	return ret;
 }
 
 void vertexPair(const Coordinate& coord) {

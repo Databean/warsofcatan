@@ -288,7 +288,6 @@ bool GameBoard::roadExists(Coordinate start, Coordinate end) const {
 	return bool(getRoad(start, end)); // shared_ptr can convert to bool
 }
 
-
 /**
  * Checks to make sure the road being placed at a valid point according to the rules
  */
@@ -395,6 +394,14 @@ const std::shared_ptr<Road> GameBoard::getRoad(Coordinate start, Coordinate end)
 		}
 	}
 	return NULL;
+}
+
+const std::vector<std::shared_ptr<Road>>& GameBoard::getRoads(Coordinate coord) const {
+	static const std::vector<std::shared_ptr<Road>> empty;
+	if(roads.find(coord) != roads.end()) {
+		return roads.find(coord)->second;
+	}
+	return empty;
 }
 
 /**
@@ -585,4 +592,8 @@ bool GameBoard::isValidBoard() const {
 		}
 	}
 	return true;
+}
+
+const std::vector<std::unique_ptr<Player>>& GameBoard::getPlayers() const {
+	return players;
 }

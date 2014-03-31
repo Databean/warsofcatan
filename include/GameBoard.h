@@ -66,7 +66,7 @@ public:
 
 
 	const std::shared_ptr<Road> getRoad(Coordinate start, Coordinate end) const;
-
+	const std::vector<std::shared_ptr<Road>>& getRoads(Coordinate loc) const;
 	
 	int FindLongestRoad(const Player & owner) const;
 
@@ -90,6 +90,8 @@ public:
 	void accept(GameVisitor& visitor);
 	
 	bool operator==(const GameBoard& other) const;
+	
+	const std::vector<std::unique_ptr<Player>>& getPlayers() const;
     
     bool testRollChecking(int* rolls);
 
