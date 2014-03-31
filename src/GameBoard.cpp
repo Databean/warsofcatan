@@ -633,5 +633,11 @@ void GameBoard::enableRobber()
  */
 void GameBoard::payoutResources(int roll)
 {
-    
+    for (auto& it : resources)
+    {
+        if (it.second->getDiceValue() == roll)
+        {
+            it.second->Payout();
+        }
+    }
 }
