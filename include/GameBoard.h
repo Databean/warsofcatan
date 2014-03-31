@@ -51,7 +51,7 @@ private:
 	void createRing(Coordinate topRight, int sideLength, std::vector<resourceType>& resources, std::vector<int>& rolls);
 	void insertTile(Coordinate location, std::vector<resourceType>& resources, std::vector<int>& rolls);
     
-    void startTurn();
+    std::pair<int, int> startTurn();
     void enableRobber();
     void payoutResources(int roll);
     
