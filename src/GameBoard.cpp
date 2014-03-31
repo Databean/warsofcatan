@@ -461,7 +461,9 @@ int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, const Player & owner, 
 
 
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
-	corners[location] = std::unique_ptr<CornerPiece>(new Settlement(*this, location, Owner));
+	if(resources.find(location) == resources.end() && !outOfBounds(location))
+		corners[location] = std::unique_ptr<CornerPiece>(new Settlement(*this, location, Owner));
+
 }
 
 void GameBoard::PlaceCity(Coordinate location, Player& Owner){
@@ -470,6 +472,7 @@ void GameBoard::PlaceCity(Coordinate location, Player& Owner){
 }
 
 void GameBoard::UpgradeSettlement(Coordinate location){
+	if(corners.find(location) != corners.end())
 	corners[location] = std::unique_ptr<CornerPiece>(new City(*corners[location])); //TODO test for memory leak
 }
 

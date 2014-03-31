@@ -183,7 +183,7 @@ TEST(longest_road_simple){
 }
 
 TEST(payout_simple) {
-	/*std::vector<std::unique_ptr<Player>> players {};
+	std::vector<std::unique_ptr<Player>> players {};
 	players.emplace_back(new Player("tester"));
 	Player& test_player = *players[0];
 	GameBoard * test_board = new GameBoard(std::move(players));
@@ -197,7 +197,7 @@ TEST(payout_simple) {
 	CHECK(!(test_player.getWheat() || test_player.getWood() || 
 		test_player.getOre() || test_player.getBrick() || test_player.getWool()));
 	delete test_board;
-	delete &test_player;*/
+	delete &test_player;
 
 }
 
