@@ -366,6 +366,8 @@ bool GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 	roads[start].push_back(newRoad);
 	roads[end].push_back(newRoad);
 	
+    startTurn();
+    
 	return true;
 }
 
@@ -596,4 +598,46 @@ bool GameBoard::isValidBoard() const {
 
 const std::vector<std::unique_ptr<Player>>& GameBoard::getPlayers() const {
 	return players;
+}
+
+/*
+ *  When a player begins their turn, this rolls the dice and takes the required action (paying resources or enabling robber movement)
+ *  @return An array of the dice rolls
+ */
+std::pair<int, int> GameBoard::startTurn()
+{
+    int die1 = std::rand() % 6 + 1;
+    int die2 = std::rand() % 6 + 1;
+    int roll = die1+die2;
+    std::cout << "\nDie 1: " << die1 << "\nDie 2: " << die2 << "\nRoll: " << roll <<"\n";
+    
+    if (roll==7)
+        enableRobber();
+    
+    else
+        payoutResources(roll);
+    
+    return std::make_pair(die1, die2);
+}
+
+/*
+ *  When a 7 is rolled, this enforces resource discarding and allows the current player to move the robber
+ */
+void GameBoard::enableRobber()
+{
+    //Do some straight up robber stuff.
+}
+
+/*
+ *  This pays resources based on the current roll
+ */
+void GameBoard::payoutResources(int roll)
+{
+    for (auto& it : resources)
+    {
+        if (it.second->getDiceValue() == roll)
+        {
+            it.second->Payout();
+        }
+    }
 }
