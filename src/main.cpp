@@ -68,8 +68,8 @@ int main(int argc, char *argv[]) {
 	Player& firstPlayer = *players[0];
 	
 	GameBoard model(std::move(players));
-	GameController controller(model);
-	GameView view(model, controller);
+	GameView view(model);
+	GameController controller(model, view);
 	
 	model.PlaceSettlement(Coordinate{0, 0}, firstPlayer);
 	model.PlaceRoad(Coordinate{0, 0}, Coordinate{1, 0}, firstPlayer);
