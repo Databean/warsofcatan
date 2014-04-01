@@ -10,6 +10,9 @@
 
 #include "tinyxml2.h"
 
+/**
+ * A visitor that populates a tinyxml2::XMLDocument with the state of a GameBoard model.
+ */
 class XMLVisitor : public GameVisitor {
 private:
 	tinyxml2::XMLDocument xmldoc;

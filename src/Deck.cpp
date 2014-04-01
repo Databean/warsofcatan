@@ -8,6 +8,9 @@
 #include <iostream>
 #include "Deck.h"
 
+/**
+ * Construct a Deck with the standard cards available in the Settlers of Catan game.
+ */
 Deck::Deck()
 {
 	// TODO Auto-generated constructor stub
@@ -40,6 +43,9 @@ Deck::Deck()
     shuffleDeck();
 }
 
+/**
+ * Destroy the deck and its held cards.
+ */
 Deck::~Deck() {
 	// TODO Auto-generated destructor stub
 
@@ -58,13 +64,19 @@ Deck::~Deck() {
 	}
 }
 
-
+/**
+ * The number of cards in the Deck.
+ * @return The amount of cards.
+ */
 int Deck::getSize()
 {
 	return this->deck.size();
 }
 
-
+/**
+ * Pull a random card from the deck. If the deck is empty, reshuffle it.
+ * @return An owning raw pointer to a random card from the deck.
+ */
 DevelopmentCard* Deck::drawCard()
 {
 	if(this->getSize() == 0)
@@ -82,12 +94,18 @@ DevelopmentCard* Deck::drawCard()
 	return card;
 }
 
+/**
+ * Randomize the order of the cards in the deck.
+ */
 void Deck::shuffleDeck()
 {
     std::srand(std::time(0));
     random_shuffle(deck.begin(), deck.end());
 }
 
+/**
+ * Move the cards from the discard pile to the draw pile, and randomize their order.
+ */
 void Deck::reshuffleDeck()
 {
     while(!discardPile.empty())
@@ -98,6 +116,10 @@ void Deck::reshuffleDeck()
     shuffleDeck();
 }
 
+/**
+ * Return a played card to the discard pile.
+ * @param toDiscard An owning raw pointer to the card to discard.
+ */
 void Deck::discard(DevelopmentCard* toDiscard)
 {
     discardPile.push_back(toDiscard);

@@ -21,6 +21,11 @@ using std::pair;
 using std::runtime_error;
 using std::string;
 
+/**
+ * Loads an image into an OpenGL texture.
+ * @param name The file name of the texture to load.
+ * @return An OpenGL texture.
+ */
 GLuint loadImageAsTexture(const string& name) {
 	SDL_Surface* imageSurface = SDL_LoadBMP(name.c_str());
 	if(imageSurface == nullptr) {
@@ -43,6 +48,11 @@ GLuint loadImageAsTexture(const string& name) {
 	return texture;
 }
 
+/**
+ * Convert a triangular game coordinate to an x-y screen cordinate (from 0 to 1).
+ * @param coord The game coordinate to convert.
+ * @return The coordinate on screen to draw to.
+ */
 pair<float, float> coordToScreen(const Coordinate& coord) {
 	using std::sin;
 	using std::cos;
@@ -54,6 +64,11 @@ pair<float, float> coordToScreen(const Coordinate& coord) {
 	return std::make_pair(x, y);
 }
 
+/**
+ * Convert a screen x-y coordinate (from 0 to 1) to a game coordinate.
+ * @param screen The screen coordinate to convert.
+ * @return The game coordinate.
+ */
 Coordinate screenToCoord(const pair<float, float>& screen) {
 	static const float scale = 0.1;
 	static const float angle = M_PI / 3.f;
@@ -64,15 +79,27 @@ Coordinate screenToCoord(const pair<float, float>& screen) {
 	return ret;
 }
 
+/**
+ * Draw a game coordinate as a vertex.
+ * @param coord The game coordinate to draw.
+ */
 void vertexPair(const Coordinate& coord) {
 	pair<float, float> screenCoord = coordToScreen(coord);
 	glVertex2f(screenCoord.first, screenCoord.second);
 }
 
+/**
+ * Take a texture coordinate (x between 0 and 2048 and y between 0 and 1024, corresponding to the sprite sheet).
+ */
 void texCoordPair(const pair<float, float>& p) {
 	glTexCoord2f(p.first / 2048., p.second / 1024.);
 }
 
+/**
+ * The average point in a vector of points.
+ * @param points The points to aggregate.
+ * @return The average of the points.
+ */
 pair<float, float> averagePoint(const std::vector<pair<float, float>>& points) {
 	pair<float, float> average;
 	for(auto& it : points) {

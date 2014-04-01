@@ -2,6 +2,12 @@
 
 #include "GameVisitor.h"
 
+/**
+ * Construct a road.
+ * @param start One endpoint of the road.
+ * @param end The other endpoint of the road.
+ * @param Owner The player owning the road.
+ */
 Road::Road(Coordinate start, Coordinate end, Player& Owner) : owner(Owner) {
 	if(start < end) {
 		this->start = start;
@@ -19,6 +25,7 @@ Road::Road(Coordinate start, Coordinate end, Player& Owner) : owner(Owner) {
 
 /**
  * Valid roads must start in one point and end in another point a distance of 1 away.
+ * @return If the road is a valid road.
  */
 bool Road::checkRoad(){
 	if (start == end)
@@ -28,10 +35,16 @@ bool Road::checkRoad(){
 	return (dist <= 1);
 }
 
+/**
+ * Destroy the road.
+ */
 Road::~Road() {
 	
 }
 
+/**
+ * 
+ */
 void Road::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
 }
@@ -43,21 +56,25 @@ bool Road::operator==(const Road& other) const {
 }
 
 /**
- * Returns the starting coordinate of the road
+ * The starting coordinate of the road.
+ * @return The start.
  */
 Coordinate Road::getStart() const{
 	return start;
 }
 
 /**
- * Returns the ending coordinate of the road
+ * The ending coordinate of the road.
+ * @return The end.
  */
 Coordinate Road::getEnd() const{
 	return end;
 }
 
 /**
- * Returns true if the roads have the same coordinates whether they are matching starting or ending coordinates doesn't matter
+ * Compares this road with another road for equality.
+ * @param otherRoad The road to compare this road two.
+ * @return true if the roads have the same coordinates whether they are matching starting or ending coordinates doesn't matter
  */
 bool Road::equals(const Road& otherRoad){
 	Coordinate otherstart = otherRoad.getStart();
@@ -66,7 +83,10 @@ bool Road::equals(const Road& otherRoad){
 }
 
 /**
- * Returns true if the roads have the same coordinates whether they are matching starting or ending coordinates doesn't matter
+ * Compares this road with a pair of points for equality.
+ * @param otherStart One endpoint of the road to compare to.
+ * @param otherEnd The other endpoint of the road to compare to.
+ * @return true if the roads have the same coordinates whether they are matching starting or ending coordinates doesn't matter
  */
 bool Road::equals(const Coordinate& otherStart, const Coordinate& otherEnd){
 	if((otherStart == start && otherEnd == end) || (otherStart == end && otherEnd == start))
@@ -74,10 +94,18 @@ bool Road::equals(const Coordinate& otherStart, const Coordinate& otherEnd){
 	return false;
 }
 
+/**
+ * The owner of this road.
+ * @return The owner.
+ */
 Player& Road::getOwner() {
 	return owner;
 }
 
+/**
+ * The const owner of this road.
+ * @return The owner.
+ */
 const Player& Road::getOwner() const {
 	return owner;
 }

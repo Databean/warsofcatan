@@ -15,6 +15,10 @@ using std::pair;
 using std::runtime_error;
 using std::string;
 
+/**
+ * Construct a ViewElement covering a particular rectangle on screen.
+ * @param rect The rectangle on screen that the view element occupies.
+ */
 ViewElement::ViewElement(decltype(rect) rect) {
 	using std::min;
 	using std::max;
@@ -25,14 +29,25 @@ ViewElement::ViewElement(decltype(rect) rect) {
 	this->rect.second = {max(rect.first.first, rect.second.first), max(rect.first.second, rect.second.second)};
 }
 
+/**
+ * Destroy the view element.
+ */
 ViewElement::~ViewElement() {
 	
 }
 
+/**
+ * The rectangle that the ViewElement occupies on screen.
+ * @return The rectangle.
+ */
 decltype(ViewElement::rect) ViewElement::getRect() const {
 	return rect;
 }
 
+/**
+ * Determines if a ScreenCoordinate clicked on lies inside this ViewElement.
+ * @return Whether the point is contained.
+ */
 bool ViewElement::containsPoint(ScreenCoordinate coord) const {
 	return rect.first.first < coord.first &&
 		rect.first.second < coord.second &&
@@ -40,6 +55,9 @@ bool ViewElement::containsPoint(ScreenCoordinate coord) const {
 		coord.second < rect.second.second;
 }
 
+/**
+ * Use this ViewElement's click handler if the coordinate clicked on lies inside the rectangle.
+ */
 bool ViewElement::handleClick(ScreenCoordinate coord) {
 	if(containsPoint(coord)) {
 		return clicked(coord);
@@ -47,14 +65,24 @@ bool ViewElement::handleClick(ScreenCoordinate coord) {
 	return false;
 }
 
+/**
+ * Constrct a GameView.
+ * @param model The GameBoard the view is displaying.
+ */
 GameView::GameView(GameBoard& model) : model(model) {
 	
 }
 
+/**
+ * Destroy a GameView.
+ */
 GameView::~GameView() {
 	
 }
 
+/**
+ * Display the GameBoard to the screen as well as additional ViewElements.
+ */
 void GameView::render() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
@@ -68,6 +96,9 @@ void GameView::render() {
 	glFlush();
 }
 
+/**
+ * Handle raw input from SDL and convert into input the controller is familiar with.
+ */
 bool GameView::acceptInput(SDL_Event& event) {
 	if(event.type == SDL_QUIT) {
 		return false;
@@ -82,22 +113,40 @@ bool GameView::acceptInput(SDL_Event& event) {
 	return true;
 }
 
+/**
+ * Add a ViewElement to be rendered and accept input.
+ * @param element An owning pointer to the element to be added.
+ */
 void GameView::addElement(std::unique_ptr<ViewElement> element) {
 	viewElements.emplace_back(std::move(element));
 }
 
+/*
+ * Construct a DrawingGameVisitor with the view that it is drawing to.
+ */
 DrawingGameVisitor::DrawingGameVisitor(GameView& view) : view(view) {
 	
 }
 
+/**
+ * Destroy the DrawingGameVisitor.
+ */
 DrawingGameVisitor::~DrawingGameVisitor() {
 	
 }
 
+/**
+ * Visit the game board.
+ * @param model The GameBoard to be drawn.
+ */
 void DrawingGameVisitor::visit(GameBoard& model) {
 	
 }
 
+/**
+ * Draw a road.
+ * @param road The road to draw.
+ */
 void DrawingGameVisitor::visit(Road& road) {
 	static const auto roadWidth = 0.01;
 	
@@ -130,6 +179,10 @@ void DrawingGameVisitor::visit(Road& road) {
 	glEnd();
 }
 
+/**
+ * Draw a settlement. Right now is just a diamond.
+ * @param settlement The settlement to draw.
+ */
 void DrawingGameVisitor::visit(Settlement& settlement) {
 	static const auto settlementRadius = 0.03;
 	
@@ -145,6 +198,10 @@ void DrawingGameVisitor::visit(Settlement& settlement) {
 	glEnd();
 }
 
+/**
+ * Draw a city. Right now is just a square.
+ * @param city The city to draw.
+ */
 void DrawingGameVisitor::visit(City& city) {
 	static const auto cityRadius = 0.03;
 	
@@ -160,10 +217,22 @@ void DrawingGameVisitor::visit(City& city) {
 	glEnd();
 }
 
+/**
+ * Draw a player.
+ * @param player The player to draw.
+ */
 void DrawingGameVisitor::visit(Player& player) {
-	
+	//TODO: draw cards, resources, etc.
 }
 
+/**
+ * Convenience method to draw a circle that corresponds to a circular texture in the texture file.
+ * @param texCenter The center of the texture.
+ * @param texRadius The radius of the texture.
+ * @param screenCenter The center of the circle drawn on screen.
+ * @param screenRadius The radius of the circle drawn on screen.
+ * @param articulation The number of points to draw in the circle.
+ */
 void drawTexturedCircle(std::pair<float, float> texCenter, float texRadius, std::pair<float, float> screenCenter, float screenRadius, int articulation = 20) {
 	glBegin(GL_TRIANGLE_FAN);
 	texCoordPair(texCenter);
@@ -177,6 +246,10 @@ void drawTexturedCircle(std::pair<float, float> texCenter, float texRadius, std:
 	glEnd();
 }
 
+/**
+ * Draw a resource tile.
+ * @param tile The tile to draw.
+ */
 void DrawingGameVisitor::visit(ResourceTile& tile) {
 	Coordinate coord = tile.getLocation();
 	static const GLuint tileTextures = loadImageAsTexture("resources/catan_sprite_sheet.bmp");
@@ -236,6 +309,10 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+/**
+ * Draw a development card.
+ * @param card The development card to draw.
+ */
 void DrawingGameVisitor::visit(DevelopmentCard& card) {
 	
 }

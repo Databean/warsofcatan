@@ -30,7 +30,10 @@ class Deck;
 class GameBoard;
 
 
-
+/**
+ * One of the players interacting with the Settlers of Catan game. Contains her name, victory points,
+ * development cards, and resources.
+ */
 class Player {
 private:
     std::string name;

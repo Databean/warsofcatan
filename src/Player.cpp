@@ -23,6 +23,10 @@ using std::map;
 using std::make_pair;
 using std::runtime_error;
 
+/**
+ * Initialize a player.
+ * @param playerName The name of the player. Should be unique.
+ */
 Player::Player(std::string playerName) : name(playerName)
 {
 	armySize = 0;
@@ -33,6 +37,10 @@ Player::Player(std::string playerName) : name(playerName)
 	}
 }
 
+/**
+ * Construct a player from a serialized tinyxml2::XMLElement.
+ * @param elem The XMLElement to read data from.
+ */
 Player::Player(XMLElement* elem)
 {
 	for(auto& r : resources) {
@@ -64,17 +72,25 @@ Player::Player(XMLElement* elem)
 	victoryPoints = 0;
 }
 
+/**
+ * Destroy the player.
+ */
 Player::~Player() {
 
 }
 
+/**
+ * The number of development cards the player is holding.
+ * @return The number of cards.
+ */
 int Player::getDevCardsInHand()
 {
 	return developmentCards.size();
 }
 
 /**
- * Returns true if the player has enough resources to buy a road, false otherwise
+ * Determine if the player has enough resources to buy a road.
+ * @return True if the player has enough resources to buy a road, false otherwise
  */
 bool Player::canBuyRoad(){
 	return getWood() > 0 && getBrick() > 0;
@@ -82,7 +98,7 @@ bool Player::canBuyRoad(){
 
 /**
  * Subtracts the cost of a road from a player's resources if they have enough
- * returns true if the resources were subtracted, false otherwise
+ * @return True if the resources were subtracted, false otherwise.
  */
 bool Player::buyRoad(){
 	if(canBuyRoad()){
@@ -95,42 +111,72 @@ bool Player::buyRoad(){
 }
 
 
+/**
+ * Update the player's internal state with their victory states.
+ */
 void Player::updateVictoryPoints()
 {
     //TODO: Calculate and Update victory points
 }
 
+/**
+ * The number of victory points a player has, not counting victory point cards.
+ * @return Victory points sans cards.
+ */
 int Player::getVictoryPointsWithoutCards()
 {
     updateVictoryPoints();
     return victoryPoints - getVictoryPointCards();
 }
 
+/**
+ * The number of victory points the player has from victory point cards.
+ * @return Victory points from cards.
+ */
 int Player::getVictoryPointCards()
 {
 	//TODO:write function
 	return 0;
 }
 
+/**
+ * The number of victory points a player has.
+ */
 int Player::getVictoryPoints()
 {
     updateVictoryPoints();
     return victoryPoints;
 }
 
+/**
+ * The GameBoard that a player is playing on.
+ * @return The board.
+ */
 GameBoard* Player::getBoard(){
 	return board;
 }
 
+/**
+ * Assign the Player to a particular GameBoard.
+ * @param newboard The new board they are playing on.
+ */
 void Player::setBoard(GameBoard * newboard){
 	board = newboard;
 }
 
+/**
+ * Acquire a development card.
+ * @param card An owning pointer to the card the player acquired.
+ */
 void Player::buyCard(std::unique_ptr<DevelopmentCard> card)
 {
     developmentCards.push_back(std::move(card));
 }
 
+/**
+ * Play a particular development card.
+ * @param card The card to play.
+ */
 void Player::playCard(DevelopmentCard *card)
 {
     auto cardTester = [card](std::unique_ptr<DevelopmentCard>& test) -> bool { return card == test.get(); };
@@ -145,6 +191,13 @@ void Player::playCard(DevelopmentCard *card)
     std::remove_if(developmentCards.begin(), developmentCards.end(), cardTester);
 }
 
+/**
+ * Offer a trade to another player with an offer and a demand.
+ * @param p The other player that is receiving the trade.
+ * @param offer The resources this player is offering to the other player.
+ * @param demand The resources that this player wants in return from the other player.
+ * @return If the trade succeeded.
+ */
 bool Player::offerTrade(Player* p, int offer[], int demand[])
 {
 	if(sizeof offer/sizeof(int) != 5 || sizeof demand/sizeof(int) != 5)
@@ -156,6 +209,13 @@ bool Player::offerTrade(Player* p, int offer[], int demand[])
 	return p->recieveOffer(this, offer, demand);
 }
 
+/**
+ * Receive a trade offer from another player.
+ * @param p The player offering the trade.
+ * @param offer The resources the other player is giving.
+ * @param demand The resources the other player wants in return.
+ * @return If the trade succeeded.
+ */
 bool Player::recieveOffer(Player* p, int offer[], int demand[])
 {
 	if( !this->checkResources(demand) )
@@ -175,7 +235,12 @@ bool Player::recieveOffer(Player* p, int offer[], int demand[])
 
 }
 
-
+/**
+ * Accept the trade offer from another player.
+ * @param p The player offering the trade.
+ * @param offer The resources the other player is offering.
+ * @param demand The resources the other player wants in return.
+ */
 bool Player::acceptOffer(Player* p, int offer[], int demand[])
 {
 	p->addWood(demand[WOOD_INDEX] - offer[WOOD_INDEX]);
@@ -196,7 +261,10 @@ bool Player::acceptOffer(Player* p, int offer[], int demand[])
 
 
 
-
+/**
+ * Determine if the player has a valid (nonnegative) set of resources.
+ * @return If the player's resources are valid.
+ */
 bool Player::checkResources(int resourceList[5])
 {
 	for(int i = 0; i < 5; i++)
@@ -207,34 +275,55 @@ bool Player::checkResources(int resourceList[5])
 	return true;
 }
 
-
+/**
+ * The amount of wood a player has.
+ * @return The player's wood.
+ */
 int Player::getWood() const
 {
     return resources[WOOD_INDEX];
 }
 
+/**
+ * The amount of brick a player has.
+ * @return The player's brick.
+ */
 int Player::getBrick() const
 {
     return resources[BRICK_INDEX];
 }
 
+/**
+ * The amount of ore a player has.
+ * @return The player's ore.
+ */
 int Player::getOre() const
 {
     return resources[ORE_INDEX];
 }
 
+/**
+ * The amount of wheat a player has.
+ * @return The player's wheat.
+ */
 int Player::getWheat() const
 {
     return resources[WHEAT_INDEX];
 }
 
+/**
+ * The amount of wool a player has.
+ * @return The player's wool.
+ */
 int Player::getWool() const
 {
     return resources[WOOL_INDEX];
 }
 
-
-
+/**
+ * Modify a player's wood supply.
+ * @param resource The wood to add or remove.
+ */
 void Player::addWood(int resource)
 {
 	if(resources[WOOD_INDEX] < (0-resource))
@@ -243,6 +332,10 @@ void Player::addWood(int resource)
 		resources[WOOD_INDEX] += resource;
 }
 
+/**
+ * Modify a player's brick supply.
+ * @param resource The brick to add or remove.
+ */
 void Player::addBrick(int resource)
 {
 	if(resources[BRICK_INDEX] < (0-resource))
@@ -251,6 +344,10 @@ void Player::addBrick(int resource)
 		resources[BRICK_INDEX] += resource;
 }
 
+/**
+ * Modify a player's ore supply.
+ * @param resource The ore to add or remove.
+ */
 void Player::addOre(int resource)
 {
 	if(resources[ORE_INDEX] < (0-resource))
@@ -259,6 +356,10 @@ void Player::addOre(int resource)
 		resources[ORE_INDEX] += resource;
 }
 
+/**
+ * Modify a player's wheat supply.
+ * @param resource The wheat to add or remove.
+ */
 void Player::addWheat(int resource)
 {
 	if(resources[WHEAT_INDEX] < (0-resource))
@@ -267,6 +368,10 @@ void Player::addWheat(int resource)
 		resources[WHEAT_INDEX] += resource;
 }
 
+/**
+ * Modify a player's wool supply.
+ * @param resource The wool to add or remove.
+ */
 void Player::addWool(int resource)
 {
 	if(resources[WOOL_INDEX] < (0-resource))
@@ -275,16 +380,29 @@ void Player::addWool(int resource)
 		resources[WOOL_INDEX] += resource;
 }
 
+/**
+ * Get a player's name.
+ * @return The player's name.
+ */
 std::string Player::getName() const
 {
     return name;
 }
 
+/**
+ * Modify a player's resource supply.
+ * @param resourceType The resource to modify the supply of.
+ * @param delta The change in the resource.
+ */
 void Player::addResource(int resourceType, int delta) {
 	resources[resourceType] += delta;
 	
 }
 
+/**
+ * Visitor double-dispatch method.
+ * @param visitor The visiting instance.
+ */
 void Player::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
 	for(auto& card : developmentCards) {
@@ -292,6 +410,11 @@ void Player::accept(GameVisitor& visitor) {
 	}
 }
 
+/**
+ * Compare equality with another player.
+ * @param player The player to test equality with.
+ * @return If the other player is equivalent to this player.
+ */
 bool Player::operator==(const Player& player) const {
 	if(developmentCards.size() != player.developmentCards.size()) {
 		return false;

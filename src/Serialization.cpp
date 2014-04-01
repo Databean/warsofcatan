@@ -18,19 +18,33 @@ using std::make_pair;
 using tinyxml2::XMLElement;
 using tinyxml2::XMLText;
 
+/**
+ * Construct the serialization visitor.
+ */
 XMLVisitor::XMLVisitor() {
 	xmldoc.InsertEndChild(xmldoc.NewElement("catangame"));
 	//xmldoc.RootElement()->SetName("catangame");
 }
 
+/**
+ * Destroy the serialization visitor.
+ */
 XMLVisitor::~XMLVisitor() {
 	
 }
 
+/**
+ * Serialize GameBoard-specific information.
+ * @param board The board to serialize.
+ */
 void XMLVisitor::visit(GameBoard& board) {
 	
 }
 
+/**
+ * Serialize a road.
+ * @param road The road to serialize.
+ */
 void XMLVisitor::visit(Road& road) {
 	if(!xmldoc.RootElement()->FirstChildElement("roads")) {
 		xmldoc.RootElement()->InsertEndChild(xmldoc.NewElement("roads"));
@@ -57,6 +71,10 @@ void XMLVisitor::visit(Road& road) {
 	}
 }
 
+/**
+ * Serialize a settlement.
+ * @param settlement The settlement to serialize.
+ */
 void XMLVisitor::visit(Settlement& settlement) {
 	if(!xmldoc.RootElement()->FirstChildElement("settlements")) {
 		xmldoc.RootElement()->InsertEndChild(xmldoc.NewElement("settlements"));
@@ -73,6 +91,10 @@ void XMLVisitor::visit(Settlement& settlement) {
 	settlementsElement->InsertEndChild(newSettlementElement);
 }
 
+/**
+ * Serialize a city.
+ * @param city The city to serialize.
+ */
 void XMLVisitor::visit(City& city) {
 	if(!xmldoc.RootElement()->FirstChildElement("cities")) {
 		xmldoc.RootElement()->InsertEndChild(xmldoc.NewElement("cities"));
@@ -89,6 +111,10 @@ void XMLVisitor::visit(City& city) {
 	citiesElement->InsertEndChild(newCityElement);
 }
 
+/**
+ * Serialize a player.
+ * @param player The player to serialize.
+ */
 void XMLVisitor::visit(Player& player) {
 	if(!xmldoc.RootElement()->FirstChildElement("players")) {
 		xmldoc.RootElement()->InsertEndChild(xmldoc.NewElement("players"));
@@ -126,6 +152,10 @@ void XMLVisitor::visit(Player& player) {
 	playerElementMap[player.getName()] = newPlayerElement;
 }
 
+/**
+ * Serialize a resource tile.
+ * @param tile The tile to serialize.
+ */
 void XMLVisitor::visit(ResourceTile& tile) {
 	if(!xmldoc.RootElement()->FirstChildElement("tiles")) {
 		xmldoc.RootElement()->InsertEndChild(xmldoc.NewElement("tiles"));
@@ -158,6 +188,10 @@ void XMLVisitor::visit(ResourceTile& tile) {
 	tilesElement->InsertEndChild(newTileElement);
 }
 
+/**
+ * Serialize a development card.
+ * @param card The card to serialize.
+ */
 void XMLVisitor::visit(DevelopmentCard& card) {
 	auto playerElementIt = playerElementMap.find(card.getOwner()->getName());
 	if(playerElementIt == playerElementMap.end()) {
@@ -190,6 +224,10 @@ void XMLVisitor::visit(DevelopmentCard& card) {
 	cardsElement->InsertEndChild(newCardElement);
 }
 
+/**
+ * Serialize a game coordinate.
+ * @param c The coordinate to serialize.
+ */
 XMLElement* XMLVisitor::coordinateElement(const Coordinate& c) {
 	XMLElement* ret = xmldoc.NewElement("coordinate");
 	ret->SetAttribute("u", c.first);
@@ -197,10 +235,17 @@ XMLElement* XMLVisitor::coordinateElement(const Coordinate& c) {
 	return ret;
 }
 
+/**
+ * Retrieve the populated XML document from the serialization visitor.
+ * @return The serialized data.
+ */
 const tinyxml2::XMLDocument& XMLVisitor::getXMLDoc() const {
 	return xmldoc;
 }
 
+/**
+ * Convert a serialized game coordinate to an actual game coordinate.
+ */
 Coordinate xmlElementToCoord(const XMLElement& elem) {
 	return Coordinate(elem.IntAttribute("u"), elem.IntAttribute("v"));
 }

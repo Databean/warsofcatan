@@ -26,10 +26,11 @@ using std::istream;
 using std::ostream;
 using std::vector;
 
-/* 
- *   Initialize board with a set of resources. 
- *   Currently only the standard configuration (no custom shapes or expansion packs) is implemented.
- *   Board tiles and roll numbers are randomized.
+/**
+ * Initialize board with a set of resources. 
+ * Currently only the standard configuration (no custom shapes or expansion packs) is implemented.
+ * Board tiles and roll numbers are randomized.
+ * @param players A vector of the players playing the game.
  */
 GameBoard::GameBoard(vector<unique_ptr<Player>>&& players) : players(std::move(players)) {
 	std::srand(std::time(0));
@@ -58,6 +59,14 @@ GameBoard::GameBoard(vector<unique_ptr<Player>>&& players) : players(std::move(p
 	}
 }
 
+/**
+ * Create a ring of hexagons of a particular radius around a center point. Takes in a vector of resource types and a vector of rolls to pull
+ * from.
+ * @param topRight The top-right hexagon in the ring.
+ * @param sideLength The number of hexagons in a particular face of the outer hexagon.
+ * @param[out] resources A vector of the resources still available for placement.
+ * @param[out] rolls A vector of the rolls still available for placement.
+ */
 void GameBoard::createRing(Coordinate topRight, int sideLength, vector<resourceType>& resources, vector<int>& rolls) {
 	//static const Coordinate adjacentTileOffsets[] = {Coordinate(1, -2), Coordinate(2, -1), Coordinate(-1, -1), Coordinate(-2, 1), Coordinate(2, -1), Coordinate(1, 1)};
 	static const Coordinate adjacentTileOffsets[] = {Coordinate{1, -2}, Coordinate{-1, -1}, Coordinate{-2, 1}, Coordinate{-1, 2}, Coordinate{1, 1}, Coordinate{2, -1}};
@@ -72,6 +81,12 @@ void GameBoard::createRing(Coordinate topRight, int sideLength, vector<resourceT
 	}
 }
 
+/**
+ * Create a particular hexagon at a location on the board. Takes in a vector of resource types and a vector of rolls to pull from.
+ * @param location The coordinate to insert the hexagon on.
+ * @param[out] resources The vector of resources still available for placement.
+ * @param[out] rolls The vector of rolls still available for placement.
+ */
 void GameBoard::insertTile(Coordinate location, vector<resourceType>& resources, vector<int>& rolls) {
 	if(rolls.back() == 0) {
 		addResource(location.first, location.second, DESERT, rolls.back());
@@ -83,6 +98,12 @@ void GameBoard::insertTile(Coordinate location, vector<resourceType>& resources,
 	}
 }
 
+/**
+ * Construct a board with a pre-built map of resource tiles. Throws an exception if the resource tiles are invalid.
+ * @param players The players playing the game.
+ * @param resourceLocations A mapping from coordinates to resource types and dice values, representing the tiles.
+ * @throws std::runtime_error When the configuration is invalid.
+ */
 GameBoard::GameBoard(std::vector<std::unique_ptr<Player>>&& players, const std::map<Coordinate, std::pair<resourceType, int>>& resourceLocations) : players(std::move(players)) {
 	for(auto& resource : resourceLocations) {
 		resources[resource.first] = std::unique_ptr<ResourceTile>(new ResourceTile(*this, resource.first, resource.second.first, resource.second.second));
@@ -92,6 +113,10 @@ GameBoard::GameBoard(std::vector<std::unique_ptr<Player>>&& players, const std::
 	}
 }
 
+/**
+ * Construct a board by reading in an XML representation from a stream.
+ * @param in The stream to read from.
+ */
 GameBoard::GameBoard(istream& in) {
 	std::string gameXML;
 	std::getline(in, gameXML, '\0'); //Read until the null character (end of file) and put in the string
@@ -196,12 +221,16 @@ GameBoard::GameBoard(istream& in) {
 	}
 }
 
+/**
+ * Destroy the GameBoard.
+ */
 GameBoard::~GameBoard() {
 	
 }
 
 /**
  * Find and remove the road that matches startRoad
+ * @param startRoad The road used for comparison to existing roads.
  */
 void GameBoard::removeRoadEnd(std::shared_ptr<Road> startRoad){
 	std::vector<shared_ptr<Road>> endRoadVector = roads[startRoad->getEnd()];
@@ -212,6 +241,10 @@ void GameBoard::removeRoadEnd(std::shared_ptr<Road> startRoad){
 	}
 }
 
+/**
+ * Serializes the GameBoard to XML on an output stream.
+ * @param out The stream to write the serialized board to.
+ */
 void GameBoard::save(ostream& out) {
 	XMLVisitor saver;
 	accept(saver);
@@ -220,10 +253,19 @@ void GameBoard::save(ostream& out) {
 	out << printer.CStr();
 }
 
+/**
+ * Retrieve the map of resource tiles.
+ * @return The map of resource tiles used internally.
+ */
 const map<Coordinate, unique_ptr<ResourceTile>>& GameBoard::getResources() const {
 	return resources;
 }
 
+/**
+ * Retrieve the ResourceTile at a particular location.
+ * @param location The coordinate to look for
+ * @return The resource tile at the given location.
+ */
 ResourceTile& GameBoard::getResourceTile(Coordinate location) const
 {
 	//return resources.at(location);
@@ -231,6 +273,11 @@ ResourceTile& GameBoard::getResourceTile(Coordinate location) const
 	return *(resources.find(location)->second);
 }
 
+/**
+ * Finds settlements neighboring a particular coordinate.
+ * @param location The location to search the neighbors of.
+ * @return A vector of the settlements in the vicinity.
+ */
 std::vector<Settlement*> GameBoard::GetNeighboringSettlements(
 		Coordinate location) const {
 	static Coordinate adjacentCoordDiffs[] = { Coordinate(0, 1), Coordinate(1,
@@ -252,6 +299,11 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(
 	return v;
 }
 
+/**
+ * Finds corner pieces neighboring a particular coordinate.
+ * @param location The location to search the neighbors of.
+ * @return A vector of the corner pieces in the vicinity.
+ */
 std::vector<CornerPiece*> GameBoard::GetNeighboringCorners(
 		Coordinate location) const{
 	static Coordinate adjacentCoordDiffs[] = { Coordinate(0, 1), Coordinate(1,
@@ -276,6 +328,8 @@ std::vector<CornerPiece*> GameBoard::GetNeighboringCorners(
 
 /**
  * Checks to make sure the coordinate is within bounds of the board and not a resource tile.
+ * @param coord The coordinate to check.
+ * @return Whether the coordinate is a valid palcement for an object.
  */
 bool GameBoard::outOfBounds(const Coordinate& coord) const {
 	//All valid coordinates are adjacent to resource tiles.
@@ -290,15 +344,20 @@ bool GameBoard::outOfBounds(const Coordinate& coord) const {
 
 /**
  * Checks to make sure the road doesn't already exist. If it does, then we don't want to add it again
+ * @param start One of the coordinates of the road.
+ * @param end The other coordinate of the road
+ * @return Whether a road exists between start and end.
  */
 bool GameBoard::roadExists(Coordinate start, Coordinate end) const {
 	return bool(getRoad(start, end)); // shared_ptr can convert to bool
 }
 
 /**
- * Checks to make sure the road being placed at a valid point according to the rules
+ * Checks if a road can be built with the given endpoint owned by the given player.
+ * @param point The point to attempt building a road from.
+ * @param Owner The player attempting to build a road.
+ * @return If the player can construct a road there.
  */
-
 bool GameBoard::isRoadConnectionPoint(Coordinate point, Player& Owner) const {
 	//is there a settlement we can build off of
 	auto cornerIt = corners.find(point);
@@ -328,6 +387,10 @@ bool GameBoard::isRoadConnectionPoint(Coordinate point, Player& Owner) const {
 /**
  * Runs a series of checks to make sure the road can be placed
  * new Roads must be in bounds, unique, and connected to an existing road or settlement
+ * @param start One side of the road.
+ * @param end The other side of the road.
+ * @param Owner The player attempting to build the road.
+ * @return If the road can be placed at the locations by the player.
  */
 bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const {
 	if (outOfBounds(start) || outOfBounds(end))
@@ -342,6 +405,10 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
 	return true;
 }
 
+/**
+ * Move the robber to a new coordinate on the board.
+ * @param newRobber The coordinate to move the robber to.
+ */
 void GameBoard::moveRobber(Coordinate newRobber) {
 
 	robber = newRobber;
@@ -349,14 +416,21 @@ void GameBoard::moveRobber(Coordinate newRobber) {
 	//force trade	
 }
 
+/**
+ * The robber's location on the board.
+ * @return The robber's location.
+ */
 Coordinate GameBoard::getRobber() const {
 	return robber;
 
 }
 
 /**
- * Places a road at the specified coordinates that will be owned by the given player
- * returns true if the road was placed, false otherwise
+ * Places a road at the specified coordinates that will be owned by the given player.
+ * @param start One endpoint of the road.
+ * @param end The other endpoint of the road.
+ * @param Owner The player placing the road.
+ * @returns True if the road was placed, false otherwise
  */
 bool GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 	if (!verifyRoadPlacement(start, end, Owner))
@@ -380,7 +454,10 @@ bool GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 
 /**
  * Will purchase a road for the given Player if it is possible.
- * returns true if the road was purchased and placed, false otherwise
+ * @param start One endpoint of the road to be placed.
+ * @param end The other endpoint of the road to be placed.
+ * @param Owner The player placing the road.
+ * @return True if the road was purchased and placed, false otherwise
  */
 bool GameBoard::buyRoad(Coordinate start, Coordinate end, Player& Owner){
 	if(Owner.canBuyRoad() && PlaceRoad(start, end, Owner)){
@@ -392,7 +469,8 @@ bool GameBoard::buyRoad(Coordinate start, Coordinate end, Player& Owner){
 
 
 /**
- * returns a pointer to the road located at the specified coordinates. Will return NULL if the road is not found
+ * 
+ * @return A pointer to the road located at the specified coordinates, or NULL if the road is not found
  */
 const std::shared_ptr<Road> GameBoard::getRoad(Coordinate start, Coordinate end) const {
 	auto roadVecIt = roads.find(start);
@@ -405,6 +483,9 @@ const std::shared_ptr<Road> GameBoard::getRoad(Coordinate start, Coordinate end)
 	return NULL;
 }
 
+/**
+ * 
+ */
 const std::vector<std::shared_ptr<Road>>& GameBoard::getRoads(Coordinate coord) const {
 	static const std::vector<std::shared_ptr<Road>> empty;
 	if(roads.find(coord) != roads.end()) {
@@ -415,6 +496,8 @@ const std::vector<std::shared_ptr<Road>>& GameBoard::getRoads(Coordinate coord) 
 
 /**
  * Parent function for the find longest road traversal. Note that longest path is NP-Hard, so there is no simple algorithm for this.
+ * @param owner The player to find the longest road of.
+ * @return The length of the longest road.
  */
 int GameBoard::FindLongestRoad(const Player & owner) const {
 	int longest_path = 0;
@@ -434,7 +517,15 @@ int GameBoard::FindLongestRoad(const Player & owner) const {
 	return longest_path;
 }
 
-
+/**
+ * Internal function to find the longest road that starts at a particular point.
+ * @param curr The coordinate to search from.
+ * @param owner The player to find the longest road of.
+ * @param[out] marked A reference to the points already visited in this pass.
+ * @param[out] markedRoads A reference to the roads already visited in this pass.
+ * @param length The length of the road that leads to the point currently being visited.
+ * @return The length of the longest road starting at the current point plus the length of the road up to this point.
+ */
 int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, const Player & owner, std::map<Coordinate, bool>& marked, std::map<Road*, bool>& markedRoads, int length) const {
 	marked[curr] = true;
 	int longest_path = length;
@@ -467,26 +558,40 @@ int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, const Player & owner, 
 	return longest_path;
 }
 
-
-
+/**
+ * Place a settlement on the board.
+ * @param location Where to place it on the board.
+ * @param Owner The player placing the settlement.
+ */
 void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 	if(resources.find(location) == resources.end() && !outOfBounds(location))
 		corners[location] = std::unique_ptr<CornerPiece>(new Settlement(*this, location, Owner));
 
 }
 
+/**
+ * Place a city on the board.
+ * @param location Where to place it on the board.
+ * @param Owner The player placing the city.
+ */
 void GameBoard::PlaceCity(Coordinate location, Player& Owner){
 	corners[location] = std::unique_ptr<CornerPiece>(new City(*this, location, Owner));
 
 }
 
+/**
+ * Upgrade a settlement to a city.
+ * @param location Where the settlement being upgraded is.
+ */
 void GameBoard::UpgradeSettlement(Coordinate location){
 	if(corners.find(location) != corners.end())
 	corners[location] = std::unique_ptr<CornerPiece>(new City(*corners[location])); //TODO test for memory leak
 }
 
-
-
+/**
+ * Accept a visitor and have it visit all the game pieces, players, and roads.
+ * @param visitor The instance visiting this GameBoard.
+ */
 void GameBoard::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
 
@@ -514,6 +619,11 @@ void GameBoard::accept(GameVisitor& visitor) {
 	}
 }
 
+/**
+ * Equality comparison with another GameBoard.
+ * @param other The board to compare with this GameBoard.
+ * @return Whether the two boards are equal.
+ */
 bool GameBoard::operator==(const GameBoard& other) const {
 	for(auto& it : corners) {
 		auto otherIt = other.corners.find(it.first);
@@ -570,7 +680,7 @@ bool GameBoard::operator==(const GameBoard& other) const {
 	}
 	return true;
 }
-/*
+/**
  *  Adds a resource and roll tile combo to the board
  *
  *  @param x The first coordinate
@@ -606,13 +716,17 @@ bool GameBoard::isValidBoard() const {
 	return true;
 }
 
+/**
+ * The players in the game.
+ * @return The players.
+ */
 const std::vector<std::unique_ptr<Player>>& GameBoard::getPlayers() const {
 	return players;
 }
 
-/*
+/**
  *  When a player begins their turn, this rolls the dice and takes the required action (paying resources or enabling robber movement)
- *  @return An array of the dice rolls
+ *  @return A pair of the values of the dice.
  */
 std::pair<int, int> GameBoard::startTurn()
 {
@@ -630,7 +744,7 @@ std::pair<int, int> GameBoard::startTurn()
     return std::make_pair(die1, die2);
 }
 
-/*
+/**
  *  When a 7 is rolled, this enforces resource discarding and allows the current player to move the robber
  */
 void GameBoard::enableRobber()
@@ -638,8 +752,9 @@ void GameBoard::enableRobber()
     //Do some straight up robber stuff.
 }
 
-/*
- *  This pays resources based on the current roll
+/**
+ * This pays resources based on the current roll
+ * @param roll This turn's dice roll.
  */
 void GameBoard::payoutResources(int roll)
 {
