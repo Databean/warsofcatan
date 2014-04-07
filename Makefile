@@ -30,3 +30,4 @@ tests: $(EXECUTABLE)
 clean:
 	rm -f $(EXECUTABLE)
 	rm -f obj/*.o
+	cd sdl2ttf && $(MAKE) clean

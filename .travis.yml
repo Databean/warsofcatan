@@ -1,5 +1,6 @@
 language: cpp
 before_install: 
+ - sudo apt-get install automake
  - sudo add-apt-repository ppa:antumdeluge/sdl2 -y
  - sudo apt-get update -y
  - sudo apt-get install libsdl2 libsdl2-dev -y
