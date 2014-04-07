@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL_ttf.h>
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -49,11 +50,18 @@ void updateViewport(int width, int height) {
  * Main. Initializes SDL and the model, view, and controller. Also has the main game loop.
  */
 int main(int argc, char *argv[]) {
+	const int windowWidth = 900, windowHeight = 800;
+	
+	if(TTF_Init()==-1) {
+		std::cout << "Error in TTF_Init: " << TTF_GetError() << std::endl;
+		return 2;
+	}
+	
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE);
 	SDL_Window* displayWindow;
 	SDL_Renderer* displayRenderer;
 	SDL_RendererInfo displayRendererInfo;
-	SDL_CreateWindowAndRenderer(900, 800, SDL_WINDOW_OPENGL, &displayWindow, &displayRenderer);
+	SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_OPENGL, &displayWindow, &displayRenderer);
 	SDL_GetRendererInfo(displayRenderer, &displayRendererInfo);
 	/*TODO: Check that we have OpenGL */
 	if ((displayRendererInfo.flags & SDL_RENDERER_ACCELERATED) == 0 || 
@@ -66,7 +74,7 @@ int main(int argc, char *argv[]) {
 	
 	initOpenGL();
 
-	updateViewport(1024, 768);
+	updateViewport(windowWidth, windowHeight);
 	
 	vector<unique_ptr<Player>> players;
 	players.emplace_back(unique_ptr<Player>(new Player("test")));

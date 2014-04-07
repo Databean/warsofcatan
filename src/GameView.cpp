@@ -93,6 +93,8 @@ void GameView::render() {
 		it->render();
 	}
 	
+	renderText("resources/TypeWritersSubstitute-Black.ttf", 20, {.2, .9}, {.8, 1}, "Settlers of Catan");
+	
 	glFlush();
 }
 
