@@ -47,16 +47,15 @@ void renderText(const std::string& fontPath, int fontSize, const std::pair<float
 	}
 	
 	SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGB888);
-	
 	SDL_Surface* imageSurface = SDL_ConvertSurface(textSurface, format, 0);
-	
 	SDL_FreeSurface(textSurface);
+	SDL_FreeFormat(format);
 	
 	GLuint texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textSurface->w, textSurface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageSurface->pixels);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageSurface->w, imageSurface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageSurface->pixels);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	
