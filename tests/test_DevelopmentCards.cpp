@@ -14,10 +14,10 @@ TEST(RoadBuildingCard_good){
 	std::vector<std::unique_ptr<Player>> players {};
 	players.emplace_back(new Player("tester"));
 	Player& test_player = *players[0];
-	GameBoard * test_board = new GameBoard(std::move(players));
-	test_player.setBoard(test_board);
+	GameBoard test_board(std::move(players));
+	test_player.setBoard(&test_board);
 
-	test_board->PlaceSettlement(Coordinate(0,0), test_player);
+	test_board.PlaceSettlement(Coordinate(0,0), test_player);
 
 	RoadBuildingCard test_card(&test_player);
 
@@ -34,10 +34,10 @@ TEST(RoadBuildingCard_bad){
 	std::vector<std::unique_ptr<Player>> players {};
 	players.emplace_back(new Player("tester"));
 	Player& test_player = *players[0];
-	GameBoard * test_board = new GameBoard(std::move(players));
-	test_player.setBoard(test_board);
+	GameBoard test_board(std::move(players));
+	test_player.setBoard(&test_board);
 
-	test_board->PlaceSettlement(Coordinate(0,0), test_player);
+	test_board.PlaceSettlement(Coordinate(0,0), test_player);
 
 	RoadBuildingCard test_card(&test_player);
 
