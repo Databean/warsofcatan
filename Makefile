@@ -6,16 +6,20 @@ export TEST_INCLUDE := $(realpath UnitTest++/src)
 export EXECUTABLE := warsofcatan
 ALLFILES := $(wildcard $(SRC_HOME)/*) $(wildcard $(INCL_HOME)/*)
 export CXX := g++
-export LD := g++
+export LDX := g++
 export CXXFLAGS := -g -I$(INCL_HOME) -std=c++0x -Wall
-export LDFLAGS := -L/usr/local/lib -lSDL2 -lSDL2_ttf -lGL -lGLU
+export LDXFLAGS := -L/usr/local/lib -lSDL2 -L$(realpath .)/sdl2ttf/.libs/ -Wl,-R$(realpath .)/sdl2ttf/.libs/ -lSDL2_ttf -lGL -lGLU
 
 .PHONY: all
 all: $(EXECUTABLE)
 
-$(EXECUTABLE): $(ALLFILES)
+$(EXECUTABLE): sdl2ttf/.libs/libSDL2_ttf.so $(ALLFILES)
 	cd src && $(MAKE)
-	${LD} obj/*.o $(LDFLAGS) -o $(EXECUTABLE)
+	${LDX} obj/*.o $(LDXFLAGS) -o $(EXECUTABLE)
+
+sdl2ttf/.libs/libSDL2_ttf.so:
+	cd sdl2ttf && ./configure
+	cd sdl2ttf && $(MAKE)
 
 .PHONY: tests
 tests: $(EXECUTABLE)
