@@ -11,6 +11,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL_ttf.h>
 #include <GL/gl.h>
 
 #include "GameBoard.h"
@@ -20,6 +21,59 @@ using std::make_pair;
 using std::pair;
 using std::runtime_error;
 using std::string;
+
+/**
+ * Render some text on screen.
+ * 
+ * @param fontPath The path to the font ttf
+ * @param fontSize The size to draw the letters in.
+ * @param bottomLeft The bottom left screen coordinate of the bounding box to draw to.
+ * @param topRight The top right screen coordinate of the bounding box to draw to.
+ * @param text The text to render.
+ */
+void renderText(const std::string& fontPath, int fontSize, const std::pair<float, float> bottomLeft, const std::pair<float, float> topRight, const std::string& text) {
+	TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);
+	if(!font) {
+		throw runtime_error("TTF_OpenFont: " + string(TTF_GetError()));
+	}
+	
+	SDL_Color color { 0, 0, 0, 255 };
+	
+	SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
+	TTF_CloseFont(font);
+	
+	if(!textSurface) {
+		throw runtime_error("TTF_RenderText_Solid: " + string(TTF_GetError()));
+	}
+	
+	SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGB888);
+	SDL_Surface* imageSurface = SDL_ConvertSurface(textSurface, format, 0);
+	SDL_FreeSurface(textSurface);
+	SDL_FreeFormat(format);
+	
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageSurface->w, imageSurface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageSurface->pixels);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	
+	SDL_FreeSurface(imageSurface);
+	
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);
+	glVertex2f(bottomLeft.first, bottomLeft.second);
+	glTexCoord2f(0, 0);
+	glVertex2f(bottomLeft.first, topRight.second);
+	glTexCoord2f(1, 0);
+	glVertex2f(topRight.first, topRight.second);
+	glTexCoord2f(1, 1);
+	glVertex2f(topRight.first, bottomLeft.second);
+	glEnd();
+	
+	glDeleteTextures(1, &texture);
+}
 
 /**
  * Loads an image into an OpenGL texture.

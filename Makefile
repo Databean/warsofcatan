@@ -8,7 +8,7 @@ ALLFILES := $(wildcard $(SRC_HOME)/*) $(wildcard $(INCL_HOME)/*)
 export CXX := g++
 export LD := g++
 export CXXFLAGS := -g -I$(INCL_HOME) -std=c++0x -Wall
-export LDFLAGS := -L/usr/local/lib -lSDL2 -lGL -lGLU
+export LDFLAGS := -L/usr/local/lib -lSDL2 -lSDL2_ttf -lGL -lGLU
 
 .PHONY: all
 all: $(EXECUTABLE)
