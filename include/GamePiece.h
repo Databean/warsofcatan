@@ -10,6 +10,10 @@ enum resourceType { WHEAT, SHEEP, STONE, BRICK, WOOD, DESERT };
 
 class GameBoard;
 
+/**
+ * Something that occupies a position in triangular coordinates on the board. Currently is either a
+ * CornerPiece(Settlement or City) or a ResourceTile.
+ */
 class GamePiece {
 private:
 	GameBoard& board;
@@ -33,6 +37,10 @@ public:
 
 };
 
+/**
+ * One of the hexagons that has a particular resource and a dice number on the board. When the dice
+ * roll its number, resources are paid out to adjacent cities.
+ */
 class ResourceTile : public GamePiece {
 public:
 	ResourceTile(GameBoard& board);

@@ -13,6 +13,10 @@
 #include <algorithm>
 #include "DevelopmentCard.h"
 
+/**
+ * A collection of Settlers of Catan cards, initialized with the cards available in the standard game
+ * in the original amounts.
+ */
 class Deck {
 
 private:

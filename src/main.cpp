@@ -20,10 +20,9 @@
 using std::vector;
 using std::unique_ptr;
 
-void initGame() {
-	
-}
-
+/**
+ * Initialize some OpenGL settings.
+ */
 void initOpenGL() {
 	glEnable(GL_TEXTURE_2D);
 	glEnable (GL_BLEND); 
@@ -32,7 +31,11 @@ void initOpenGL() {
 	glDepthFunc(GL_NEVER);
 }
 
-/* function to reset our viewport after a window resize */
+/**
+ * Reset the viewport after a window resize.
+ * @param width The new width of the viewport.
+ * @param height The new height of the viewport.
+ */
 void updateViewport(int width, int height) {
 	glViewport(0, 0, width, height); 
 	glMatrixMode(GL_PROJECTION);
@@ -42,6 +45,9 @@ void updateViewport(int width, int height) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
+/**
+ * Main. Initializes SDL and the model, view, and controller. Also has the main game loop.
+ */
 int main(int argc, char *argv[]) {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE);
 	SDL_Window* displayWindow;

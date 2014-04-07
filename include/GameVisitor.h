@@ -9,6 +9,9 @@ class City;
 class Player;
 class DevelopmentCard;
 
+/**
+ * A class to be extended with callbacks to handle the different classes in the model. 
+ */
 class GameVisitor {
 private:
 	//Block copy constructor and assignment operator

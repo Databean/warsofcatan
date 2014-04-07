@@ -7,6 +7,10 @@ class GameBoard;
 class ClickCoordinateEvent;
 class GameView;
 
+/**
+ * Takes interpreted Catan events from the View and calls the appropriate functions on the model to changee the state
+ * in response.
+ */
 class GameController {
 private:
 	GameBoard& model;

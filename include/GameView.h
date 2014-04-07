@@ -16,6 +16,10 @@ class GameController;
 class ViewElement;
 class GameView;
 
+/**
+ * An element that is drawn on screen and can receive inputs from the user. These all occupy a rectangular area on screen
+ * and can choose to handle clicks from the user that are inside their area.
+ */
 class ViewElement {
 private:
 	std::pair<ScreenCoordinate, ScreenCoordinate> rect;
@@ -34,6 +38,9 @@ public:
 	virtual void render() = 0;
 };
 
+/**
+ * The class in charge of drawing the view to the screen, using OpenGL calls.
+ */
 class GameView {
 private:
 	GameBoard& model;
@@ -52,6 +59,9 @@ public:
 	void addElement(std::unique_ptr<ViewElement>);
 };
 
+/**
+ * A visitor of the GameBoard hierarchy that draws the entire model.
+ */
 class DrawingGameVisitor : public GameVisitor {
 private:
 	GameView& view;
@@ -71,6 +81,9 @@ public:
 	virtual void visit(DevelopmentCard&);
 };
 
+/**
+ * A view element that is invisible and calls a callback function when it is clicked.
+ */
 template<class Fn>
 class ViewButton : public ViewElement {
 private:
@@ -89,11 +102,21 @@ public:
 	virtual void render() {}
 };
 
+/**
+ * Constructs a ViewButton using the same parameters as the ViewButton. Exists because template inference exists only
+ * for functions, not classes.
+ * @param fn The callback function to be called with the ScreenCoordinate clicked and returning a boolean on if it was handled.
+ * @param rect The location on screen that the invisible button receives clicks from.
+ * @return An owning unique pointer to the constructed view button.
+ */
 template<class Fn>
 std::unique_ptr<ViewElement> makeViewButton(Fn fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect) {
 	return std::unique_ptr<ViewElement>(new ViewButton<Fn>(fn, rect));
 }
 
+/**
+ * A view element drawn as a solid color that has a callback function that is called when it is clicked.
+ */
 template<class Fn>
 class ViewButtonColor : public ViewButton<Fn> {
 private:
@@ -119,6 +142,14 @@ public:
 	}
 };
 
+/**
+ * Constructs a ViewButtonColor using the same parameters as the ViewButtonColor. Exists because template inference exists only
+ * for functions, not classes.
+ * @param fn The callback function to be called with the ScreenCoordinate clicked and returning a boolean on if it was handled.
+ * @param rect The location on screen to draw to and receive clicks from.
+ * @param color The color to draw the button. RGB floats from 0 to 1 for intensity.
+ * @return An owning unique pointer to the constructed view button.
+ */
 template<class Fn>
 std::unique_ptr<ViewElement> makeViewButtonColor(Fn fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::tuple<float, float, float> color) {
 	return std::unique_ptr<ViewElement>(new ViewButtonColor<Fn>(fn, rect, color));

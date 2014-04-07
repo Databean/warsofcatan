@@ -20,7 +20,9 @@
 enum DevCardType { KNIGHT, VICTORYPOINT, YEAROFPLENTY, MONOPOLY, ROADBUILDING };
 
 
-
+/**
+ * A card which can be held in a player's hand and be used to perform an action.
+ */
 class DevelopmentCard {
 
 private:
@@ -38,8 +40,9 @@ public:
 	virtual bool operator==(const DevelopmentCard&);
 };
 
-
-
+/**
+ * A development card used to move the robber and take a resource from another player.
+ */
 class KnightCard : public DevelopmentCard {
 private:
 
@@ -52,8 +55,9 @@ public:
 
 };
 
-
-
+/**
+ * A development card that gives a permanent victory point on usage.
+ */
 class VictoryPointCard : public DevelopmentCard {
 public:
     VictoryPointCard(Player* player);
@@ -64,7 +68,9 @@ public:
 
 };
 
-
+/**
+ * A development card used to retrieve two resources of any type from the bank.
+ */
 class YearOfPlentyCard : public DevelopmentCard {
 public:
     YearOfPlentyCard(Player* player);
@@ -75,9 +81,9 @@ public:
 
 };
 
-
-
-
+/**
+ * A development card used to take all resources of a particular type from all players.
+ */
 class MonopolyCard : public DevelopmentCard {
 public:
     MonopolyCard(Player* player);
@@ -88,8 +94,9 @@ public:
 
 };
 
-
-
+/**
+ * A development card used to build two roads at no cost.
+ */
 class RoadBuildingCard : public DevelopmentCard {
 private:
 

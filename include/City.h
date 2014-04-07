@@ -3,6 +3,9 @@
 
 #include "CornerPiece.h"
 
+/**
+ * Upgraded from a Settlement. Exists on the board, and receives two resources from adjacent tiles when their number is rolled.
+ */
 class City : public CornerPiece {
 private:
 

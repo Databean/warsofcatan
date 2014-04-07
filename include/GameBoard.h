@@ -20,6 +20,9 @@
 
 class GameVisitor;
 
+/**
+ * A game of Settlers of Catan, including resource tiles, settlements, cities, roads, and players.
+ */
 class GameBoard {
 private:
 	std::map<Coordinate, std::unique_ptr<CornerPiece>> corners;

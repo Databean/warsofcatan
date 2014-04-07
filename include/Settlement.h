@@ -3,6 +3,10 @@
 
 #include "CornerPiece.h"
 
+/**
+ * Exists on the board at a location and is owned by a player. Receives one resource when an adjacent resource tile
+ * has its number rolled on the dice. Worth one victory point.
+ */
 class Settlement : public CornerPiece {
 private:
 

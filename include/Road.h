@@ -11,6 +11,9 @@
 
 class GameVisitor;
 
+/**
+ * Constructed between two points on the board. Settlements can only be constructed if a player has a road to a given tile.
+ */
 class Road {
 private:
 	Player& owner;
