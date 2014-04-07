@@ -12,12 +12,24 @@
  * @param model The GameBoard model that is drawn to the screen.
  * @param view The GameView that is used to draw the model.
  */
-GameController::GameController(GameBoard& model, GameView& view) : model(model), view(view), placingRoads(false), placingCities(false) ,lastCoordClick(-100, -100) {
+GameController::GameController(GameBoard& model, GameView& view) : model(model), view(view) {
 	using namespace std::placeholders;
 	
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.1}}, std::make_tuple(1.f, 0.f, 0.f)));
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0, 0.1}, {0.1, 0.2}}, std::make_tuple(0.f, 1.0f, 0.f)));
+
+
+	view.addElement(makeViewButtonColor(std::bind(&GameController::handleCancelButtonEvent, this, _1), {{.95, .95}, {1.0, 1.0}}, std::make_tuple(1.f, 0.0f, 0.f)));
+
+	view.addElement(makeViewButtonColor(std::bind(&GameController::handleRoadCardButtonEvent, this, _1), {{.2, 0}, {.3, .05}}, std::make_tuple(1.f, 0.0f, 0.f)));
+	view.addElement(makeViewButtonColor(std::bind(&GameController::handleKnightCardButtonEvent, this, _1), {{0.3, 0}, {.4, .05}}, std::make_tuple(0.f, 0.0f, 0.f)));
+	view.addElement(makeViewButtonColor(std::bind(&GameController::handleYearOfPlentyCardButtonEvent, this, _1), {{0.4, 0}, {.5, .05}}, std::make_tuple(1.f, 1.0f, 0.f)));
+	view.addElement(makeViewButtonColor(std::bind(&GameController::handleMonopolyCardButtonEvent, this, _1), {{0.5, 0}, {.6, .05}}, std::make_tuple(1.f, 0.0f, 1.f)));
+	view.addElement(makeViewButtonColor(std::bind(&GameController::handleVictoryPointCardButtonEvent, this, _1), {{0.6, 0}, {.7, .05}}, std::make_tuple(0.f, 1.0f, 1.f)));
+
 	view.addElement(makeViewButton(std::bind(&GameController::handleBoardEvent, this, _1), {{0, 0}, {1, 1}}));
+
+	stateStack.push_back(BASESTATE);
 }
 
 /**
@@ -27,6 +39,57 @@ GameController::~GameController() {
 	
 }
 
+void GameController::pushState(ControlState newState){
+	if (newState != BASESTATE){
+		stateStack.push_back(newState);
+	}
+}
+
+ControlState GameController::popState(){
+	ControlState currState = getState();
+	if(currState == BASESTATE){
+		return currState;
+	}
+	stateStack.pop_back();
+	return currState;
+}
+
+ControlState GameController::getState(){
+	return stateStack.back();
+}
+
+void GameController::storeClick(Coordinate clickCoordinate){
+	clickHistory.push_back(clickCoordinate);
+}
+
+Coordinate GameController::getLastClick(){
+	return getPastClick(0);
+}
+
+Coordinate GameController::getPastClick(int howLongAgo){
+	if (howLongAgo < clickHistory.size()){
+		return clickHistory[clickHistory.size() - 1 - howLongAgo];
+	}
+	return Coordinate(-100,-100);
+}
+
+void GameController::clearClickHistory(){
+	clickHistory.clear();
+}
+
+bool GameController::hasClickHistory(){
+	return !clickHistory.empty();
+}
+
+
+int GameController::getClickHistorySize(){
+	return clickHistory.size();
+}
+
+
+
+
+
 /**
  * Handles a click that is actually on the tiles of the board. Either constructs a road or a settlement based on the control buttons the user has clicked.
  * @param screenCoord Where the user clicked on screen.
@@ -34,18 +97,40 @@ GameController::~GameController() {
  */
 bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 	auto coord = screenToCoord(screenCoord);
-	if(placingRoads) {
-		if(lastCoordClick.first == -100 && lastCoordClick.second == -100) {
-			lastCoordClick = coord;
+
+	switch (getState()){
+	case BUILDROAD:
+		std::cout << "BUILDROAD\n";
+		if(!hasClickHistory()) {
+			storeClick(coord);
 		} else {
-			model.PlaceRoad(lastCoordClick, coord, *model.getPlayers()[0]);
-			lastCoordClick = {-100, -100};
+			if (model.PlaceRoad(getLastClick(), coord, *model.getPlayers()[0]));
+			{
+				popState();
+				if(getState() == BUILDROAD_DEVCARD)
+					popState();
+			}
+			clearClickHistory();
 		}
-	} else if(placingCities) {
+		break;
+	case BUILDSETTLEMENT:
+		std::cout << "BUILDSETTLEMENT\n";
 		model.PlaceSettlement(coord, *model.getPlayers()[0]);
+		popState();
+		break;
+	default:
+		break;
 	}
 	return true;
 }
+
+
+bool GameController::handleCancelButtonEvent(ScreenCoordinate){
+	while(getState() != BASESTATE){
+		popState();
+	}
+}
+
 
 /**
  * Handles a click on the "create road" button. Changes the internal state to indicate the user is going to be making roads on the board.
@@ -53,8 +138,11 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
  * @return Whether this event was handled by this element. Always true.
  */
 bool GameController::handleRoadButtonEvent(ScreenCoordinate coord) {
-	placingRoads = true; 
-	placingCities = false;
+	clearClickHistory();
+	if(getState() != BASESTATE){
+		popState();
+	}
+	pushState(BUILDROAD);
 	return true;
 }
 
@@ -64,8 +152,63 @@ bool GameController::handleRoadButtonEvent(ScreenCoordinate coord) {
  * @return Whether thi sevent was handled by this element. Always true.
  */
 bool GameController::handleSettlementButtonEvent(ScreenCoordinate coord) {
-	placingRoads = false; 
-	placingCities = true;
+	if(getState() != BASESTATE){
+		popState();
+	}
+	pushState(BUILDSETTLEMENT);
 	return true;
 }
+
+bool GameController::handleRoadCardButtonEvent(ScreenCoordinate coord){
+	if(getState() != BASESTATE){
+		return true;
+	}
+	clearClickHistory();
+	pushState(BUILDROAD_DEVCARD);
+	pushState(BUILDROAD);
+	pushState(BUILDROAD);
+	return true;
+}
+
+bool GameController::handleKnightCardButtonEvent(ScreenCoordinate){
+	if(getState() != BASESTATE){
+		return true;
+	}
+	pushState(ROBBER);
+	return true;
+}
+
+bool GameController::handleYearOfPlentyCardButtonEvent(ScreenCoordinate){
+	if(getState() != BASESTATE){
+		return true;
+	}
+	pushState(YEAROFPLENTY_DEVCARD);
+	return true;
+}
+bool GameController::handleMonopolyCardButtonEvent(ScreenCoordinate){
+	if(getState() != BASESTATE){
+		return true;
+	}
+	pushState(MONOPOLY_DEVCARD);
+	return true;
+}
+
+bool GameController::handleVictoryPointCardButtonEvent(ScreenCoordinate){
+	return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

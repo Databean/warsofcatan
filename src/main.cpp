@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 	
 	initOpenGL();
 
-	updateViewport(1024, 768);
+	updateViewport(900, 800);
 	
 	vector<unique_ptr<Player>> players;
 	players.emplace_back(unique_ptr<Player>(new Player("test")));
