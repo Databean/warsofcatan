@@ -7,7 +7,7 @@ export EXECUTABLE := warsofcatan
 ALLFILES := $(wildcard $(SRC_HOME)/*) $(wildcard $(INCL_HOME)/*)
 export CXX := g++
 export LDX := g++
-export CXXFLAGS := -g -I$(INCL_HOME) -std=c++0x -Wall
+export CXXFLAGS := -g -I$(INCL_HOME) -std=c++0x -Wall -I$(realpath .)/sdl2ttf -I/usr/include/SDL2/ -I/usr/local/include/SDL2/
 export LDXFLAGS := -L/usr/local/lib -lSDL2 -L$(realpath .)/sdl2ttf/.libs/ -Wl,-R$(realpath .)/sdl2ttf/.libs/ -lSDL2_ttf -lGL -lGLU
 
 .PHONY: all
