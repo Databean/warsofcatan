@@ -34,10 +34,10 @@ GLuint loadTextAsTexture(const std::string& fontPath, int fontSize, const std::s
 		throw runtime_error("TTF_OpenFont: " + string(TTF_GetError()));
 	}
 	
-	SDL_Color foreground { 255, 0, 0, 0 };
-	//SDL_Color background { 0, 0, 0, 0 };
+	//Use glColor... if you don't want black text.
+	SDL_Color color {0, 0, 0};
 	
-	SDL_Surface* textSurface = TTF_RenderText_Blended(font, text.c_str(), foreground);
+	SDL_Surface* textSurface = TTF_RenderText_Blended(font, text.c_str(), color);
 	TTF_CloseFont(font);
 	
 	if(!textSurface) {
@@ -48,6 +48,23 @@ GLuint loadTextAsTexture(const std::string& fontPath, int fontSize, const std::s
 	SDL_Surface* imageSurface = SDL_ConvertSurface(textSurface, format, 0);
 	SDL_FreeSurface(textSurface);
 	SDL_FreeFormat(format);
+	
+	// TTF_RenderText produces ARGB images. OpenGL doesn't take ARGB images, only RGBA images
+	// so we have to move the color values around so that OpenGL renders it properly.
+	
+	int bpp = imageSurface->format->BytesPerPixel;
+	SDL_LockSurface(imageSurface);
+	for(int x = 0; x < imageSurface->w; x++) {
+		for(int y = 0; y < imageSurface->h; y++) { 
+			Uint8 *p = (Uint8 *)imageSurface->pixels + y * imageSurface->pitch + x * bpp;
+			// Starts out as ARGB.
+			std::swap(p[0], p[1]); //RAGB
+			std::swap(p[1], p[2]); //RGAB
+			std::swap(p[2], p[3]); //RGBA
+		}
+	}
+	
+	SDL_UnlockSurface(imageSurface);
 	
 	GLuint texture;
 	glGenTextures(1, &texture);
@@ -75,7 +92,8 @@ void renderText(const std::string& fontPath, int fontSize, const std::pair<float
 	
 	GLuint texture = loadTextAsTexture(fontPath, fontSize, text);
 	
-	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 1);
 	glVertex2f(bottomLeft.first, bottomLeft.second);
