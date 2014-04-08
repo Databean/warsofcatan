@@ -40,7 +40,7 @@ private:
     int armySize;
     int longestRoad;
     int victoryPoints;
-    GameBoard *board;
+    GameBoard& board;
     int resources[5];
     int tradeModifiers[5];
 
@@ -49,8 +49,8 @@ private:
 
 public:
 
-	Player(std::string playerName);
-	Player(tinyxml2::XMLElement*);
+	Player(GameBoard& board, std::string playerName);
+	Player(GameBoard& board, tinyxml2::XMLElement*);
 	~Player();
 
     int getVictoryPoints();
@@ -63,9 +63,6 @@ public:
 
     void buyCard(std::unique_ptr<DevelopmentCard> card);
     std::string getName() const;
-
-    GameBoard* getBoard();
-    void setBoard(GameBoard* newboard);
 
 //    void playCard(int index);
 //    void playCard(DevelopmentCard* card);

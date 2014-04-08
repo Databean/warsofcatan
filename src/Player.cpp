@@ -25,9 +25,10 @@ using std::runtime_error;
 
 /**
  * Initialize a player.
+ * @param board The board the player is playing on.
  * @param playerName The name of the player. Should be unique.
  */
-Player::Player(std::string playerName) : name(playerName)
+Player::Player(GameBoard& board, std::string playerName) : name(playerName), board(board)
 {
 	armySize = 0;
 	longestRoad = 0;
@@ -42,9 +43,10 @@ Player::Player(std::string playerName) : name(playerName)
 
 /**
  * Construct a player from a serialized tinyxml2::XMLElement.
+ * @param board The board the player is playing on.
  * @param elem The XMLElement to read data from.
  */
-Player::Player(XMLElement* elem)
+Player::Player(GameBoard& board, XMLElement* elem) : board(board)
 {
 	for(auto& r : resources) {
 		r = 0;
@@ -58,11 +60,11 @@ Player::Player(XMLElement* elem)
 	XMLElement* cardsElement = elem->FirstChildElement("cards");
 	for(auto cardElem = cardsElement->FirstChildElement("card"); cardElem; cardElem = cardElem->NextSiblingElement("card")) {
 		static const map<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>> typeToCard = {
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("knight", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new KnightCard()); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("victorypoint", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new VictoryPointCard()); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("yearofplenty", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard()); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("monopoly", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new MonopolyCard()); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("roadbuilding", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new RoadBuildingCard()); }),
+			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("knight", [&board]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new KnightCard(board)); }),
+			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("victorypoint", [&board]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new VictoryPointCard(board)); }),
+			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("yearofplenty", [&board]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard(board)); }),
+			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("monopoly", [&board]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new MonopolyCard(board)); }),
+			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("roadbuilding", [&board]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new RoadBuildingCard(board)); }),
 		};
 		auto typeIt = typeToCard.find(std::string(cardElem->FirstChildElement("type")->FirstChild()->Value()));
 		if(typeIt == typeToCard.end()) {
@@ -163,23 +165,6 @@ int Player::getVictoryPoints()
 }
 
 /**
- * The GameBoard that a player is playing on.
- * @return The board.
- */
-GameBoard* Player::getBoard(){
-	return board;
-}
-
-/**
- * Assign the Player to a particular GameBoard.
- * @param newboard The new board they are playing on.
- */
-void Player::setBoard(GameBoard * newboard){
-	board = newboard;
-}
-
-
-/**
  * Acquire a development card.
  * @param card An owning pointer to the card the player acquired.
  */
@@ -206,7 +191,7 @@ void Player::buyCard(std::unique_ptr<DevelopmentCard> card)
 //    if(!std::any_of(developmentCards.begin(), developmentCards.end(), cardTester)) {
 //        return;
 //    }
-//    card->playCard();
+//    card->playCard(board);
 //    if (card->getType() == KNIGHT) {
 //        armySize++;
 //	}

@@ -25,9 +25,9 @@ class DevelopmentCard {
 
 protected:
     DevCardType type;
-    GameBoard *board;
+    GameBoard& board;
 public:
-    DevelopmentCard();
+    DevelopmentCard(GameBoard& board);
     virtual ~DevelopmentCard();
 
     virtual DevCardType getType() const = 0;
@@ -42,7 +42,7 @@ class KnightCard : public DevelopmentCard {
 private:
 
 public:
-	KnightCard();
+	KnightCard(GameBoard& board);
 //	virtual ~KnightCard();
 
     virtual DevCardType getType() const;
@@ -54,7 +54,7 @@ public:
 
 class VictoryPointCard : public DevelopmentCard {
 public:
-    VictoryPointCard();
+    VictoryPointCard(GameBoard& board);
 //    virtual ~VictoryPointCard();
 
     virtual DevCardType getType() const;
@@ -64,7 +64,7 @@ public:
 
 class YearOfPlentyCard : public DevelopmentCard {
 public:
-    YearOfPlentyCard();
+    YearOfPlentyCard(GameBoard& board);
 //    virtual ~YearOfPlentyCard();
 
     virtual DevCardType getType() const;
@@ -77,7 +77,7 @@ public:
 
 class MonopolyCard : public DevelopmentCard {
 public:
-    MonopolyCard();
+    MonopolyCard(GameBoard& board);
 //    virtual ~MonopolyCard();
 
     virtual DevCardType getType() const;
@@ -91,7 +91,7 @@ class RoadBuildingCard : public DevelopmentCard {
 private:
 
 public:
-	RoadBuildingCard();
+	RoadBuildingCard(GameBoard& board);
 //	virtual ~RoadBuildingCard();
 
     virtual DevCardType getType() const;

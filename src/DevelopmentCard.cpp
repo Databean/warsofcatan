@@ -12,7 +12,7 @@
 
 
 //Base Class
-DevelopmentCard::DevelopmentCard()
+DevelopmentCard::DevelopmentCard(GameBoard& board) : board(board)
 {
 
 }
@@ -31,7 +31,7 @@ bool DevelopmentCard::operator==(const DevelopmentCard& other) {
 	return getType() == other.getType();
 }
 
-KnightCard::KnightCard():DevelopmentCard()
+KnightCard::KnightCard(GameBoard& board) : DevelopmentCard(board)
 {
 
 }
@@ -43,11 +43,11 @@ DevCardType KnightCard::getType() const {
 void KnightCard::playCard(Player *player, Coordinate target)
 {
     //Call function to play card
-	board->moveRobber(target);
+	board.moveRobber(target);
 }
 
 
-VictoryPointCard::VictoryPointCard():DevelopmentCard()
+VictoryPointCard::VictoryPointCard(GameBoard& board) : DevelopmentCard(board)
 {
 
 }
@@ -58,7 +58,7 @@ DevCardType VictoryPointCard::getType() const {
 
 
 
-YearOfPlentyCard::YearOfPlentyCard():DevelopmentCard()
+YearOfPlentyCard::YearOfPlentyCard(GameBoard& board) : DevelopmentCard(board)
 {
 
 }
@@ -77,7 +77,7 @@ void YearOfPlentyCard::playCard(Player *player, int rType1, int rType2)
 
 
 
-MonopolyCard::MonopolyCard():DevelopmentCard()
+MonopolyCard::MonopolyCard(GameBoard& board) : DevelopmentCard(board)
 {
 
 }
@@ -90,9 +90,9 @@ void MonopolyCard::playCard(Player *player, int rType)
 {
 	int totalResourceCount = 0;
 
-	for(int i=0; i<board->getNoOfPlayers(); i++)
+	for(int i=0; i<board.getNoOfPlayers(); i++)
 	{
-		Player& p = board->getPlayer(i);
+		Player& p = board.getPlayer(i);
 		totalResourceCount += p.getResource(rType);
 		p.addResource(rType, (-1*p.getResource(rType)) );
 	}
@@ -101,7 +101,9 @@ void MonopolyCard::playCard(Player *player, int rType)
 
 
 
-RoadBuildingCard::RoadBuildingCard():DevelopmentCard(){};
+RoadBuildingCard::RoadBuildingCard(GameBoard& board) : DevelopmentCard(board) {
+	
+};
 
 DevCardType RoadBuildingCard::getType() const
 {
@@ -111,10 +113,10 @@ DevCardType RoadBuildingCard::getType() const
 
 
 void RoadBuildingCard::playCard(Player* player, Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2){
-	if (!board->PlaceRoad(start1, end1, *player)){
+	if (!board.PlaceRoad(start1, end1, *player)){
 		throw std::invalid_argument("The first road passed was not valid, no roads placed");
 	}
-	if ((!board->PlaceRoad(start2, end2, *player))){
+	if ((!board.PlaceRoad(start2, end2, *player))){
 		throw std::invalid_argument("The second road passed was not valid, only the first road was placed");
 	}
 }

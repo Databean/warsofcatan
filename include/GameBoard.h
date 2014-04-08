@@ -61,8 +61,8 @@ private:
     void payoutResources(int roll);
     
 public:
-	GameBoard(std::vector<std::unique_ptr<Player>>&& players);
-	GameBoard(std::vector<std::unique_ptr<Player>>&& players, const std::map<Coordinate, std::pair<resourceType, int>>& resourceLocations);
+	GameBoard(const std::vector<std::string>& playerNames);
+	GameBoard(const std::vector<std::string>& playerNames, const std::map<Coordinate, std::pair<resourceType, int>>& resourceLocations);
 	GameBoard(std::istream& in);
 	GameBoard(GameBoard&) = delete;
 	~GameBoard();
