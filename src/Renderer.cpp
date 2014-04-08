@@ -23,6 +23,46 @@ using std::runtime_error;
 using std::string;
 
 /**
+ * Create an OpenGL texture based on some text and a font.
+ * 
+ * @param fontPath The path to the font ttf
+ * @param text The text to render.
+ */
+GLuint loadTextAsTexture(const std::string& fontPath, int fontSize, const std::string& text) {
+	TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);
+	if(!font) {
+		throw runtime_error("TTF_OpenFont: " + string(TTF_GetError()));
+	}
+	
+	SDL_Color foreground { 255, 0, 0, 0 };
+	//SDL_Color background { 0, 0, 0, 0 };
+	
+	SDL_Surface* textSurface = TTF_RenderText_Blended(font, text.c_str(), foreground);
+	TTF_CloseFont(font);
+	
+	if(!textSurface) {
+		throw runtime_error("TTF_RenderText_Solid: " + string(TTF_GetError()));
+	}
+	
+	SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888);
+	SDL_Surface* imageSurface = SDL_ConvertSurface(textSurface, format, 0);
+	SDL_FreeSurface(textSurface);
+	SDL_FreeFormat(format);
+	
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageSurface->w, imageSurface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageSurface->pixels);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	
+	SDL_FreeSurface(imageSurface);
+	
+	return texture;
+}
+
+/**
  * Render some text on screen.
  * 
  * @param fontPath The path to the font ttf
@@ -32,35 +72,10 @@ using std::string;
  * @param text The text to render.
  */
 void renderText(const std::string& fontPath, int fontSize, const std::pair<float, float> bottomLeft, const std::pair<float, float> topRight, const std::string& text) {
-	TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);
-	if(!font) {
-		throw runtime_error("TTF_OpenFont: " + string(TTF_GetError()));
-	}
 	
-	SDL_Color color { 0, 0, 0, 255 };
+	GLuint texture = loadTextAsTexture(fontPath, fontSize, text);
 	
-	SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
-	TTF_CloseFont(font);
-	
-	if(!textSurface) {
-		throw runtime_error("TTF_RenderText_Solid: " + string(TTF_GetError()));
-	}
-	
-	SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGB888);
-	SDL_Surface* imageSurface = SDL_ConvertSurface(textSurface, format, 0);
-	SDL_FreeSurface(textSurface);
-	SDL_FreeFormat(format);
-	
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageSurface->w, imageSurface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageSurface->pixels);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	
-	SDL_FreeSurface(imageSurface);
-	
+	glColor3f(1.0, 1.0, 1.0);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 1);
 	glVertex2f(bottomLeft.first, bottomLeft.second);
