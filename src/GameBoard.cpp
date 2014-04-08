@@ -735,14 +735,15 @@ int GameBoard::getNoOfPlayers()
 
 
 /**
+ * @param index The index to look at.
  * @return player at index index
  */
-std::unique_ptr<Player> GameBoard::getPlayer(int index)
+Player& GameBoard::getPlayer(int index)
 {
 	if(index >= getNoOfPlayers())
-		return NULL;
+		throw std::runtime_error("Invalid player index.");
 
-	return players[index];
+	return *players[index];
 }
 
 

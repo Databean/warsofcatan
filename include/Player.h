@@ -103,7 +103,7 @@ public:
     void addWheat(int resource);
     void addWool(int resource);
 
-    int getResource(int resourceType); //
+    int getResource(int resourceType) const; //
     void addResource(int resourceType, int delta);
 
 	void accept(GameVisitor& visitor);

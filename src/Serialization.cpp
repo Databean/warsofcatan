@@ -21,7 +21,7 @@ using tinyxml2::XMLText;
 /**
  * Construct the serialization visitor.
  */
-XMLVisitor::XMLVisitor() {
+XMLVisitor::XMLVisitor() : lastPlayer(nullptr) {
 	xmldoc.InsertEndChild(xmldoc.NewElement("catangame"));
 	//xmldoc.RootElement()->SetName("catangame");
 }
@@ -150,6 +150,8 @@ void XMLVisitor::visit(Player& player) {
 	
 	playersElement->InsertEndChild(newPlayerElement);
 	playerElementMap[player.getName()] = newPlayerElement;
+	
+	lastPlayer = &player;
 }
 
 /**
@@ -193,7 +195,10 @@ void XMLVisitor::visit(ResourceTile& tile) {
  * @param card The card to serialize.
  */
 void XMLVisitor::visit(DevelopmentCard& card) {
-	auto playerElementIt = playerElementMap.find(card.getOwner()->getName());
+	if(lastPlayer == nullptr) {
+		throw runtime_error("Don't know which player to assign this card to.");
+	}
+	auto playerElementIt = playerElementMap.find(lastPlayer->getName());
 	if(playerElementIt == playerElementMap.end()) {
 		throw runtime_error("This card belongs to a player that hasn't been saved!");
 	}

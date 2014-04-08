@@ -58,11 +58,11 @@ Player::Player(XMLElement* elem)
 	XMLElement* cardsElement = elem->FirstChildElement("cards");
 	for(auto cardElem = cardsElement->FirstChildElement("card"); cardElem; cardElem = cardElem->NextSiblingElement("card")) {
 		static const map<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>> typeToCard = {
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("knight", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new KnightCard(this)); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("victorypoint", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new VictoryPointCard(this)); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("yearofplenty", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard(this)); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("monopoly", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new MonopolyCard(this)); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("roadbuilding", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new RoadBuildingCard(this)); }),
+			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("knight", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new KnightCard()); }),
+			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("victorypoint", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new VictoryPointCard()); }),
+			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("yearofplenty", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard()); }),
+			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("monopoly", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new MonopolyCard()); }),
+			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("roadbuilding", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new RoadBuildingCard()); }),
 		};
 		auto typeIt = typeToCard.find(std::string(cardElem->FirstChildElement("type")->FirstChild()->Value()));
 		if(typeIt == typeToCard.end()) {
@@ -384,7 +384,7 @@ bool Player::acceptOffer(Player* p, int offer[], int demand[])
  */
 int Player::getRandomResource()
 {
-	int total = getWood() + getBrick() + getOre() + getWheat() + getWool();
+	//int total = getWood() + getBrick() + getOre() + getWheat() + getWool();
 	int randomNo = 0;
 
 	if(getWood()!=0 && randomNo <= getWood())
@@ -416,6 +416,18 @@ int Player::getRandomResource()
 
 }
 
+/**
+ * Get the resources a player has of a given type.
+ * @param resourceType The index to get the resource count of.
+ * @return The amount of the resource the player has.
+ */
+int Player::getResource(int resourceType) const {
+	if(resourceType < 5) {
+		return resources[resourceType];
+	} else {
+		throw std::runtime_error("Type index is out of bounds.");
+	}
+}
 
 /**
  * Determine if the player has a valid (nonnegative) set of resources.

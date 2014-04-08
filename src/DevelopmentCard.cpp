@@ -92,9 +92,9 @@ void MonopolyCard::playCard(Player *player, int rType)
 
 	for(int i=0; i<board->getNoOfPlayers(); i++)
 	{
-		Player* p = board->getPlayer(i);
-		totalResourceCount += p->getResource(rType);
-		p->addResource(rType, (-1*p->getResource(rType)) );
+		Player& p = board->getPlayer(i);
+		totalResourceCount += p.getResource(rType);
+		p.addResource(rType, (-1*p.getResource(rType)) );
 	}
 	player->addResource(rType, totalResourceCount);
 }

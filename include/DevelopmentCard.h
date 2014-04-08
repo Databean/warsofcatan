@@ -23,7 +23,7 @@ enum DevCardType { KNIGHT, VICTORYPOINT, YEAROFPLENTY, MONOPOLY, ROADBUILDING };
 
 class DevelopmentCard {
 
-private:
+protected:
     DevCardType type;
     GameBoard *board;
 public:

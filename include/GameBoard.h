@@ -104,7 +104,7 @@ public:
 	const std::vector<std::unique_ptr<Player>>& getPlayers() const;
 	
 	int getNoOfPlayers();
-	std::unique_ptr<Player> getPlayer(int index);
+	Player& getPlayer(int index);
 
     bool testRollChecking(int* rolls);
 
