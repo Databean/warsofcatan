@@ -724,6 +724,29 @@ const std::vector<std::unique_ptr<Player>>& GameBoard::getPlayers() const {
 	return players;
 }
 
+
+/**
+ * @return no of players
+ */
+int GameBoard::getNoOfPlayers()
+{
+	return players.size();
+}
+
+
+/**
+ * @return player at index index
+ */
+std::unique_ptr<Player> GameBoard::getPlayer(int index)
+{
+	if(index >= getNoOfPlayers())
+		return NULL;
+
+	return players[index];
+}
+
+
+
 /**
  *  When a player begins their turn, this rolls the dice and takes the required action (paying resources or enabling robber movement)
  *  @return A pair of the values of the dice.

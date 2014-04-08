@@ -35,12 +35,12 @@ private:
 	std::vector<std::unique_ptr<Player>> players;
 	Coordinate robber;
 
-	
+
     void addResource(int x, int y, resourceType res, int val);
     bool checkRolls(int* rolls);
-	
+
 	bool isValidBoard() const;
-	
+
 
 	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const;
 	bool outOfBounds(const Coordinate& coord) const;
@@ -52,7 +52,7 @@ private:
 
 	void removeRoadEnd(std::shared_ptr<Road> startRoad);
 	int FindLongestRoad_FromPoint(Coordinate curr, const Player & owner, std::map<Coordinate, bool>& marked, std::map<Road*, bool>& markedRoads, int length) const;
-	
+
 	void createRing(Coordinate topRight, int sideLength, std::vector<resourceType>& resources, std::vector<int>& rolls);
 	void insertTile(Coordinate location, std::vector<resourceType>& resources, std::vector<int>& rolls);
     
@@ -67,9 +67,9 @@ public:
 	GameBoard(GameBoard&) = delete;
 	~GameBoard();
 	GameBoard& operator=(GameBoard&) = delete;
-	
+
 	void save(std::ostream& out);
-	
+
 	ResourceTile& getResourceTile(Coordinate location) const;
 
 	const std::map<Coordinate, std::unique_ptr<ResourceTile>>& getResources() const;
@@ -78,7 +78,7 @@ public:
 
 	const std::shared_ptr<Road> getRoad(Coordinate start, Coordinate end) const;
 	const std::vector<std::shared_ptr<Road>>& getRoads(Coordinate loc) const;
-	
+
 	int FindLongestRoad(const Player & owner) const;
 
 	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location) const;
@@ -96,13 +96,16 @@ public:
 	//void PlaceSettlement(Coordinate location, Player& Owner);
 	void PlaceCity(Coordinate location, Player& Owner);
 	bool PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
-	
+
 	void accept(GameVisitor& visitor);
-	
+
 	bool operator==(const GameBoard& other) const;
-	
+
 	const std::vector<std::unique_ptr<Player>>& getPlayers() const;
-    
+	
+	int getNoOfPlayers();
+	std::unique_ptr<Player> getPlayer(int index);
+
     bool testRollChecking(int* rolls);
 
     void moveRobber(Coordinate newRobber);

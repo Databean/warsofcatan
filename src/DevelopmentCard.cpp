@@ -10,183 +10,111 @@
 #include "Util.h"
 #include "GameBoard.h"
 
-/**
- * DevelopmentCard base class constructor.
- * @param player The owner of the card. May be @code nullptr @endcode for a card in the discard pile.
- */
-DevelopmentCard::DevelopmentCard(Player* player):owner(player)
+
+//Base Class
+DevelopmentCard::DevelopmentCard()
 {
 
 }
 
-/**
- * DevelopmentCard base class destructor.
- */
 DevelopmentCard::~DevelopmentCard() {
 	
 }
 
-/**
- * Getter for the owner of a development card.
- * @return The card's owner.
- */
-Player* DevelopmentCard::getOwner() {
-    return owner;
-}
 
-/**
- * Visitor double-dispatch method.
- * @param visitor The visiting instance.
- */
+
 void DevelopmentCard::accept(GameVisitor& visitor) {
     visitor.visit(*this);
 }
 
-/**
- * Tests equality between two development cards.
- * @param other Card to test equality with.
- * @return If the two cards are equal.
- */
 bool DevelopmentCard::operator==(const DevelopmentCard& other) {
 	return getType() == other.getType();
 }
 
-/**
- * Construct a Knight Card with its owning player.
- * @param player The owner of the card. May be @code nullptr @endcode for a card in the discard pile.
- */
-KnightCard::KnightCard(Player* player):DevelopmentCard(player)
+KnightCard::KnightCard():DevelopmentCard()
 {
 
 }
 
-/**
- * The type of card that this is.
- * @return The card's type.
- */
 DevCardType KnightCard::getType() const {
     return KNIGHT;
 }
 
-/**
- * Move the robber and steal a resource from another player.
- */
-void KnightCard::playCard()
+void KnightCard::playCard(Player *player, Coordinate target)
 {
-    //TODO: implement
+    //Call function to play card
+	board->moveRobber(target);
 }
 
-/**
- * 
- */
-VictoryPointCard::VictoryPointCard(Player* player):DevelopmentCard(player)
+
+VictoryPointCard::VictoryPointCard():DevelopmentCard()
 {
 
 }
 
-/**
- * The type of card that this is.
- * @return The card's type.
- */
 DevCardType VictoryPointCard::getType() const {
     return VICTORYPOINT;
 }
 
-/**
- * Permanently give the owning player a victory point.
- */
-void VictoryPointCard::playCard()
-{
-    //TODO:implement
-}
 
 
-YearOfPlentyCard::YearOfPlentyCard(Player* player):DevelopmentCard(player)
+YearOfPlentyCard::YearOfPlentyCard():DevelopmentCard()
 {
 
 }
 
-/**
- * The type of card that this is.
- * @return The card's type.
- */
 DevCardType YearOfPlentyCard::getType() const {
     return YEAROFPLENTY;
 }
 
-/**
- * Give the owning player two resources of her choice.
- */
-void YearOfPlentyCard::playCard()
+void YearOfPlentyCard::playCard(Player *player, int rType1, int rType2)
 {
-    //TODO: implement
+    //Call function to change knight positsion
+	player->addResource(rType1, 1);
+	player->addResource(rType2, 1);
+
 }
 
 
-/**
- * Construct the monopoly card with its owning player.
- */
-MonopolyCard::MonopolyCard(Player* player):DevelopmentCard(player)
+
+MonopolyCard::MonopolyCard():DevelopmentCard()
 {
 
 }
 
-/**
- * The type of card that this is.
- * @return The card's type.
- */
 DevCardType MonopolyCard::getType() const {
     return MONOPOLY;
 }
 
-/**
- * Collect all the resources of a specific type from other players.
- */
-void MonopolyCard::playCard()
+void MonopolyCard::playCard(Player *player, int rType)
 {
-    //TODO: implement
+	int totalResourceCount = 0;
+
+	for(int i=0; i<board->getNoOfPlayers(); i++)
+	{
+		Player* p = board->getPlayer(i);
+		totalResourceCount += p->getResource(rType);
+		p->addResource(rType, (-1*p->getResource(rType)) );
+	}
+	player->addResource(rType, totalResourceCount);
 }
 
 
-/**
- * Construct a road building card with its owning player.
- * @param player The owning player.
- */
-RoadBuildingCard::RoadBuildingCard(Player* player):DevelopmentCard(player){
-	
-};
 
-/**
- * The type of card that this is.
- * @return The card's type.
- */
+RoadBuildingCard::RoadBuildingCard():DevelopmentCard(){};
+
 DevCardType RoadBuildingCard::getType() const
 {
     return ROADBUILDING;
 }
 
-/**
- * Build two roads without cost at locations of the owner's choice.
- */
-void RoadBuildingCard::playCard()
-{
-    //Call function to build a road twice
-	//Perhaps this function could signal to the controller how it should receive input next.
-}
 
-/**
- * Build two roads without cost at the locations of the owner's choice.
- * @throws std::invalid_argument If either of the roads is invalid.
- * @param start1 The starting location of the first road.
- * @param end1 The ending location of the first road.
- * @param start2 The starting location of the second road.
- * @param end2 The ending location of the second road.
- */
-void RoadBuildingCard::playCard(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2){
-	if (!(getOwner()->getBoard()->PlaceRoad(start1, end1, *getOwner()))){
+
+void RoadBuildingCard::playCard(Player* player, Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2){
+	if (!board->PlaceRoad(start1, end1, *player)){
 		throw std::invalid_argument("The first road passed was not valid, no roads placed");
 	}
-	if ((!getOwner()->getBoard()->PlaceRoad(start2, end2, *getOwner()))){
+	if ((!board->PlaceRoad(start2, end2, *player))){
 		throw std::invalid_argument("The second road passed was not valid, only the first road was placed");
 	}
 }

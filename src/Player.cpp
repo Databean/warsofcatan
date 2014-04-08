@@ -35,6 +35,9 @@ Player::Player(std::string playerName) : name(playerName)
 	for(auto& r : resources) {
 		r = 0;
 	}
+	for(auto& t : tradeModifiers) {
+		t = 4;
+	}
 }
 
 /**
@@ -88,6 +91,7 @@ int Player::getDevCardsInHand()
 	return developmentCards.size();
 }
 
+
 /**
  * Determine if the player has enough resources to buy a road.
  * @return True if the player has enough resources to buy a road, false otherwise
@@ -98,7 +102,7 @@ bool Player::canBuyRoad(){
 
 /**
  * Subtracts the cost of a road from a player's resources if they have enough
- * @return True if the resources were subtracted, false otherwise.
+ * returns true if the resources were subtracted, false otherwise
  */
 bool Player::buyRoad(){
 	if(canBuyRoad()){
@@ -111,12 +115,14 @@ bool Player::buyRoad(){
 }
 
 
+
 /**
  * Update the player's internal state with their victory states.
  */
 void Player::updateVictoryPoints()
 {
     //TODO: Calculate and Update victory points
+
 }
 
 /**
@@ -129,6 +135,7 @@ int Player::getVictoryPointsWithoutCards()
     return victoryPoints - getVictoryPointCards();
 }
 
+
 /**
  * The number of victory points the player has from victory point cards.
  * @return Victory points from cards.
@@ -136,8 +143,15 @@ int Player::getVictoryPointsWithoutCards()
 int Player::getVictoryPointCards()
 {
 	//TODO:write function
-	return 0;
+	int retVal = 0;
+	for(int i =0; i<getDevCardsInHand(); i++)
+	{
+		if(developmentCards[i]->getType() == VICTORYPOINT)
+			retVal++;
+	}
+	return retVal;
 }
+
 
 /**
  * The number of victory points a player has.
@@ -164,6 +178,7 @@ void Player::setBoard(GameBoard * newboard){
 	board = newboard;
 }
 
+
 /**
  * Acquire a development card.
  * @param card An owning pointer to the card the player acquired.
@@ -173,23 +188,124 @@ void Player::buyCard(std::unique_ptr<DevelopmentCard> card)
     developmentCards.push_back(std::move(card));
 }
 
+
+//play method refactored for dev cards
+
+//void Player::playCard(int index)
+//{
+//	if(index >=developmentCards.size())
+//		return;
+//
+//	playCard(developmentCards[index]);
+//}
+
+
+//void Player::playCard(DevelopmentCard *card)
+//{
+//    auto cardTester = [card](std::unique_ptr<DevelopmentCard>& test) -> bool { return card == test.get(); };
+//    if(!std::any_of(developmentCards.begin(), developmentCards.end(), cardTester)) {
+//        return;
+//    }
+//    card->playCard();
+//    if (card->getType() == KNIGHT) {
+//        armySize++;
+//	}
+//
+//    std::remove_if(developmentCards.begin(), developmentCards.end(), cardTester);
+//}
+
+
 /**
- * Play a particular development card.
- * @param card The card to play.
+ * Sets the trade modifier for Wood to 2:1
  */
-void Player::playCard(DevelopmentCard *card)
+void Player::setWoodModifier()
 {
-    auto cardTester = [card](std::unique_ptr<DevelopmentCard>& test) -> bool { return card == test.get(); };
-    if(!std::any_of(developmentCards.begin(), developmentCards.end(), cardTester)) {
-        return;
-    }
-    card->playCard();
-    if (card->getType() == KNIGHT) {
-        armySize++;
+	tradeModifiers[WOOD_INDEX] = 2;
+}
+
+/**
+ * Sets the trade modifier for Brick to 2:1
+ */
+void Player::setBrickModifier()
+{
+	tradeModifiers[BRICK_INDEX] = 2;
+}
+
+/**
+ * Sets the trade modifier for Ore to 2:1
+ */
+void Player::setOreModifier()
+{
+	tradeModifiers[ORE_INDEX] = 2;
+}
+
+/**
+ * Sets the trade modifier for Wheat to 2:1
+ */
+void Player::setWheatModifier()
+{
+	tradeModifiers[WHEAT_INDEX] = 2;
+}
+
+/**
+ * Sets the trade modifier for Wool to 2:1
+ */
+void Player::setWoolModifier()
+{
+	tradeModifiers[WOOL_INDEX] = 2;
+}
+
+/**
+ * Sets the trade modifier for all resources to 3:1
+ */
+void Player::setGenralModifier()
+{
+	for(int i =0; i<5; i++)
+	{
+		if(tradeModifiers[i] == 4)
+			tradeModifiers[i] = 3;
+	}
+}
+
+
+/**
+ *Performs a trade with bank according to the trade modifiers for each resource
+ *@param offer An array representing your offer to the bank
+ *@param demand An array representing your demand
+ */
+void Player::tradeWithBank(int offer[], int demand[])
+{
+	for(int i=0; i<5; i++)
+	{
+		resources[i] -= offer[i]*tradeModifiers[i];
+		resources[i] += demand[i];
+	}
+}
+
+/**
+ * Offer the bank a trade
+ * @param offer An array representing your offer to the bank
+ * @param demand An array representing your demand
+ * @return true if bank accepted and trade was successful.
+ */
+bool Player::offerBankTrade(int offer[], int demand[])
+{
+	if(!checkResources(offer))
+		return false;
+
+	int offerToBank[5];
+
+	for(int i=0; i<5; i++)
+	{
+		if(offer[i]%tradeModifiers[i] != 0)
+			return false;
+		offerToBank[i] = offer[i]/tradeModifiers[i];
 	}
 
-    std::remove_if(developmentCards.begin(), developmentCards.end(), cardTester);
+	this->tradeWithBank(offerToBank, demand);
+	return true;
 }
+
 
 /**
  * Offer a trade to another player with an offer and a demand.
@@ -208,6 +324,7 @@ bool Player::offerTrade(Player* p, int offer[], int demand[])
 
 	return p->recieveOffer(this, offer, demand);
 }
+
 
 /**
  * Receive a trade offer from another player.
@@ -235,12 +352,14 @@ bool Player::recieveOffer(Player* p, int offer[], int demand[])
 
 }
 
+
 /**
  * Accept the trade offer from another player.
  * @param p The player offering the trade.
  * @param offer The resources the other player is offering.
  * @param demand The resources the other player wants in return.
  */
+
 bool Player::acceptOffer(Player* p, int offer[], int demand[])
 {
 	p->addWood(demand[WOOD_INDEX] - offer[WOOD_INDEX]);
@@ -259,12 +378,50 @@ bool Player::acceptOffer(Player* p, int offer[], int demand[])
 }
 
 
+/**
+ * picks any one resource at random for robber to steal
+ * @return type of resource to steal
+ */
+int Player::getRandomResource()
+{
+	int total = getWood() + getBrick() + getOre() + getWheat() + getWool();
+	int randomNo = 0;
+
+	if(getWood()!=0 && randomNo <= getWood())
+		return WOOD_INDEX;
+	else
+		randomNo -= getWood();
+
+	if(getBrick()!=0 && randomNo <= getBrick())
+		return BRICK_INDEX;
+	else
+		randomNo -= getBrick();
+
+	if(getOre()!=0 && randomNo <= getOre())
+		return ORE_INDEX;
+	else
+		randomNo -= getOre();
+
+	if(getWheat()!=0 && randomNo <= getWheat())
+		return WHEAT_INDEX;
+	else
+		randomNo -= getWheat();
+
+	if(getWool()!=0 && randomNo <= getWool())
+		return WOOL_INDEX;
+	else
+		randomNo -= getWool();
+
+	return -1;
+
+}
 
 
 /**
  * Determine if the player has a valid (nonnegative) set of resources.
  * @return If the player's resources are valid.
  */
+
 bool Player::checkResources(int resourceList[5])
 {
 	for(int i = 0; i < 5; i++)
@@ -275,10 +432,12 @@ bool Player::checkResources(int resourceList[5])
 	return true;
 }
 
+
 /**
  * The amount of wood a player has.
  * @return The player's wood.
  */
+
 int Player::getWood() const
 {
     return resources[WOOD_INDEX];
@@ -320,10 +479,8 @@ int Player::getWool() const
     return resources[WOOL_INDEX];
 }
 
-/**
- * Modify a player's wood supply.
- * @param resource The wood to add or remove.
- */
+
+
 void Player::addWood(int resource)
 {
 	if(resources[WOOD_INDEX] < (0-resource))
@@ -332,10 +489,6 @@ void Player::addWood(int resource)
 		resources[WOOD_INDEX] += resource;
 }
 
-/**
- * Modify a player's brick supply.
- * @param resource The brick to add or remove.
- */
 void Player::addBrick(int resource)
 {
 	if(resources[BRICK_INDEX] < (0-resource))
@@ -344,10 +497,6 @@ void Player::addBrick(int resource)
 		resources[BRICK_INDEX] += resource;
 }
 
-/**
- * Modify a player's ore supply.
- * @param resource The ore to add or remove.
- */
 void Player::addOre(int resource)
 {
 	if(resources[ORE_INDEX] < (0-resource))
@@ -356,10 +505,6 @@ void Player::addOre(int resource)
 		resources[ORE_INDEX] += resource;
 }
 
-/**
- * Modify a player's wheat supply.
- * @param resource The wheat to add or remove.
- */
 void Player::addWheat(int resource)
 {
 	if(resources[WHEAT_INDEX] < (0-resource))
@@ -368,10 +513,6 @@ void Player::addWheat(int resource)
 		resources[WHEAT_INDEX] += resource;
 }
 
-/**
- * Modify a player's wool supply.
- * @param resource The wool to add or remove.
- */
 void Player::addWool(int resource)
 {
 	if(resources[WOOL_INDEX] < (0-resource))
@@ -388,6 +529,7 @@ std::string Player::getName() const
 {
     return name;
 }
+
 
 /**
  * Modify a player's resource supply.
