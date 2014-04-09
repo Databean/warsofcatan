@@ -11,15 +11,12 @@
 
 
 TEST(RoadBuildingCard_good){
-	std::vector<std::unique_ptr<Player>> players {};
-	players.emplace_back(new Player("tester"));
-	Player& test_player = *players[0];
-	GameBoard test_board(std::move(players));
-	test_player.setBoard(&test_board);
+	GameBoard test_board({"tester"});
+	Player& test_player = test_board.getPlayer(0);
 
 	test_board.PlaceSettlement(Coordinate(0,0), test_player);
 
-	RoadBuildingCard test_card;
+	RoadBuildingCard test_card(test_board);
 
 	try{
 		test_card.playCard(&test_player, Coordinate(0,0), Coordinate(-1,1), Coordinate(0,0), Coordinate(1,0));
@@ -31,15 +28,12 @@ TEST(RoadBuildingCard_good){
 }
 
 TEST(RoadBuildingCard_bad){
-	std::vector<std::unique_ptr<Player>> players {};
-	players.emplace_back(new Player("tester"));
-	Player& test_player = *players[0];
-	GameBoard test_board(std::move(players));
-	test_player.setBoard(&test_board);
+	GameBoard test_board({"tester"});
+	Player& test_player = test_board.getPlayer(0);
 
 	test_board.PlaceSettlement(Coordinate(0,0), test_player);
 
-	RoadBuildingCard test_card;
+	RoadBuildingCard test_card(test_board);
 
 	try{
 		test_card.playCard(&test_player, Coordinate(0,0), Coordinate(0,2), Coordinate(0,0), Coordinate(1,0));
