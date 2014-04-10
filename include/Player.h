@@ -27,13 +27,10 @@ const int WOOL_INDEX = 4;
 
 class DevelopmentCard;
 class Deck;
-class GameBoard;
 
 
-/**
- * One of the players interacting with the Settlers of Catan game. Contains her name, victory points,
- * development cards, and resources.
- */
+
+
 class Player {
 private:
     std::string name;
@@ -43,16 +40,17 @@ private:
     int armySize;
     int longestRoad;
     int victoryPoints;
-    GameBoard* board;
+    GameBoard& board;
     int resources[5];
+    int tradeModifiers[5];
 
 
-
+    void tradeWithBank(int offer[], int demand[]);
 
 public:
 
-	Player(std::string playerName);
-	Player(tinyxml2::XMLElement*);
+	Player(GameBoard& board, std::string playerName);
+	Player(GameBoard& board, tinyxml2::XMLElement*);
 	~Player();
 
     int getVictoryPoints();
@@ -66,17 +64,27 @@ public:
     void buyCard(std::unique_ptr<DevelopmentCard> card);
     std::string getName() const;
 
-    GameBoard* getBoard();
-    void setBoard(GameBoard* newboard);
-
-    void playCard(DevelopmentCard* card);
+//    void playCard(int index);
+//    void playCard(DevelopmentCard* card);
 
     bool canBuyRoad();
     bool buyRoad();
 
+    void setWoodModifier();
+    void setBrickModifier();
+    void setOreModifier();
+    void setWheatModifier();
+    void setWoolModifier();
+
+    void setGenralModifier();			//3:1 port
+
+    bool offerBankTrade(int offer[], int demand[]);
+
     bool offerTrade(Player* p, int offer[], int demand[]);
     bool recieveOffer(Player* p, int offer[], int demand[]);
     bool acceptOffer(Player* p, int offer[], int demand[]);
+
+    int getRandomResource();
 
     bool checkResources(int resourceList[]);
 
@@ -92,6 +100,7 @@ public:
     void addWheat(int resource);
     void addWool(int resource);
 
+    int getResource(int resourceType) const; //
     void addResource(int resourceType, int delta);
 
 	void accept(GameVisitor& visitor);

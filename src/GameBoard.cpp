@@ -32,7 +32,11 @@ using std::vector;
  * Board tiles and roll numbers are randomized.
  * @param players A vector of the players playing the game.
  */
-GameBoard::GameBoard(vector<unique_ptr<Player>>&& players) : players(std::move(players)) {
+GameBoard::GameBoard(const vector<std::string>& playerNames) {
+	for(auto& name : playerNames) {
+		players.push_back(std::unique_ptr<Player>(new Player(*this, name)));
+	}
+	
 	std::srand(std::time(0));
 	
 	const static vector<resourceType> boardResources {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP};
@@ -104,7 +108,11 @@ void GameBoard::insertTile(Coordinate location, vector<resourceType>& resources,
  * @param resourceLocations A mapping from coordinates to resource types and dice values, representing the tiles.
  * @throws std::runtime_error When the configuration is invalid.
  */
-GameBoard::GameBoard(std::vector<std::unique_ptr<Player>>&& players, const std::map<Coordinate, std::pair<resourceType, int>>& resourceLocations) : players(std::move(players)) {
+GameBoard::GameBoard(const std::vector<std::string>& playerNames, const std::map<Coordinate, std::pair<resourceType, int>>& resourceLocations) {
+	for(auto& name : playerNames) {
+		players.push_back(std::unique_ptr<Player>(new Player(*this, name)));
+	}
+	
 	for(auto& resource : resourceLocations) {
 		resources[resource.first] = std::unique_ptr<ResourceTile>(new ResourceTile(*this, resource.first, resource.second.first, resource.second.second));
 	}
@@ -152,7 +160,7 @@ GameBoard::GameBoard(istream& in) {
 	auto playerElements = doc.RootElement()->FirstChildElement("players");
 	if(playerElements) {
 		for(auto playerElement = playerElements->FirstChildElement(); playerElement; playerElement = playerElement->NextSiblingElement()) {
-			unique_ptr<Player> player(new Player(playerElement));
+			unique_ptr<Player> player(new Player(*this, playerElement));
 			players.emplace_back(std::move(player));
 		}
 	}
@@ -723,6 +731,30 @@ bool GameBoard::isValidBoard() const {
 const std::vector<std::unique_ptr<Player>>& GameBoard::getPlayers() const {
 	return players;
 }
+
+
+/**
+ * @return no of players
+ */
+int GameBoard::getNoOfPlayers()
+{
+	return players.size();
+}
+
+
+/**
+ * @param index The index to look at.
+ * @return player at index index
+ */
+Player& GameBoard::getPlayer(int index)
+{
+	if(index >= getNoOfPlayers())
+		throw std::runtime_error("Invalid player index.");
+
+	return *players[index];
+}
+
+
 
 /**
  *  When a player begins their turn, this rolls the dice and takes the required action (paying resources or enabling robber movement)

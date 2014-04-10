@@ -76,14 +76,12 @@ int main(int argc, char *argv[]) {
 
 	updateViewport(windowWidth, windowHeight);
 	
-	vector<unique_ptr<Player>> players;
-	players.emplace_back(unique_ptr<Player>(new Player("test")));
 	
-	Player& firstPlayer = *players[0];
-	
-	GameBoard model(std::move(players));
+	GameBoard model({"testPlayer"});
 	GameView view(model);
 	GameController controller(model, view);
+	
+	Player& firstPlayer = model.getPlayer(0);
 	
 	model.PlaceSettlement(Coordinate{0, 0}, firstPlayer);
 	model.PlaceRoad(Coordinate{0, 0}, Coordinate{1, 0}, firstPlayer);

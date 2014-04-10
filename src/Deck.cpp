@@ -11,32 +11,32 @@
 /**
  * Construct a Deck with the standard cards available in the Settlers of Catan game.
  */
-Deck::Deck()
+Deck::Deck(GameBoard& board)
 {
 	// TODO Auto-generated constructor stub
 	for(int i = 0; i < 15; i++)
 	{
-		DevelopmentCard* card = new KnightCard(NULL);
+		DevelopmentCard* card = new KnightCard(board);
 		this->deck.push_back(card);
 	}
 	for(int i = 0; i < 4; i++)
 	{
-		DevelopmentCard* card = new VictoryPointCard(NULL);
+		DevelopmentCard* card = new VictoryPointCard(board);
 		this->deck.push_back(card);
 	}
 	for(int i = 0; i < 2; i++)
 	{
-		DevelopmentCard* card = new YearOfPlentyCard(NULL);
+		DevelopmentCard* card = new YearOfPlentyCard(board);
 		this->deck.push_back(card);
 	}
 	for(int i = 0; i < 2; i++)
 	{
-		DevelopmentCard* card = new MonopolyCard(NULL);
+		DevelopmentCard* card = new MonopolyCard(board);
 		this->deck.push_back(card);
 	}
 	for(int i = 0; i < 2; i++)
 	{
-		DevelopmentCard* card = new RoadBuildingCard(NULL);
+		DevelopmentCard* card = new RoadBuildingCard(board);
 		this->deck.push_back(card);
 	}
     
