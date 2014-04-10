@@ -13,6 +13,7 @@
 void renderBoard(const GameBoard& board, const Player& perspective);
 
 GLuint loadImageAsTexture(const std::string& name);
+GLuint loadTextAsTexture(const std::string& font, int fontSize, const std::string& text);
 
 void renderText(const std::string& font, int fontSize, const std::pair<float, float> bottomLeft, const std::pair<float, float> topRight, const std::string& text);
 

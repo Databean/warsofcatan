@@ -20,6 +20,4 @@ warsofcatan
 /Default
 *.wocs
 
-sdl2ttf/.libs/*
-sdl2ttf/glfont
-sdl2ttf/showfont
+documentation/*
