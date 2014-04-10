@@ -1,4 +1,9 @@
-#include <UnitTest++.h>
+#include <iostream>
+#include <sstream>
+#include <memory>
+#include <vector>
+
+#include "gtest/gtest.h"
 
 #include "Serialization.h"
 #include "GameBoard.h"
@@ -7,16 +12,11 @@
 
 #include "tinyxml2.h"
 
-#include <iostream>
-#include <sstream>
-#include <memory>
-#include <vector>
-
 using std::vector;
 using std::unique_ptr;
 using std::stringstream;
 
-TEST(emptyBoardSerialization) {
+TEST(SerializationTest, emptyBoardSerialization) {
 	GameBoard testBoard({});
 	
 	stringstream stream;
@@ -24,10 +24,10 @@ TEST(emptyBoardSerialization) {
 	
 	GameBoard copyBoard(stream);
 	
-	CHECK(testBoard == copyBoard);
+	ASSERT_EQ(testBoard, copyBoard);
 }
 
-TEST(multiplePlayerSerialization) {
+TEST(SerializationTest, multiplePlayerSerialization) {
 	GameBoard testBoard({"test", "test2"});
 	
 	stringstream stream;
@@ -35,10 +35,10 @@ TEST(multiplePlayerSerialization) {
 	
 	GameBoard copyBoard(stream);
 	
-	CHECK(testBoard == copyBoard);
+	ASSERT_EQ(testBoard, copyBoard);
 }
 
-TEST(testCardSerialization) {
+TEST(SerializationTest, testCardSerialization) {
 	GameBoard testBoard({"test"});
 	Player& testPlayer = testBoard.getPlayer(0);
 	testPlayer.buyCard(unique_ptr<DevelopmentCard>(new KnightCard(testBoard)));
@@ -52,10 +52,10 @@ TEST(testCardSerialization) {
 	
 	GameBoard copyBoard(stream);
 	
-	CHECK(testBoard == copyBoard);
+	ASSERT_EQ(testBoard, copyBoard);
 }
 
-TEST(roadSerialization) {
+TEST(SerializationTest, roadSerialization) {
 	GameBoard testBoard({"test", "test2"});
 	Player& firstPlayer = testBoard.getPlayer(0);
 	Player& secondPlayer = testBoard.getPlayer(1);
@@ -70,10 +70,10 @@ TEST(roadSerialization) {
 	
 	GameBoard copyBoard(stream);
 	
-	CHECK(testBoard == copyBoard);
+	ASSERT_EQ(testBoard, copyBoard);
 }
 
-TEST(settlementSerialization) {
+TEST(SerializationTest, settlementSerialization) {
 	GameBoard testBoard({"test"});
 	Player& player = testBoard.getPlayer(0);
 	
@@ -85,5 +85,5 @@ TEST(settlementSerialization) {
 	
 	GameBoard copyBoard(stream);
 	
-	CHECK(testBoard == copyBoard);
+	ASSERT_EQ(testBoard, copyBoard);
 }

@@ -3,14 +3,15 @@
 #include <map>
 #include <stdexcept>
 
+#include "gtest/gtest.h"
+
 #include "GameBoard.h"
 #include "GamePiece.h"
 #include "DevelopmentCard.h"
 #include "Util.h"
-#include "UnitTest++.h"
 
 
-TEST(RoadBuildingCard_good){
+TEST(DevCardTest, RoadBuildingCard_good){
 	GameBoard test_board({"tester"});
 	Player& test_player = test_board.getPlayer(0);
 
@@ -20,14 +21,14 @@ TEST(RoadBuildingCard_good){
 
 	try{
 		test_card.playCard(&test_player, Coordinate(0,0), Coordinate(-1,1), Coordinate(0,0), Coordinate(1,0));
-		CHECK(true);
+		ASSERT_TRUE(true);
 	} catch (std::invalid_argument& e){
 		std::cout << e.what();
-		CHECK(false);
+		ASSERT_TRUE(false);
 	}
 }
 
-TEST(RoadBuildingCard_bad){
+TEST(DevCardTest, RoadBuildingCard_bad){
 	GameBoard test_board({"tester"});
 	Player& test_player = test_board.getPlayer(0);
 
@@ -37,16 +38,16 @@ TEST(RoadBuildingCard_bad){
 
 	try{
 		test_card.playCard(&test_player, Coordinate(0,0), Coordinate(0,2), Coordinate(0,0), Coordinate(1,0));
-		CHECK(false);
+		ASSERT_TRUE(false);
 	} catch (std::invalid_argument& e){
-		CHECK(true);
+		ASSERT_TRUE(true);
 	}
 
 	try{
 		test_card.playCard(&test_player, Coordinate(0,0), Coordinate(0,1), Coordinate(0,0), Coordinate(2,2));
-		CHECK(false);
+		ASSERT_TRUE(false);
 	} catch (std::invalid_argument& e){
-		CHECK(true);
+		ASSERT_TRUE(true);
 	}
 
 }
