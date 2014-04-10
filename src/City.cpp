@@ -20,7 +20,6 @@ City::~City() {
 }
 
 /**
- * 
  * @param visitor The visiting member.
  */
 void City::accept(GameVisitor& visitor) {
@@ -49,7 +48,7 @@ int City::getResourceModifier() {
  * @return The victory points the player gets from the city.
  */
 int City::getVictoryPoints() {
-	return 2; //TODO: implement robber check here
+	return 2;
 }
 
 /**
