@@ -99,12 +99,12 @@ int Player::getDevCardsInHand()
  * @return True if the player has enough resources to buy a road, false otherwise
  */
 bool Player::canBuyRoad(){
-	return getWood() > 0 && getBrick() > 0;
+	return getWood() >= 1 && getBrick() >= 1;
 }
 
 /**
  * Subtracts the cost of a road from a player's resources if they have enough
- * returns true if the resources were subtracted, false otherwise
+ * @return true if the resources were subtracted, false otherwise
  */
 bool Player::buyRoad(){
 	if(canBuyRoad()){
@@ -116,27 +116,70 @@ bool Player::buyRoad(){
 	return false;
 }
 
+/**
+ * Determine if the player has enough resources to buy a settlement.
+ * @return True if the player has enough resources to buy a road, false otherwise
+ */
 bool Player::canBuySettlement(){
-	return false;
+	return getWood() >= 1 && getBrick() >= 1 && getWheat() >= 1 && getWool() >= 1;
 }
 
+/**
+ * Subtracts the cost of a road from a player's resources if they have enough
+ * @return true if the resources were subtracted, false otherwise
+ */
 bool Player::buySettlement(){
+	if(canBuySettlement()){
+		addWood(-1);
+		addBrick(-1);
+		addWheat(-1);
+		addWool(-1);
+		return true;
+	}
 	return false;
 }
 
+/**
+ * Determine if the player has enough resources to buy a city.
+ * @return True if the player has enough resources to buy a road, false otherwise
+ */
 bool Player::canBuyCity(){
-	return false;
+	return getWheat() >= 2 && getOre() >= 3;
 }
 
+/**
+ * Subtracts the cost of a city from a player's resources if they have enough
+ * @return true if the resources were subtracted, false otherwise
+ */
 bool Player::buyCity(){
+	if(canBuyCity()){
+		addWheat(-2);
+		addOre(-3);
+	}
 	return false;
 }
 
+/**
+ * Determine if the player has enough resources to buy a wonder.
+ * @return True if the player has enough resources to buy a road, false otherwise
+ */
 bool Player::canBuyWonder(){
-	return false;
+	return getWood() >= 5 && getBrick() >= 5 && getWheat() >= 5 && getWool() >= 5 && getOre() >= 5;
 }
 
+/**
+ * Subtracts the cost of a wonder from a player's resources if they have enough
+ * @return true if the resources were subtracted, false otherwise
+ */
 bool Player::buyWonder(){
+	if(canBuySettlement()){
+		addWood(-5);
+		addBrick(-5);
+		addWheat(-5);
+		addWool(-5);
+		addOre(-5);
+		return true;
+	}
 	return false;
 }
 
