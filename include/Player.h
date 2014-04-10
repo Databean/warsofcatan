@@ -69,6 +69,12 @@ public:
 
     bool canBuyRoad();
     bool buyRoad();
+    bool canBuySettlement();
+    bool buySettlement();
+    bool canBuyCity();
+    bool buyCity();
+    bool canBuyWonder();
+    bool buyWonder();
 
     void setWoodModifier();
     void setBrickModifier();

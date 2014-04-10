@@ -116,6 +116,30 @@ bool Player::buyRoad(){
 	return false;
 }
 
+bool Player::canBuySettlement(){
+	return false;
+}
+
+bool Player::buySettlement(){
+	return false;
+}
+
+bool Player::canBuyCity(){
+	return false;
+}
+
+bool Player::buyCity(){
+	return false;
+}
+
+bool Player::canBuyWonder(){
+	return false;
+}
+
+bool Player::buyWonder(){
+	return false;
+}
+
 
 
 /**
