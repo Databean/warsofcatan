@@ -69,3 +69,16 @@ Wonder::Wonder(CornerPiece& sett) : CornerPiece(sett.getBoard(), sett.getLocatio
 
 }
 
+/**
+ * Determines if a piece is the same
+ * @return boolean
+ */
+bool City::operator==(const City& other) const {
+	auto won = dynamic_cast<const Wonder*>(&other);
+	if(won) {
+		return getOwner().getName() == won->getOwner().getName() && getLocation() == won->getLocation();
+	} else {
+		return false;
+	}
+}
+

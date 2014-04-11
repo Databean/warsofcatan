@@ -58,3 +58,16 @@ int City::getVictoryPoints() {
 City::City(CornerPiece& sett) : CornerPiece(sett.getBoard(), sett.getLocation(), sett.getOwner()) {
 
 }
+
+/**
+ * Determines if a piece is the same
+ * @return boolean
+ */
+bool City::operator==(const City& other) const {
+	auto city = dynamic_cast<const City*>(&other);
+	if(city) {
+		return getOwner().getName() == city->getOwner().getName() && getLocation() == city->getLocation();
+	} else {
+		return false;
+	}
+}

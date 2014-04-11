@@ -21,6 +21,8 @@ class City : public CornerPiece {
 	
 		int getResourceModifier();
 		int getVictoryPoints();
+
+		bool operator==(const City&) const;
 };
 
 #endif

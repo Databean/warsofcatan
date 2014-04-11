@@ -10,7 +10,7 @@
 
 #include "CornerPiece.h"
 
-class Wonder {
+class Wonder : public CornerPiece {
 	private:
 
 	public:
@@ -25,6 +25,8 @@ class Wonder {
 
 		int getResourceModifier();
 		int getVictoryPoints();
+
+		bool operator==(const Wonder&) const;
 };
 
 #endif /* WONDER_H_ */

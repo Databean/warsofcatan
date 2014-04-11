@@ -23,6 +23,8 @@ public:
 	virtual int getResourceModifier();
 
 	virtual int getVictoryPoints();
+
+	virtual bool operator==(const CornerPiece&) const;
 };
 
 #endif
