@@ -20,8 +20,6 @@ public:
 	virtual bool operator==(const GamePiece&) const;
 	int getResourceModifier();
 	int getVictoryPoints();
-
-	bool operator==(const Settlement&) const;
 };
 
 #endif

@@ -30,6 +30,7 @@ public:
 	virtual void visit(ResourceTile&) = 0;
 	virtual void visit(DevelopmentCard&) = 0;
 	virtual void visit(Wonder&) = 0;
+	virtual void visit(CornerPiece&) = 0;
 };
 
 #endif

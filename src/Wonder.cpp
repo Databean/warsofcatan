@@ -41,8 +41,13 @@ void Wonder::accept(GameVisitor& visitor) {
  * @param p The piece to test with
  * @return True if this object is equal to the other, false if not.
  */
-bool Wonder::operator==(const GamePiece& p) const {
-	return false; //TODO: Actually compare.
+bool Wonder::operator==(const GamePiece& other) const {
+	auto won = dynamic_cast<const Wonder*>(&other);
+	if(won) {
+		return getOwner().getName() == won->getOwner().getName() && getLocation() == won->getLocation();
+	} else {
+		return false;
+	}
 }
 
 /**
@@ -69,16 +74,5 @@ Wonder::Wonder(CornerPiece& sett) : CornerPiece(sett.getBoard(), sett.getLocatio
 
 }
 
-/**
- * Determines if a piece is the same
- * @return boolean
- */
-bool City::operator==(const City& other) const {
-	auto won = dynamic_cast<const Wonder*>(&other);
-	if(won) {
-		return getOwner().getName() == won->getOwner().getName() && getLocation() == won->getLocation();
-	} else {
-		return false;
-	}
-}
+
 

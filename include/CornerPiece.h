@@ -20,11 +20,13 @@ public:
 	Player& getOwner();
 	const Player& getOwner() const;
 
+	void accept(GameVisitor& visitor)
+
 	virtual int getResourceModifier();
 
 	virtual int getVictoryPoints();
 
-	virtual bool operator==(const CornerPiece&) const;
+	virtual bool operator==(const GamePiece&) const;
 };
 
 #endif

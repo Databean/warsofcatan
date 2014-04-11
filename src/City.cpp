@@ -28,11 +28,16 @@ void City::accept(GameVisitor& visitor) {
 
 /**
  * Test for equality with another game piece.
- * @param p The piece to test with
+ * @param other The piece to test with
  * @return True if this object is equal to the other, false if not.
  */
-bool City::operator==(const GamePiece& p) const {
-	return false; //TODO: Actually compare.
+bool City::operator==(const GamePiece& other) const {
+	auto city = dynamic_cast<const City*>(&other);
+	if(city) {
+		return getOwner().getName() == city->getOwner().getName() && getLocation() == city->getLocation();
+	} else {
+		return false;
+	}
 }
 
 /**
@@ -59,15 +64,4 @@ City::City(CornerPiece& sett) : CornerPiece(sett.getBoard(), sett.getLocation(),
 
 }
 
-/**
- * Determines if a piece is the same
- * @return boolean
- */
-bool City::operator==(const City& other) const {
-	auto city = dynamic_cast<const City*>(&other);
-	if(city) {
-		return getOwner().getName() == city->getOwner().getName() && getLocation() == city->getLocation();
-	} else {
-		return false;
-	}
-}
+

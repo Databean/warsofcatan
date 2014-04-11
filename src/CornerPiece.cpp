@@ -18,6 +18,14 @@ CornerPiece::~CornerPiece() {
 }
 
 /**
+ * Visitor double-dispatch method.
+ * @param visitor The visiting instance.
+ */
+void CornerPiece::accept(GameVisitor& visitor) {
+	visitor.visit(*this);
+}
+
+/**
  * Getter for the owner of the piece.
  * @return The piece's owner.
  */
@@ -53,7 +61,7 @@ int CornerPiece::getResourceModifier() {
  * Determines if a piece is the same
  * @return boolean
  */
-bool CornerPiece::operator==(const CornerPiece& other) const {
+bool CornerPiece::operator==(const GamePiece& other) const {
 	auto cp = dynamic_cast<const CornerPiece*>(&other);
 	if(cp) {
 		return getOwner().getName() == cp->getOwner().getName() && getLocation() == cp->getLocation();

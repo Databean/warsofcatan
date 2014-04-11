@@ -26,7 +26,6 @@ class Wonder : public CornerPiece {
 		int getResourceModifier();
 		int getVictoryPoints();
 
-		bool operator==(const Wonder&) const;
 };
 
 #endif /* WONDER_H_ */
