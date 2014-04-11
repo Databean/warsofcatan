@@ -105,6 +105,7 @@ public:
     void addOre(int resource);
     void addWheat(int resource);
     void addWool(int resource);
+    void addMultiple(int wood, int brick, int ore, int wheat, int wool);
 
     int getResource(int resourceType) const; //
     void addResource(int resourceType, int delta);

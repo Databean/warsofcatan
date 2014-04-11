@@ -108,8 +108,7 @@ bool Player::canBuyRoad(){
  */
 bool Player::buyRoad(){
 	if(canBuyRoad()){
-		addWood(-1);
-		addBrick(-1);
+		addMultiple(-1,-1,0,0,0);
 		return true;
 	}
 	//insufficient funds
@@ -130,10 +129,7 @@ bool Player::canBuySettlement(){
  */
 bool Player::buySettlement(){
 	if(canBuySettlement()){
-		addWood(-1);
-		addBrick(-1);
-		addWheat(-1);
-		addWool(-1);
+		addMultiple(-1,-1,0,-1,-1);
 		return true;
 	}
 	return false;
@@ -153,8 +149,7 @@ bool Player::canBuyCity(){
  */
 bool Player::buyCity(){
 	if(canBuyCity()){
-		addWheat(-2);
-		addOre(-3);
+		addMultiple(0,0,-3,-2,0);
 	}
 	return false;
 }
@@ -173,11 +168,7 @@ bool Player::canBuyWonder(){
  */
 bool Player::buyWonder(){
 	if(canBuySettlement()){
-		addWood(-5);
-		addBrick(-5);
-		addWheat(-5);
-		addWool(-5);
-		addOre(-5);
+		addMultiple(-5,-5,-5,-5,-5);
 		return true;
 	}
 	return false;
@@ -544,7 +535,10 @@ int Player::getWool() const
 }
 
 
-
+/**
+ * Adds (or subtracts) the amount of wood a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addWood(int resource)
 {
 	if(resources[WOOD_INDEX] < (0-resource))
@@ -553,6 +547,10 @@ void Player::addWood(int resource)
 		resources[WOOD_INDEX] += resource;
 }
 
+/**
+ * Adds (or subtracts) the amount of brick a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addBrick(int resource)
 {
 	if(resources[BRICK_INDEX] < (0-resource))
@@ -561,6 +559,10 @@ void Player::addBrick(int resource)
 		resources[BRICK_INDEX] += resource;
 }
 
+/**
+ * Adds (or subtracts) the amount of ore a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addOre(int resource)
 {
 	if(resources[ORE_INDEX] < (0-resource))
@@ -569,6 +571,10 @@ void Player::addOre(int resource)
 		resources[ORE_INDEX] += resource;
 }
 
+/**
+ * Adds (or subtracts) the amount of wheat a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addWheat(int resource)
 {
 	if(resources[WHEAT_INDEX] < (0-resource))
@@ -577,12 +583,30 @@ void Player::addWheat(int resource)
 		resources[WHEAT_INDEX] += resource;
 }
 
+/**
+ * Adds (or subtracts) the amount of wool a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addWool(int resource)
 {
 	if(resources[WOOL_INDEX] < (0-resource))
 		resources[WOOL_INDEX] = 0;
 	else
 		resources[WOOL_INDEX] += resource;
+}
+
+/**
+ * Adds (or subtracts) the amount of resources a player has
+ * Param order: wood, brick, ore, wheat, wool
+ * @param [resource], the number to add (negative to subtract)
+ *
+ */
+void Player::addMultiple(int wood, int brick, int ore, int wheat, int wool){
+	addWood(wood);
+	addBrick(brick);
+	addOre(ore);
+	addWheat(wheat);
+	addWool(wool);
 }
 
 /**
@@ -601,7 +625,10 @@ std::string Player::getName() const
  * @param delta The change in the resource.
  */
 void Player::addResource(int resourceType, int delta) {
-	resources[resourceType] += delta;
+	if(resources[resourceType] < (0-delta))
+		resources[resourceType] = 0;
+	else
+		resources[resourceType] += delta;
 	
 }
 
