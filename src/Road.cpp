@@ -18,16 +18,23 @@ Road::Road(Coordinate start, Coordinate end, Player& Owner) : owner(Owner) {
 	}
 	
 	//If the input is bad, throw an exception so bad roads won't be built
-	if(!checkRoad()){
-		throw std::invalid_argument("Road start on one corner and go to a corner exactly 1 away");
+	if(!isValidRoad(start, end)){
+		throw std::invalid_argument("Road must start on one corner and go to a corner exactly 1 away");
 	}
+}
+
+/**
+ * Destroy the road.
+ */
+Road::~Road() {
+	
 }
 
 /**
  * Valid roads must start in one point and end in another point a distance of 1 away.
  * @return If the road is a valid road.
  */
-bool Road::checkRoad(){
+bool Road::isValidRoad(Coordinate start, Coordinate end){
 	if (start == end)
 		return false;
 	if (abs((start.second - end.second) > 1))
@@ -37,12 +44,6 @@ bool Road::checkRoad(){
 	return (dist <= 1);
 }
 
-/**
- * Destroy the road.
- */
-Road::~Road() {
-	
-}
 
 /**
  * 

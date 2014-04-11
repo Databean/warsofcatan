@@ -40,8 +40,6 @@ private:
 	
 	bool isValidBoard() const;
 	
-
-	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const;
 	bool outOfBounds(const Coordinate& coord) const;
 	bool roadExists(Coordinate start, Coordinate end) const;
 	bool isRoadConnectionPoint(Coordinate point, Player& Owner) const;
@@ -90,6 +88,7 @@ public:
 	//void PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
 
 
+	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const;
 	bool buyRoad(Coordinate start, Coordinate end, Player& Owner);
 
 	//void PlaceSettlement(Coordinate location, Player& Owner);

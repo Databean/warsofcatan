@@ -402,6 +402,9 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
 	if (!isRoadConnectionPoint(start, Owner) && !isRoadConnectionPoint(end, Owner)) //need to XOR
 		return false;
 
+	if(!Road::isValidRoad(start, end))
+		return false;
+
 	return true;
 }
 

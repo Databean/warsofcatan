@@ -214,7 +214,11 @@ bool Player::playMonopoly(int resourceType){
 bool Player::playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2){
 	std::cout << "PLAYING ROADBUILDINGCARD\n";
 	if(developmentCards[ROADBUILDING] > 0){
-		return true;
+//		if(board->verifyRoadPlacement(start1, end1, this) && board->verifyRoadPlacement(start2, end2, this)){
+//			board->PlaceRoad(start1, end1, this);
+//			board->PlaceRoad(start2, end2, this);
+//			return true;
+//		}
 	}
 	return false;
 }
