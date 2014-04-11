@@ -9,6 +9,7 @@
 #include "GL/gl.h"
 
 #include "GameVisitor.h"
+#include "Renderer.h"
 #include "Util.h"
 
 class GameBoard;
@@ -153,6 +154,57 @@ public:
 template<class Fn>
 std::unique_ptr<ViewElement> makeViewButtonColor(Fn fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::tuple<float, float, float> color) {
 	return std::unique_ptr<ViewElement>(new ViewButtonColor<Fn>(fn, rect, color));
+}
+
+/**
+ * A view element drawn as some text on the screen that has a callback function when it is clicked.
+ */
+template<class Fn>
+class ViewButtonText : public ViewButton<Fn> {
+private:
+	GLuint texture;
+	
+	ViewButtonText(const ViewButtonText& vb) : ViewElement(vb) {} //deleted
+	ViewButtonText& operator=(const ViewButtonText& vb) { return *this; }
+public:
+	ViewButtonText(Fn action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, const std::string& font, int fontSize, const std::string& text) : ViewButton<Fn>(action, rect) {
+		texture = loadTextAsTexture(font, fontSize, text);
+	}
+	virtual ~ViewButtonText() {
+		glDeleteTextures(1, &texture);
+	}
+	
+	virtual void render() {
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glColor3f(1.0, 1.0, 1.0);
+		auto topLeft = ViewElement::getRect().first;
+		auto bottomRight = ViewElement::getRect().second;
+		glBegin(GL_QUADS);
+		glTexCoord2i(0, 1);
+		glVertex2f(topLeft.first, topLeft.second);
+		glTexCoord2i(1, 1);
+		glVertex2f(bottomRight.first, topLeft.second);
+		glTexCoord2i(1, 0);
+		glVertex2f(bottomRight.first, bottomRight.second);
+		glTexCoord2i(0, 0);
+		glVertex2f(topLeft.first, bottomRight.second);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+};
+
+/**
+ * Constructs a ViewButtonText using the same parameters as the ViewButtonText. Exists because template inference exists only
+ * for functions, not classes.
+ * @param fn The callback function to be called with the ScreenCoordinate clicked and returning a boolean on if it was handled.
+ * @param rect The location on screen to draw to and receive clicks from.
+ * @param font The path to the font to use to draw the text.
+ * @param fontSize The font size of the text.
+ * @param text The text to render.
+ */
+template<class Fn>
+std::unique_ptr<ViewElement> makeViewButtonText(Fn fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect, const std::string& font, int fontSize, const std::string& text) {
+	return std::unique_ptr<ViewElement>(new ViewButtonText<Fn>(fn, rect, font, fontSize, text));
 }
 
 #endif
