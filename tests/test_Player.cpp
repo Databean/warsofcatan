@@ -170,54 +170,121 @@ TEST(Trade_Modifiers_Mixed){
 TEST(Buy_Settlement_True){
 	Player tp(NULL, "Buster");
 	tp.addMultiple(5,5,5,5,5);
+	CHECK_EQUAL(true, tp.canBuySettlement());
+	tp.buySettlement();
+	CHECK_EQUAL(4, tp.getWood());
+	CHECK_EQUAL(4, tp.getBrick());
+	CHECK_EQUAL(5, tp.getOre());
+	CHECK_EQUAL(4, tp.getWheat());
+	CHECK_EQUAL(4, tp.getOre());
 }
 
 TEST(Buy_Settlement_False){
 	Player tp(NULL, "Buster");
 	tp.addMultiple(0,1,1,1,1);
+	CHECK_EQUAL(false, tp.canBuySettlement());
+	tp.buySettlement();
+	CHECK_EQUAL(0, tp.getWood());
+	CHECK_EQUAL(1, tp.getBrick());
+	CHECK_EQUAL(1, tp.getOre());
+	CHECK_EQUAL(1, tp.getWheat());
+	CHECK_EQUAL(1, tp.getOre());
 }
 
 TEST(Buy_Road_True){
 	Player tp(NULL, "Buster");
 	tp.addMultiple(5,5,5,5,5);
+	CHECK_EQUAL(true, tp.canBuyRoad());
+	tp.buyRoad();
+	CHECK_EQUAL(4, tp.getWood());
+	CHECK_EQUAL(4, tp.getBrick());
+	CHECK_EQUAL(5, tp.getOre());
+	CHECK_EQUAL(5, tp.getWheat());
+	CHECK_EQUAL(5, tp.getOre());
 }
 
 TEST(Buy_Road_False){
 	Player tp(NULL, "Buster");
 	tp.addMultiple(0,1,1,1,1);
+	CHECK_EQUAL(false, tp.canBuyRoad());
+	tp.buyRoad();
+	CHECK_EQUAL(0, tp.getWood());
+	CHECK_EQUAL(1, tp.getBrick());
+	CHECK_EQUAL(1, tp.getOre());
+	CHECK_EQUAL(1, tp.getWheat());
+	CHECK_EQUAL(1, tp.getOre());
 }
 
 TEST(Buy_City_True){
 	Player tp(NULL, "Buster");
 	tp.addMultiple(5,5,5,5,5);
+	CHECK_EQUAL(true, tp.canBuyCity());
+	tp.buyCity();
+	CHECK_EQUAL(5, tp.getWood());
+	CHECK_EQUAL(5, tp.getBrick());
+	CHECK_EQUAL(2, tp.getOre());
+	CHECK_EQUAL(3, tp.getWheat());
+	CHECK_EQUAL(5, tp.getOre());
 }
 
 TEST(Buy_City_False){
 	Player tp(NULL, "Buster");
 	tp.addMultiple(1,1,1,1,1);
+	CHECK_EQUAL(false, tp.canBuyCity());
+	tp.buyCity();
+	CHECK_EQUAL(1, tp.getWood());
+	CHECK_EQUAL(1, tp.getBrick());
+	CHECK_EQUAL(1, tp.getOre());
+	CHECK_EQUAL(1, tp.getWheat());
+	CHECK_EQUAL(1, tp.getOre());
 }
 
 TEST(Buy_Wonder_True){
 	Player tp(NULL, "Buster");
 	tp.addMultiple(6,6,6,6,6);
-
+	CHECK_EQUAL(true, tp.canBuyWonder());
+	tp.buyWonder();
+	CHECK_EQUAL(1, tp.getWood());
+	CHECK_EQUAL(1, tp.getBrick());
+	CHECK_EQUAL(1, tp.getOre());
+	CHECK_EQUAL(1, tp.getWheat());
+	CHECK_EQUAL(1, tp.getOre());
 }
 
 TEST(Buy_Wonder_False){
 	Player tp(NULL, "Buster");
 	tp.addMultiple(5,5,1,5,5);
+	CHECK_EQUAL(false, tp.canBuyWonder());
+	tp.buyWonder();
+	CHECK_EQUAL(5, tp.getWood());
+	CHECK_EQUAL(5, tp.getBrick());
+	CHECK_EQUAL(1, tp.getOre());
+	CHECK_EQUAL(5, tp.getWheat());
+	CHECK_EQUAL(5, tp.getOre());
 }
 
 TEST(Buy_DevCard_True){
 	Player tp(NULL, "Buster");
 	tp.addMultiple(5,5,5,5,5);
+	CHECK_EQUAL(true, tp.canBuyCard());
+	tp.buyCard();
+	CHECK_EQUAL(5, tp.getWood());
+	CHECK_EQUAL(5, tp.getBrick());
+	CHECK_EQUAL(4, tp.getOre());
+	CHECK_EQUAL(4, tp.getWheat());
+	CHECK_EQUAL(4, tp.getOre());
 }
 
 TEST(Buy_DevCard_False){
 	Player tp(NULL, "Buster");
 	tp.addMultiple(1,1,0,1,1);
-	CHECK_EQUAL(FALSE, tp.canBuyCard());
+	CHECK_EQUAL(false, tp.canBuyCard());
 	tp.buyCard();
+	CHECK_EQUAL(1, tp.getWood());
+	CHECK_EQUAL(1, tp.getBrick());
+	CHECK_EQUAL(0, tp.getOre());
+	CHECK_EQUAL(1, tp.getWheat());
+	CHECK_EQUAL(1, tp.getOre());
 }
 
 
