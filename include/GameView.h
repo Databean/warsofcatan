@@ -168,10 +168,17 @@ private:
 	ViewButtonText& operator=(const ViewButtonText& vb) { return *this; }
 public:
 	ViewButtonText(Fn action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, const std::string& font, int fontSize, const std::string& text) : ViewButton<Fn>(action, rect) {
-		texture = loadTextAsTexture(font, fontSize, text);
+		setText(font, fontSize, text);
 	}
 	virtual ~ViewButtonText() {
 		glDeleteTextures(1, &texture);
+	}
+	
+	void setText(const std::string& font, int fontSize, const std::string& text) {
+		if(texture != 0) {
+			glDeleteTextures(1, &texture);
+		}
+		texture = loadTextAsTexture(font, fontSize, text);
 	}
 	
 	virtual void render() {
