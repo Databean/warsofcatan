@@ -15,6 +15,8 @@
 GameController::GameController(GameBoard& model, GameView& view) : model(model), view(view) {
 	using namespace std::placeholders;
 	
+	view.addElement(makeViewButton(std::bind(&GameController::handleBoardEvent, this, _1), {{0, 0}, {1, 1}}));
+
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.1}}, std::make_tuple(1.f, 0.f, 0.f)));
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0, 0.1}, {0.1, 0.2}}, std::make_tuple(0.f, 1.0f, 0.f)));
 
@@ -27,7 +29,6 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleMonopolyCardButtonEvent, this, _1), {{0.5, 0}, {.6, .05}}, std::make_tuple(1.f, 0.0f, 1.f)));
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleVictoryPointCardButtonEvent, this, _1), {{0.6, 0}, {.7, .05}}, std::make_tuple(0.f, 1.0f, 1.f)));
 
-	view.addElement(makeViewButton(std::bind(&GameController::handleBoardEvent, this, _1), {{0, 0}, {1, 1}}));
 
 	stateStack.push_back(BASESTATE);
 }
@@ -59,6 +60,7 @@ ControlState GameController::getState(){
 }
 
 void GameController::storeClick(Coordinate clickCoordinate){
+	view.addPointOfInterest(coordToScreen(clickCoordinate));
 	clickHistory.push_back(clickCoordinate);
 }
 
@@ -74,6 +76,7 @@ Coordinate GameController::getPastClick(int howLongAgo){
 }
 
 void GameController::clearClickHistory(){
+	view.clearPointsOfInterest();
 	clickHistory.clear();
 }
 
@@ -107,12 +110,34 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 			if (model.PlaceRoad(getLastClick(), coord, *model.getPlayers()[0]));
 			{
 				popState();
-				if(getState() == BUILDROAD_DEVCARD)
-					popState();
 			}
 			clearClickHistory();
 		}
 		break;
+	case ROBBER:
+		std::cout << "ROBBER\n";
+		model.moveRobber(coord);
+		if (getState() == KNIGHT_DEVCARD)
+			popState();
+		break;
+	case BUILDROAD_DEVCARD:
+		storeClick(coord);
+		if(getClickHistorySize() >= 4){
+			using namespace std::placeholders;
+			view.addElement(makeConfirmationDialogue(
+				std::bind(&GameController::handleConfirmRoadCard, this, _1),
+				std::bind(&GameController::handleCancelRoadCard, this, _1), {{.2, .3}, {.8, .6}}));
+			pushState(MODALSTATE);
+		}
+	case KNIGHT_DEVCARD:
+		model.getCurrentPlayer().playKnight(coord);
+		break;
+	case YEAROFPLENTY_DEVCARD:
+		//@ TODO Need to select a resource
+		model.getCurrentPlayer().playYearOfPlenty(0);
+	case MONOPOLY_DEVCARD:
+		//@TODO Need to select a resource
+		model.getCurrentPlayer().playMonopoly(0);
 	case BUILDSETTLEMENT:
 		std::cout << "BUILDSETTLEMENT\n";
 		model.PlaceSettlement(coord, *model.getPlayers()[0]);
@@ -124,11 +149,12 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 	return true;
 }
 
-
 bool GameController::handleCancelButtonEvent(ScreenCoordinate){
 	while(getState() != BASESTATE){
 		popState();
 	}
+	clearClickHistory();
+	return true;
 }
 
 
@@ -140,7 +166,7 @@ bool GameController::handleCancelButtonEvent(ScreenCoordinate){
 bool GameController::handleRoadButtonEvent(ScreenCoordinate coord) {
 	clearClickHistory();
 	if(getState() != BASESTATE){
-		popState();
+		return true;
 	}
 	pushState(BUILDROAD);
 	return true;
@@ -153,7 +179,7 @@ bool GameController::handleRoadButtonEvent(ScreenCoordinate coord) {
  */
 bool GameController::handleSettlementButtonEvent(ScreenCoordinate coord) {
 	if(getState() != BASESTATE){
-		popState();
+		return true;
 	}
 	pushState(BUILDSETTLEMENT);
 	return true;
@@ -165,15 +191,29 @@ bool GameController::handleRoadCardButtonEvent(ScreenCoordinate coord){
 	}
 	clearClickHistory();
 	pushState(BUILDROAD_DEVCARD);
-	pushState(BUILDROAD);
-	pushState(BUILDROAD);
 	return true;
 }
+
+bool GameController::handleConfirmRoadCard(ScreenCoordinate coord){
+	//play card
+	std::cout << "CONFIRMED!";
+	model.getCurrentPlayer().playRoadBuilding(getPastClick(3), getPastClick(2), getPastClick(1), getPastClick(0));
+	view.removeLastElement();
+	return handleCancelButtonEvent(coord);
+}
+
+bool GameController::handleCancelRoadCard(ScreenCoordinate coord){
+	std::cout << "CANCELLED!";
+	view.removeLastElement();
+	return handleCancelButtonEvent(coord);
+}
+
 
 bool GameController::handleKnightCardButtonEvent(ScreenCoordinate){
 	if(getState() != BASESTATE){
 		return true;
 	}
+	pushState(KNIGHT_DEVCARD);
 	pushState(ROBBER);
 	return true;
 }
@@ -186,14 +226,12 @@ bool GameController::handleYearOfPlentyCardButtonEvent(ScreenCoordinate){
 	return true;
 }
 bool GameController::handleMonopolyCardButtonEvent(ScreenCoordinate){
-	if(getState() != BASESTATE){
-		return true;
-	}
-	pushState(MONOPOLY_DEVCARD);
+	std::cout <<"CONFIRMED!!!";
 	return true;
 }
 
 bool GameController::handleVictoryPointCardButtonEvent(ScreenCoordinate){
+	std::cout << "CANCELED!!!";
 	return true;
 }
 

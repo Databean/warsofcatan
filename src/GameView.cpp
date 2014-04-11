@@ -65,6 +65,7 @@ bool ViewElement::handleClick(ScreenCoordinate coord) {
 	return false;
 }
 
+
 /**
  * Constrct a GameView.
  * @param model The GameBoard the view is displaying.
@@ -92,6 +93,9 @@ void GameView::render() {
 	for(auto& it : viewElements) {
 		it->render();
 	}
+	for(auto& it : pointsOfInterest) {
+		highlightPoint(it);
+	}
 	
 	glFlush();
 }
@@ -106,7 +110,7 @@ bool GameView::acceptInput(SDL_Event& event) {
 		ScreenCoordinate screen = {(float) event.button.x / 900.f, 1.f - (float) event.button.y / 800.f};
 		for(auto& it : viewElements) {
 			if(it->handleClick(screen)) {
-				break;
+				//break;
 			}
 		}
 	}
@@ -120,6 +124,47 @@ bool GameView::acceptInput(SDL_Event& event) {
 void GameView::addElement(std::unique_ptr<ViewElement> element) {
 	viewElements.emplace_back(std::move(element));
 }
+
+/**
+ * Removes the element pointed to so that it will no longer be rendered
+ * @param a pointer to the element we want to remove
+ */
+bool GameView::removeElement(ViewElement* element_sought){
+	for (std::vector<std::unique_ptr<ViewElement>>::iterator element = viewElements.begin() ; element != viewElements.end(); ++element)
+	{
+		if (element->get() == element_sought){
+			viewElements.erase(element);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool GameView::removeLastElement(){
+	viewElements.pop_back();
+	return true;
+}
+
+void GameView::addPointOfInterest(ScreenCoordinate coord){
+	pointsOfInterest.push_back(coord);
+}
+
+void GameView::clearPointsOfInterest(){
+	pointsOfInterest.clear();
+}
+
+void GameView::highlightPoint(ScreenCoordinate & coord){
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3f(0., 0., 1.);
+	glBegin(GL_QUADS);
+	glVertex2f(coord.first - .01, coord.second - .01);
+	glVertex2f(coord.first + .01 , coord.second - .01);
+	glVertex2f(coord.first + .01, coord.second + .01);
+	glVertex2f(coord.first - .01, coord.second + .01);
+	glEnd();
+
+}
+
 
 /*
  * Construct a DrawingGameVisitor with the view that it is drawing to.

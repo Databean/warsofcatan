@@ -724,6 +724,10 @@ const std::vector<std::unique_ptr<Player>>& GameBoard::getPlayers() const {
 	return players;
 }
 
+Player& GameBoard::getCurrentPlayer(){
+	return *(players[0]);
+}
+
 /**
  *  When a player begins their turn, this rolls the dice and takes the required action (paying resources or enabling robber movement)
  *  @return A pair of the values of the dice.

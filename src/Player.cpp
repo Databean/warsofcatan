@@ -16,7 +16,9 @@
 #include <functional>
 #include <iostream>
 
+
 #include "DevelopmentCard.h"
+
 
 using tinyxml2::XMLElement;
 using std::map;
@@ -52,21 +54,13 @@ Player::Player(XMLElement* elem)
 	addOre(fromString<int>(elem->FirstChildElement("ore")->FirstChild()->Value()));
 	addWheat(fromString<int>(elem->FirstChildElement("wheat")->FirstChild()->Value()));
 	addWool(fromString<int>(elem->FirstChildElement("wool")->FirstChild()->Value()));
-	XMLElement* cardsElement = elem->FirstChildElement("cards");
-	for(auto cardElem = cardsElement->FirstChildElement("card"); cardElem; cardElem = cardElem->NextSiblingElement("card")) {
-		static const map<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>> typeToCard = {
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("knight", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new KnightCard(this)); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("victorypoint", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new VictoryPointCard(this)); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("yearofplenty", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard(this)); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("monopoly", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new MonopolyCard(this)); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("roadbuilding", [this]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new RoadBuildingCard(this)); }),
-		};
-		auto typeIt = typeToCard.find(std::string(cardElem->FirstChildElement("type")->FirstChild()->Value()));
-		if(typeIt == typeToCard.end()) {
-			throw runtime_error("Invalid card type");
-		}
-		developmentCards.emplace_back(typeIt->second());
-	}
+
+	developmentCards[KNIGHT]+=fromString<int>(elem->FirstChildElement("knight")->FirstChild()->Value());
+	developmentCards[VICTORYPOINT]+=fromString<int>(elem->FirstChildElement("victorypoint")->FirstChild()->Value());
+	developmentCards[YEAROFPLENTY]+=fromString<int>(elem->FirstChildElement("yearofplenty")->FirstChild()->Value());
+	developmentCards[MONOPOLY]+=fromString<int>(elem->FirstChildElement("monopoly")->FirstChild()->Value());
+	developmentCards[ROADBUILDING]+=fromString<int>(elem->FirstChildElement("roadbuilding")->FirstChild()->Value());
+
 	armySize = 0;
 	longestRoad = 0;
 	victoryPoints = 0;
@@ -85,7 +79,11 @@ Player::~Player() {
  */
 int Player::getDevCardsInHand()
 {
-	return developmentCards.size();
+	int sum = 0;
+	for(int i = 0; i < 5; i++){
+		sum += developmentCards[i];
+	}
+	return sum;
 }
 
 /**
@@ -117,6 +115,7 @@ bool Player::buyRoad(){
 void Player::updateVictoryPoints()
 {
     //TODO: Calculate and Update victory points
+
 }
 
 /**
@@ -126,7 +125,7 @@ void Player::updateVictoryPoints()
 int Player::getVictoryPointsWithoutCards()
 {
     updateVictoryPoints();
-    return victoryPoints - getVictoryPointCards();
+    return victoryPoints - developmentCards[VICTORYPOINT];
 }
 
 /**
@@ -135,8 +134,7 @@ int Player::getVictoryPointsWithoutCards()
  */
 int Player::getVictoryPointCards()
 {
-	//TODO:write function
-	return 0;
+	return developmentCards[VICTORYPOINT];
 }
 
 /**
@@ -168,28 +166,85 @@ void Player::setBoard(GameBoard * newboard){
  * Acquire a development card.
  * @param card An owning pointer to the card the player acquired.
  */
-void Player::buyCard(std::unique_ptr<DevelopmentCard> card)
+bool Player::buyCard(std::unique_ptr<DevelopmentCard> card)
 {
-    developmentCards.push_back(std::move(card));
-}
-
-/**
- * Play a particular development card.
- * @param card The card to play.
- */
-void Player::playCard(DevelopmentCard *card)
-{
-    auto cardTester = [card](std::unique_ptr<DevelopmentCard>& test) -> bool { return card == test.get(); };
-    if(!std::any_of(developmentCards.begin(), developmentCards.end(), cardTester)) {
-        return;
-    }
-    card->playCard();
-    if (card->getType() == KNIGHT) {
-        armySize++;
+	if(getWood() > 0 && getOre() > 0 && getWool() > 0){
+		developmentCards[card->getType()]++;
+		return true;
 	}
-
-    std::remove_if(developmentCards.begin(), developmentCards.end(), cardTester);
+	return false;
 }
+
+bool Player::playVictoryCard(){
+	if(developmentCards[VICTORYPOINT] > 0){
+		developmentCards[VICTORYPOINT]--;
+		victoryPoints++;
+		return true;
+	}
+	return false;
+}
+
+bool Player::playKnight(Coordinate location){
+	if(developmentCards[KNIGHT] > 0){
+		developmentCards[KNIGHT]--;
+		//board->moveRobber(location);
+		//@ TODO need to steal resources
+		return true;
+	}
+	return false;
+}
+bool Player::playYearOfPlenty(int resourceType){
+	if(developmentCards[YEAROFPLENTY] > 0){
+		developmentCards[YEAROFPLENTY]--;
+		addResource(resourceType, 2);
+		return true;
+	}
+	return false;
+}
+bool Player::playMonopoly(int resourceType){
+	if(developmentCards[MONOPOLY] > 0){
+		developmentCards[MONOPOLY]--;
+//		for(auto& player : board->getPlayers()) {
+//			addResource(resourceType, player->giveAllResources(resourceType));
+//		}
+		return true;
+	}
+	return false;
+}
+bool Player::playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2){
+	std::cout << "PLAYING ROADBUILDINGCARD\n";
+	if(developmentCards[ROADBUILDING] > 0){
+		return true;
+	}
+	return false;
+}
+
+
+int Player::getVictoryCards() const{
+	return developmentCards[VICTORYPOINT];
+}
+int Player::getKnightCards() const{
+	return developmentCards[KNIGHT];
+}
+int Player::getYearOfPlentyCards() const{
+	return developmentCards[YEAROFPLENTY];
+}
+int Player::getMonopolyCards() const{
+	return developmentCards[MONOPOLY];
+}
+int Player::getRoadBuildingCards() const{
+	return developmentCards[ROADBUILDING];
+}
+
+
+int Player::giveAllResources(int resourceType){
+	int resource_count = resources[resourceType];
+	resources[resourceType] = 0;
+	return resource_count;
+}
+
+
+
 
 /**
  * Offer a trade to another player with an offer and a demand.
@@ -405,9 +460,6 @@ void Player::addResource(int resourceType, int delta) {
  */
 void Player::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
-	for(auto& card : developmentCards) {
-		card->accept(visitor);
-	}
 }
 
 /**
@@ -416,19 +468,16 @@ void Player::accept(GameVisitor& visitor) {
  * @return If the other player is equivalent to this player.
  */
 bool Player::operator==(const Player& player) const {
-	if(developmentCards.size() != player.developmentCards.size()) {
-		return false;
-	}
-	for(std::size_t i = 0; i < developmentCards.size(); i++) {
-		if((*developmentCards[i]) == (*player.developmentCards[i])) {}
-		else {
-			return false;
-		}
-	}
 	return getName() == player.getName() &&
 		getWood() == player.getWood() &&
 		getBrick() == player.getBrick() &&
 		getOre() == player.getOre() &&
 		getWheat() == player.getWheat() &&
-		getWool() == player.getWool();
+		getWool() == player.getWool() &&
+		getVictoryCards() == player.getVictoryCards() &&
+		getKnightCards() == player.getKnightCards() &&
+		getYearOfPlentyCards() == player.getYearOfPlentyCards() &&
+		getMonopolyCards() == player.getMonopolyCards() &&
+		getRoadBuildingCards() == player.getRoadBuildingCards();
+
 }
