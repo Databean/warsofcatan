@@ -9,13 +9,12 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-
 #include <vector>
 #include <string>
 #include <memory>
 
 #include "tinyxml2.h"
-
+#include "Util.h"
 #include "GameVisitor.h"
 
 const int WOOD_INDEX = 0;
@@ -27,8 +26,6 @@ const int WOOL_INDEX = 4;
 
 class DevelopmentCard;
 class Deck;
-class GameBoard;
-
 
 /**
  * One of the players interacting with the Settlers of Catan game. Contains her name, victory points,
@@ -38,7 +35,8 @@ class Player {
 private:
     std::string name;
 
-    std::vector<std::unique_ptr<DevelopmentCard>> developmentCards;
+    //std::vector<std::unique_ptr<DevelopmentCard>> developmentCards;
+    int developmentCards[5];
 
     int armySize;
     int longestRoad;
@@ -63,13 +61,19 @@ public:
 
     int getDevCardsInHand();
 
-    void buyCard(std::unique_ptr<DevelopmentCard> card);
+    bool buyCard(std::unique_ptr<DevelopmentCard> card);
     std::string getName() const;
 
     GameBoard* getBoard();
     void setBoard(GameBoard* newboard);
 
-    void playCard(DevelopmentCard* card);
+    //KNIGHT, VICTORYPOINT, YEAROFPLENTY, MONOPOLY, ROADBUILDING
+    bool playVictoryCard();
+    bool playKnight(Coordinate location);
+    bool playYearOfPlenty(int resource);
+    bool playMonopoly(int resource);
+    bool playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2);
+
 
     bool canBuyRoad();
     bool buyRoad();
@@ -86,6 +90,14 @@ public:
     int getWheat() const;
     int getWool() const;
 
+    int getVictoryCards() const;
+    int getKnightCards() const;
+    int getYearOfPlentyCards() const;
+    int getMonopolyCards() const;
+    int getRoadBuildingCards() const;
+
+
+
     void addWood(int resource);
     void addBrick(int resource);
     void addOre(int resource);
@@ -93,6 +105,7 @@ public:
     void addWool(int resource);
 
     void addResource(int resourceType, int delta);
+    int giveAllResources(int resourceType);
 
 	void accept(GameVisitor& visitor);
 	bool operator==(const Player& player) const;

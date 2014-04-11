@@ -16,27 +16,27 @@ Deck::Deck()
 	// TODO Auto-generated constructor stub
 	for(int i = 0; i < 15; i++)
 	{
-		DevelopmentCard* card = new KnightCard(NULL);
+		DevelopmentCard* card = new KnightCard();
 		this->deck.push_back(card);
 	}
 	for(int i = 0; i < 4; i++)
 	{
-		DevelopmentCard* card = new VictoryPointCard(NULL);
+		DevelopmentCard* card = new VictoryPointCard();
 		this->deck.push_back(card);
 	}
 	for(int i = 0; i < 2; i++)
 	{
-		DevelopmentCard* card = new YearOfPlentyCard(NULL);
+		DevelopmentCard* card = new YearOfPlentyCard();
 		this->deck.push_back(card);
 	}
 	for(int i = 0; i < 2; i++)
 	{
-		DevelopmentCard* card = new MonopolyCard(NULL);
+		DevelopmentCard* card = new MonopolyCard();
 		this->deck.push_back(card);
 	}
 	for(int i = 0; i < 2; i++)
 	{
-		DevelopmentCard* card = new RoadBuildingCard(NULL);
+		DevelopmentCard* card = new RoadBuildingCard();
 		this->deck.push_back(card);
 	}
     

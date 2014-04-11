@@ -17,7 +17,7 @@
 #include <stdexcept>
 
 
-enum DevCardType { KNIGHT, VICTORYPOINT, YEAROFPLENTY, MONOPOLY, ROADBUILDING };
+enum DevCardType {KNIGHT, VICTORYPOINT, YEAROFPLENTY, MONOPOLY, ROADBUILDING };
 
 
 /**
@@ -26,16 +26,13 @@ enum DevCardType { KNIGHT, VICTORYPOINT, YEAROFPLENTY, MONOPOLY, ROADBUILDING };
 class DevelopmentCard {
 
 private:
-    Player* owner;
     DevCardType type;
 public:
-    DevelopmentCard(Player* player);
+    DevelopmentCard() {}
     virtual ~DevelopmentCard();
 
     virtual DevCardType getType() const = 0;
-    virtual void playCard() = 0;
 
-    virtual Player* getOwner();
 	virtual void accept(GameVisitor& visitor);
 	virtual bool operator==(const DevelopmentCard&);
 };
@@ -47,12 +44,8 @@ class KnightCard : public DevelopmentCard {
 private:
 
 public:
-	KnightCard(Player* player);
-//	virtual ~KnightCard();
-
+	KnightCard() {}
     virtual DevCardType getType() const;
-    virtual void playCard();
-
 };
 
 /**
@@ -60,12 +53,8 @@ public:
  */
 class VictoryPointCard : public DevelopmentCard {
 public:
-    VictoryPointCard(Player* player);
-//    virtual ~VictoryPointCard();
-
+    VictoryPointCard() {}
     virtual DevCardType getType() const;
-    virtual void playCard();
-
 };
 
 /**
@@ -73,12 +62,8 @@ public:
  */
 class YearOfPlentyCard : public DevelopmentCard {
 public:
-    YearOfPlentyCard(Player* player);
-//    virtual ~YearOfPlentyCard();
-
+    YearOfPlentyCard() {}
     virtual DevCardType getType() const;
-    virtual void playCard();
-
 };
 
 /**
@@ -86,12 +71,8 @@ public:
  */
 class MonopolyCard : public DevelopmentCard {
 public:
-    MonopolyCard(Player* player);
-//    virtual ~MonopolyCard();
-
+    MonopolyCard() {}
     virtual DevCardType getType() const;
-    virtual void playCard();
-
 };
 
 /**
@@ -101,12 +82,8 @@ class RoadBuildingCard : public DevelopmentCard {
 private:
 
 public:
-	RoadBuildingCard(Player* player);
-//	virtual ~RoadBuildingCard();
-
+	RoadBuildingCard() {};
     virtual DevCardType getType() const;
-    virtual void playCard();
-    void playCard(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2);
 };
 
 

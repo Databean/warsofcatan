@@ -9,7 +9,7 @@ class ClickCoordinateEvent;
 class GameView;
 
 
-enum ControlState {BASESTATE, BUILDROAD, BUILDSETTLEMENT, ROBBER, BUILDROAD_DEVCARD, YEAROFPLENTY_DEVCARD, MONOPOLY_DEVCARD};
+enum ControlState {BASESTATE, MODALSTATE, BUILDROAD, BUILDSETTLEMENT, ROBBER, BUILDROAD_DEVCARD, KNIGHT_DEVCARD, YEAROFPLENTY_DEVCARD, MONOPOLY_DEVCARD};
 
 
 /**
@@ -39,6 +39,9 @@ public:
 	bool handleMonopolyCardButtonEvent(ScreenCoordinate);
 	bool handleVictoryPointCardButtonEvent(ScreenCoordinate);
 	bool handleCancelButtonEvent(ScreenCoordinate);
+
+	bool handleConfirmRoadCard(ScreenCoordinate);
+	bool handleCancelRoadCard(ScreenCoordinate);
 
 	void pushState(ControlState);
 	ControlState getState();

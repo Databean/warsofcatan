@@ -17,7 +17,6 @@
 #include "tinyxml2.h"
 #include "Road.h"
 
-
 class GameVisitor;
 
 /**
@@ -74,7 +73,7 @@ public:
 
 	const std::map<Coordinate, std::unique_ptr<ResourceTile>>& getResources() const;
 
-
+	Player& getCurrentPlayer();
 
 	const std::shared_ptr<Road> getRoad(Coordinate start, Coordinate end) const;
 	const std::vector<std::shared_ptr<Road>>& getRoads(Coordinate loc) const;

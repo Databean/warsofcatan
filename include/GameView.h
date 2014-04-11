@@ -46,6 +46,9 @@ private:
 	GameBoard& model;
 	
 	std::vector<std::unique_ptr<ViewElement>> viewElements;
+	std::vector<ScreenCoordinate> pointsOfInterest;
+
+	void highlightPoint(ScreenCoordinate & coord);
 	
 	GameView(const GameView& o) : model(o.model) {} //deleted
 	GameView& operator=(const GameView& o) { return *this; } //deleted
@@ -57,6 +60,11 @@ public:
 	bool acceptInput(SDL_Event& event);
 	
 	void addElement(std::unique_ptr<ViewElement>);
+	bool removeElement(ViewElement*);
+	bool removeLastElement();
+
+	void addPointOfInterest(ScreenCoordinate);
+	void clearPointsOfInterest();
 };
 
 /**
@@ -80,6 +88,7 @@ public:
 	virtual void visit(ResourceTile&);
 	virtual void visit(DevelopmentCard&);
 };
+
 
 /**
  * A view element that is invisible and calls a callback function when it is clicked.
@@ -141,6 +150,94 @@ public:
 		glEnd();
 	}
 };
+
+template<class Fn>
+class ConfirmationDialogue : public ViewElement {
+private:
+	Fn confirm_action;
+	Fn cancel_action;
+
+	bool clickedConfirm(ScreenCoordinate coord);
+	bool clickedCancel(ScreenCoordinate coord);
+	ScreenCoordinate topLeft;
+	ScreenCoordinate bottomRight;
+	ScreenCoordinate confirmTopLeft;
+	ScreenCoordinate confirmBottomRight;
+	ScreenCoordinate cancelTopLeft;
+	ScreenCoordinate cancelBottomRight;
+
+
+protected:
+	virtual bool clicked_confirm(ScreenCoordinate coord){
+		return confirmTopLeft.first < coord.first &&
+				confirmTopLeft.second < coord.second &&
+				coord.first < confirmBottomRight.first &&
+				coord.second < confirmBottomRight.second;
+	}
+	virtual bool clicked_cancel(ScreenCoordinate coord){
+			return cancelTopLeft.first < coord.first &&
+					cancelTopLeft.second < coord.second &&
+					coord.first < cancelBottomRight.first &&
+					coord.second < cancelBottomRight.second;
+	}
+
+	virtual bool clicked(ScreenCoordinate coord){
+		if(clicked_confirm(coord)){
+			confirm_action(coord);
+		} else if(clicked_cancel(coord)){
+			cancel_action(coord);
+		}
+		return false;
+	}
+
+public:
+	ConfirmationDialogue(Fn confirm_action, Fn cancel_action, std::pair<ScreenCoordinate, ScreenCoordinate> rect): ViewElement(rect), confirm_action(confirm_action), cancel_action(cancel_action){
+		topLeft = ViewElement::getRect().first;
+		bottomRight = ViewElement::getRect().second;
+
+		float width = bottomRight.first - topLeft.first;
+		float height = bottomRight.second - topLeft.second;
+		confirmTopLeft = ScreenCoordinate(topLeft.first +(width*.1), topLeft.second+(height*.1));
+		confirmBottomRight = ScreenCoordinate(bottomRight.first - (width * .6), bottomRight.second - (height * .6));
+		cancelTopLeft = ScreenCoordinate(topLeft.first + (width*.6), topLeft.second + (height *.1));
+		cancelBottomRight = ScreenCoordinate(bottomRight.first - (width * .1), bottomRight.second - (height * .6));
+
+	}
+	virtual void render(){
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glColor3f(1., 1., 1.);
+		glBegin(GL_QUADS);
+		glVertex2f(topLeft.first, topLeft.second);
+		glVertex2f(bottomRight.first, topLeft.second);
+		glVertex2f(bottomRight.first, bottomRight.second);
+		glVertex2f(topLeft.first, bottomRight.second);
+		glEnd();
+
+		glColor3f(0., 1., 0.);
+		glBegin(GL_QUADS);
+		glVertex2f(confirmTopLeft.first, confirmTopLeft.second);
+		glVertex2f(confirmBottomRight.first, confirmTopLeft.second);
+		glVertex2f(confirmBottomRight.first, confirmBottomRight.second);
+		glVertex2f(confirmTopLeft.first, confirmBottomRight.second);
+		glEnd();
+
+		glColor3f(1.,0.,0.);
+		glBegin(GL_QUADS);
+		glVertex2f(cancelTopLeft.first, cancelTopLeft.second);
+		glVertex2f(cancelBottomRight.first, cancelTopLeft.second);
+		glVertex2f(cancelBottomRight.first, cancelBottomRight.second);
+		glVertex2f(cancelTopLeft.first, cancelBottomRight.second);
+		glEnd();
+	}
+};
+
+template<class Fn>
+std::unique_ptr<ViewElement> makeConfirmationDialogue(Fn confirm_fn, Fn cancel_fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect) {
+	return std::unique_ptr<ViewElement>(new ConfirmationDialogue<Fn>(confirm_fn, cancel_fn, rect));
+}
+
+
 
 /**
  * Constructs a ViewButtonColor using the same parameters as the ViewButtonColor. Exists because template inference exists only

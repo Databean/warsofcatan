@@ -30,6 +30,8 @@ Road::Road(Coordinate start, Coordinate end, Player& Owner) : owner(Owner) {
 bool Road::checkRoad(){
 	if (start == end)
 		return false;
+	if (abs((start.second - end.second) > 1))
+		return false;
 
 	int dist = std::abs((start.first - end.first) + (start.second - end.second));
 	return (dist <= 1);
