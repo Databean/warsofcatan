@@ -6,6 +6,7 @@
 #include "GameBoard.h"
 #include "GameView.h"
 #include "Renderer.h"
+#include "Player.h"
 
 /**
  * Initialize the game controller. Adds the buttons for user control to the view, binding them to GameController methods.
@@ -20,6 +21,15 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.1}}, font, fontSize, "Road"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0, 0.1}, {0.1, 0.2}}, font, fontSize, "Settlement"));
+	
+	auto playerTopY = 0.9;
+	for(auto i = 0; i < model.getNoOfPlayers(); i++) {
+		auto width = 0.2;
+		Player& player = model.getPlayer(i);
+		view.addElement(makeViewButtonText(std::bind(&GameController::handlePlayerClick, this, _1, std::ref(player)), {{1.0 - width, playerTopY - 0.1}, {1.0, playerTopY}}, font, fontSize, player.getName()));
+		playerTopY -= 0.05;
+	}
+	
 	view.addElement(makeViewButton(std::bind(&GameController::handleBoardEvent, this, _1), {{0, 0}, {1, 1}}));
 }
 
@@ -69,6 +79,16 @@ bool GameController::handleRoadButtonEvent(ScreenCoordinate coord) {
 bool GameController::handleSettlementButtonEvent(ScreenCoordinate coord) {
 	placingRoads = false; 
 	placingCities = true;
+	return true;
+}
+
+/**
+ * Handles a click on one of the Player names at the top right of the screen.
+ * @param coord The coordinate clicked on.
+ * @param player The player whose name was clicked on.
+ */
+bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
+	std::cout << player.getName() << std::endl;
 	return true;
 }
 
