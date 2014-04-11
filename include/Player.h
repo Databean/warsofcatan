@@ -53,7 +53,10 @@ public:
 	Player(GameBoard& board, tinyxml2::XMLElement*);
 	~Player();
 
+	int getArmySize();
+	int getLongestRoad();
     int getVictoryPoints();
+
     void updateVictoryPoints();
 
     int getVictoryPointsWithoutCards();
@@ -75,14 +78,21 @@ public:
     bool buyCity();
     bool canBuyWonder();
     bool buyWonder();
+    bool canBuyCard();
+    bool buyCard();
 
+    int getWoodModifier();
     void setWoodModifier();
+    int getBrickModifier();
     void setBrickModifier();
+    int getOreModifier();
     void setOreModifier();
+    int getWheatModifier();
     void setWheatModifier();
+    int getWoolModifier();
     void setWoolModifier();
 
-    void setGenralModifier();			//3:1 port
+    void setGeneralModifier();			//3:1 port
 
     bool offerBankTrade(int offer[], int demand[]);
 

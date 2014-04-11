@@ -117,7 +117,7 @@ bool Player::buyRoad(){
 
 /**
  * Determine if the player has enough resources to buy a settlement.
- * @return True if the player has enough resources to buy a road, false otherwise
+ * @return True if the player has enough resources to buy a settlement, false otherwise
  */
 bool Player::canBuySettlement(){
 	return getWood() >= 1 && getBrick() >= 1 && getWheat() >= 1 && getWool() >= 1;
@@ -137,7 +137,7 @@ bool Player::buySettlement(){
 
 /**
  * Determine if the player has enough resources to buy a city.
- * @return True if the player has enough resources to buy a road, false otherwise
+ * @return True if the player has enough resources to buy a city, false otherwise
  */
 bool Player::canBuyCity(){
 	return getWheat() >= 2 && getOre() >= 3;
@@ -156,7 +156,7 @@ bool Player::buyCity(){
 
 /**
  * Determine if the player has enough resources to buy a wonder.
- * @return True if the player has enough resources to buy a road, false otherwise
+ * @return True if the player has enough resources to buy a wonder, false otherwise
  */
 bool Player::canBuyWonder(){
 	return getWood() >= 5 && getBrick() >= 5 && getWheat() >= 5 && getWool() >= 5 && getOre() >= 5;
@@ -169,6 +169,26 @@ bool Player::canBuyWonder(){
 bool Player::buyWonder(){
 	if(canBuySettlement()){
 		addMultiple(-5,-5,-5,-5,-5);
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Determine if the player has enough resources to buy a card.
+ * @return True if the player has enough resources to buy a card, false otherwise
+ */
+bool Player::canBuyCard(){
+	return getWheat() >= 1 && getWool() >= 1 && getOre() >= 1;
+}
+
+/**
+ * Subtracts the cost of a card from a player's resources if they have enough
+ * @return true if the resources were subtracted, false otherwise
+ */
+bool Player::buyCard(){
+	if(canBuySettlement()){
+		addMultiple(0,0,-1,-1,-1);
 		return true;
 	}
 	return false;
@@ -212,6 +232,14 @@ int Player::getVictoryPointCards()
 	return retVal;
 }
 
+int Player::getArmySize(){
+	return armySize;
+}
+
+int Player::getLongestRoad(){
+	return longestRoad;
+}
+
 
 /**
  * The number of victory points a player has.
@@ -226,9 +254,13 @@ int Player::getVictoryPoints()
  * Acquire a development card.
  * @param card An owning pointer to the card the player acquired.
  */
-void Player::buyCard(std::unique_ptr<DevelopmentCard> card)
+void Player::buyCard(std::unique_ptr<DevelopmentCard> card);
 {
-    developmentCards.push_back(std::move(card));
+	if(canBuyCard()){
+		buyCard();
+		developmentCards.push_back(std::move(card));
+	}
+
 }
 
 
@@ -257,6 +289,13 @@ void Player::buyCard(std::unique_ptr<DevelopmentCard> card)
 //    std::remove_if(developmentCards.begin(), developmentCards.end(), cardTester);
 //}
 
+/**
+ * Gets the current modifier for trading wood
+ * @return int, the trading value for wood
+ */
+int Player::getWoodModifier(){
+	return tradeModifiers[WOOD_INDEX];
+}
 
 /**
  * Sets the trade modifier for Wood to 2:1
@@ -264,6 +303,14 @@ void Player::buyCard(std::unique_ptr<DevelopmentCard> card)
 void Player::setWoodModifier()
 {
 	tradeModifiers[WOOD_INDEX] = 2;
+}
+
+/**
+ * Gets the current modifier for trading brick
+ * @return int, the trading value for brick
+ */
+int Player::getBrickModifier(){
+	return tradeModifiers[BRICK_INDEX];
 }
 
 /**
@@ -275,6 +322,14 @@ void Player::setBrickModifier()
 }
 
 /**
+ * Gets the current modifier for trading ore
+ * @return int, the trading value for ore
+ */
+int Player::getOreModifier(){
+	return tradeModifiers[ORE_INDEX];
+}
+
+/**
  * Sets the trade modifier for Ore to 2:1
  */
 void Player::setOreModifier()
@@ -283,11 +338,27 @@ void Player::setOreModifier()
 }
 
 /**
+ * Gets the current modifier for trading wheat
+ * @return int, the trading value for wheat
+ */
+int Player::getWheatModifier(){
+	return tradeModifiers[WHEAT_INDEX];
+}
+
+/**
  * Sets the trade modifier for Wheat to 2:1
  */
 void Player::setWheatModifier()
 {
 	tradeModifiers[WHEAT_INDEX] = 2;
+}
+
+/**
+ * Gets the current modifier for trading wool
+ * @return int, the trading value for wool
+ */
+int Player::getWoolModifier(){
+	return tradeModifiers[WOOL_INDEX];
 }
 
 /**
@@ -301,7 +372,7 @@ void Player::setWoolModifier()
 /**
  * Sets the trade modifier for all resources to 3:1
  */
-void Player::setGenralModifier()
+void Player::setGeneralModifier()
 {
 	for(int i =0; i<5; i++)
 	{
