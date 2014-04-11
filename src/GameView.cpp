@@ -143,6 +143,8 @@ void DrawingGameVisitor::visit(GameBoard& model) {
 	
 }
 
+
+
 /**
  * Draw a road.
  * @param road The road to draw.
@@ -241,9 +243,93 @@ void drawTexturedCircle(std::pair<float, float> texCenter, float texRadius, std:
 		double angle = ((double) i) * (2. * M_PI) / (double)articulation;
 		double tangle = ((double) -i) * (2. * M_PI) / (double)articulation;
 		texCoordPair({texCenter.first + texRadius * std::cos(tangle), texCenter.second + texRadius * std::sin(tangle)});
+		//std::cout << texCenter.first + texRadius << "\n";
 		glVertex2d(screenCenter.first + (screenRadius * std::cos(angle)), screenCenter.second + (screenRadius * std::sin(angle)));
+		//std::cout << screenCenter.first + (screenRadius * std::cos(angle));
+		
 	}
 	glEnd();
+}
+
+void drawTexturedRectangle(std::pair<float, float> texTopLeft, float sideLength, std::pair<float, float> screenTopLeft, float screenSideLength) {
+	
+	static const GLuint diceTextures = loadImageAsTexture("resources/catan_dice_new.bmp");
+	glBindTexture(GL_TEXTURE_2D, diceTextures);
+
+	glBegin(GL_QUADS);
+
+	
+
+	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + 0.0f});
+	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + 0.0f);
+
+	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + 0.0f});
+	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + 0.0f);
+
+
+	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + sideLength});
+	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + screenSideLength);
+
+	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + sideLength});
+	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + screenSideLength);
+
+
+	//redraw the image for reasons
+	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + sideLength});
+	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + screenSideLength);
+
+	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + sideLength});
+	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + screenSideLength);
+
+	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + 0.0f});
+	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + 0.0f);
+
+	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + 0.0f});
+	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + 0.0f);
+
+	
+	
+
+	glEnd();
+
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+
+
+}
+
+void DrawingGameVisitor::visit(GameDice& dice) {
+
+	
+
+	
+	/*static const std::map<int, std::pair<float, float>> topLeftOffset = {
+		make_pair(1, make_pair(4.f, 8.f)),
+		make_pair(2, make_pair(134.f, 8.f)),
+		make_pair(3, make_pair(264.f, 8.f)),
+		make_pair(4, make_pair(4.f, 142.f)),
+		make_pair(5, make_pair(134.f, 142.f)),
+		make_pair(6, make_pair(264.f, 142.f))
+	};*/
+/*
+	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, 96.f, 
+		make_pair(.8f, .9f), 0.03);
+		*/
+
+	//drawTexturedRectangle(make_pair(134.f, 8.f), 96.f, make_pair(.8f, .9f), 0.03);
+
+	//drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, 96.f, 
+		//make_pair(.84f, .9f), 0.03);
+
+	drawTexturedRectangle(make_pair(4.f, 8.f), 1000.f, make_pair(.7f, .9f), 0.03);
+
+
+	
+
+
+	//std::cout << dice.getFirst() << "\n";
+
 }
 
 /**
@@ -253,6 +339,7 @@ void drawTexturedCircle(std::pair<float, float> texCenter, float texRadius, std:
 void DrawingGameVisitor::visit(ResourceTile& tile) {
 	Coordinate coord = tile.getLocation();
 	static const GLuint tileTextures = loadImageAsTexture("resources/catan_sprite_sheet.bmp");
+	
 	glBindTexture(GL_TEXTURE_2D, tileTextures);
 	static const std::map<resourceType, pair<float, float>> topRightPoints = {
 		make_pair(WOOD, make_pair(260.f, 17.f)),
@@ -307,6 +394,8 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 		drawTexturedCircle(numberTexPoints.find(tile.getDiceValue())->second, radius, coordToScreen(coord), 0.04);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	
 }
 
 /**

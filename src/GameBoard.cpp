@@ -13,6 +13,7 @@
 #include "tinyxml2.h"
 
 #include "CornerPiece.h"
+#include "GameDice.h"
 
 #include "City.h"
 
@@ -39,6 +40,10 @@ GameBoard::GameBoard(vector<unique_ptr<Player>>&& players) : players(std::move(p
 	const static vector<int> boardRolls = {0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
 	
 	bool valid = false;
+
+	
+
+
 	
 	const static Coordinate center {0, 4};
 	
@@ -617,6 +622,7 @@ void GameBoard::accept(GameVisitor& visitor) {
 			it->accept(visitor);
 		}
 	}
+	dice.accept(visitor);
 }
 
 /**
@@ -734,7 +740,8 @@ std::pair<int, int> GameBoard::startTurn()
     int die2 = std::rand() % 6 + 1;
     int roll = die1+die2;
     std::cout << "\nDie 1: " << die1 << "\nDie 2: " << die2 << "\nRoll: " << roll <<"\n";
-    
+    dice.setFirst(die1);
+    dice.setSecond(die2);
     if (roll==7)
         enableRobber();
     
