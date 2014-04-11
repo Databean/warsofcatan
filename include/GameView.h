@@ -58,6 +58,8 @@ public:
 	bool acceptInput(SDL_Event& event);
 	
 	void addElement(std::unique_ptr<ViewElement>);
+	std::unique_ptr<ViewElement> removeElement(const ViewElement*);
+	std::unique_ptr<ViewElement> removeElement(const ViewElement&);
 };
 
 /**
@@ -167,7 +169,7 @@ private:
 	ViewButtonText(const ViewButtonText& vb) : ViewElement(vb) {} //deleted
 	ViewButtonText& operator=(const ViewButtonText& vb) { return *this; }
 public:
-	ViewButtonText(Fn action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, const std::string& font, int fontSize, const std::string& text) : ViewButton<Fn>(action, rect) {
+	ViewButtonText(Fn action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, const std::string& font, int fontSize, const std::string& text) : ViewButton<Fn>(action, rect), texture(0) {
 		setText(font, fontSize, text);
 	}
 	virtual ~ViewButtonText() {

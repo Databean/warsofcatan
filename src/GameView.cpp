@@ -14,6 +14,7 @@ using std::make_pair;
 using std::pair;
 using std::runtime_error;
 using std::string;
+using std::unique_ptr;
 
 /**
  * Construct a ViewElement covering a particular rectangle on screen.
@@ -122,6 +123,31 @@ bool GameView::acceptInput(SDL_Event& event) {
  */
 void GameView::addElement(std::unique_ptr<ViewElement> element) {
 	viewElements.emplace_back(std::move(element));
+}
+
+/**
+ * Remove a ViewElement from the list, and return its owning pointer.
+ * @param element The element to remove.
+ * @return An owning pointer to the element that was removed.
+ */
+unique_ptr<ViewElement> GameView::removeElement(const ViewElement* element) {
+	for(auto it = viewElements.begin(); it != viewElements.end(); it++) {
+		if(it->get() == element) {
+			auto ret = std::move(*it);
+			viewElements.erase(it);
+			return ret;
+		}
+	}
+	return unique_ptr<ViewElement>();
+}
+
+/**
+ * Remove a ViewElement from the list, and return its owning pointer.
+ * @param element The element to remove.
+ * @return An owning pointer to the element that was removed.
+ */
+unique_ptr<ViewElement> GameView::removeElement(const ViewElement& element) {
+	return removeElement(&element);
 }
 
 /*
