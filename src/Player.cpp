@@ -217,6 +217,7 @@ bool Player::playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate sta
 //		if(board->verifyRoadPlacement(start1, end1, this) && board->verifyRoadPlacement(start2, end2, this)){
 //			board->PlaceRoad(start1, end1, this);
 //			board->PlaceRoad(start2, end2, this);
+//			developmentCards[ROADBUILDING]--;
 //			return true;
 //		}
 	}
