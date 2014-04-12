@@ -37,7 +37,7 @@ bool validateTradeModifiers(int wood, int brick, int ore, int wheat, int wool, P
 }
 
 TEST(Player_constructor){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	CHECK_EQUAL("Buster", tp.getName());
 	CHECK_EQUAL(0, tp.getLongestRoad());
 	CHECK_EQUAL(0, tp.getArmySize());
@@ -48,7 +48,7 @@ TEST(Player_constructor){
 }
 
 TEST(Adders_Positive){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.addBrick(1);
 	tp.addWood(1);
 	tp.addOre(1);
@@ -60,7 +60,7 @@ TEST(Adders_Positive){
 }
 
 TEST(Adders_Negative_Normal){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.addMultiple(5,5,5,5,5);
 	tp.addBrick(-1);
 	tp.addWood(-1);
@@ -73,7 +73,7 @@ TEST(Adders_Negative_Normal){
 }
 
 TEST(Adders_Negative_Excessive){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.addMultiple(1,1,1,1,1);
 	tp.addBrick(-2);
 	tp.addWood(-2);
@@ -88,43 +88,43 @@ TEST(Adders_Negative_Excessive){
 
 //TRADE MODIFIERS
 TEST(Trade_Modifiers_Brick){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.setBrickModifier();
 	CHECK(validateTradeModifiers(4,2,4,4,4,tp));
 }
 
 TEST(Trade_Modifiers_Wood){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.setWoodModifier();
 	CHECK(validateTradeModifiers(2,4,4,4,4,tp));
 }
 
 TEST(Trade_Modifiers_Ore){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.setOreModifier();
 	CHECK(validateTradeModifiers(4,4,2,4,4,tp));
 }
 
 TEST(Trade_Modifiers_Wheat){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.setWheatModifier();
 	CHECK(validateTradeModifiers(4,4,4,2,4,tp));
 }
 
 TEST(Trade_Modifiers_Wool){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.setWoolModifier();
 	CHECK(validateTradeModifiers(4,4,4,4,2,tp));
 }
 
 TEST(Trade_Modifiers_3){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.setGeneralModifier();
 	CHECK(validateTradeModifiers(3,3,3,3,3,tp));
 }
 
 TEST(Trade_Modifiers_Mixed){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.setWheatModifier();
 	tp.setOreModifier();
 	tp.setGeneralModifier();
@@ -133,7 +133,7 @@ TEST(Trade_Modifiers_Mixed){
 
 //PLAYER PURCHASES
 TEST(Buy_Settlement_True){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.addMultiple(5,5,5,5,5);
 	CHECK_EQUAL(true, tp.canBuySettlement());
 	tp.buySettlement();
@@ -141,7 +141,7 @@ TEST(Buy_Settlement_True){
 }
 
 TEST(Buy_Settlement_False){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.addMultiple(0,1,1,1,1);
 	CHECK_EQUAL(false, tp.canBuySettlement());
 	tp.buySettlement();
@@ -149,7 +149,7 @@ TEST(Buy_Settlement_False){
 }
 
 TEST(Buy_Road_True){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.addMultiple(5,5,5,5,5);
 	CHECK_EQUAL(true, tp.canBuyRoad());
 	tp.buyRoad();
@@ -157,7 +157,7 @@ TEST(Buy_Road_True){
 }
 
 TEST(Buy_Road_False){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.addMultiple(0,1,1,1,1);
 	CHECK_EQUAL(false, tp.canBuyRoad());
 	tp.buyRoad();
@@ -165,7 +165,7 @@ TEST(Buy_Road_False){
 }
 
 TEST(Buy_City_True){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.addMultiple(5,5,5,5,5);
 	CHECK_EQUAL(true, tp.canBuyCity());
 	tp.buyCity();
@@ -173,7 +173,7 @@ TEST(Buy_City_True){
 }
 
 TEST(Buy_City_False){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.addMultiple(1,1,1,1,1);
 	CHECK_EQUAL(false, tp.canBuyCity());
 	tp.buyCity();
@@ -181,7 +181,7 @@ TEST(Buy_City_False){
 }
 
 TEST(Buy_Wonder_True){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.addMultiple(6,6,6,6,6);
 	CHECK_EQUAL(true, tp.canBuyWonder());
 	tp.buyWonder();
@@ -189,7 +189,7 @@ TEST(Buy_Wonder_True){
 }
 
 TEST(Buy_Wonder_False){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.addMultiple(5,5,1,5,5);
 	CHECK_EQUAL(false, tp.canBuyWonder());
 	tp.buyWonder();
@@ -197,7 +197,7 @@ TEST(Buy_Wonder_False){
 }
 
 TEST(Buy_DevCard_True){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.addMultiple(5,5,5,5,5);
 	CHECK_EQUAL(true, tp.canBuyCard());
 	tp.buyCard();
@@ -205,7 +205,7 @@ TEST(Buy_DevCard_True){
 }
 
 TEST(Buy_DevCard_False){
-	Player tp(NULL, "Buster");
+	Player tp(nullptr, "Buster");
 	tp.addMultiple(1,1,0,1,1);
 	CHECK_EQUAL(false, tp.canBuyCard());
 	tp.buyCard();
