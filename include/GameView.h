@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include <array>
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_opengl.h"
@@ -182,7 +183,7 @@ private:
 	Player& initiating;
 	Player& receiving;
 	
-	int offer[5];
+	std::array<int, 5> offer;
 	
 	TradingView(TradingView& o) = delete;
 	TradingView& operator=(TradingView& o) = delete;
