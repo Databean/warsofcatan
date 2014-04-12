@@ -10,12 +10,6 @@
 #include "GameBoard.h"
 
 
-const int WOOD_INDEX = 0;
-const int BRICK_INDEX = 1;
-const int ORE_INDEX = 2;
-const int WHEAT_INDEX = 3;
-const int WOOL_INDEX = 4;
-
 /**
  * Check to see if a player's resources are equal to the input
  * @param [resource]x5 the amount of (wood, brick, ore, wheat, wool) you are checking
