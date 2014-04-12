@@ -99,20 +99,98 @@ int Player::getDevCardsInHand()
  * @return True if the player has enough resources to buy a road, false otherwise
  */
 bool Player::canBuyRoad(){
-	return getWood() > 0 && getBrick() > 0;
+	return getWood() >= 1 && getBrick() >= 1;
 }
 
 /**
  * Subtracts the cost of a road from a player's resources if they have enough
- * returns true if the resources were subtracted, false otherwise
+ * @return true if the resources were subtracted, false otherwise
  */
 bool Player::buyRoad(){
 	if(canBuyRoad()){
-		addWood(-1);
-		addBrick(-1);
+		addMultiple(-1,-1,0,0,0);
 		return true;
 	}
 	//insufficient funds
+	return false;
+}
+
+/**
+ * Determine if the player has enough resources to buy a settlement.
+ * @return True if the player has enough resources to buy a settlement, false otherwise
+ */
+bool Player::canBuySettlement(){
+	return getWood() >= 1 && getBrick() >= 1 && getWheat() >= 1 && getWool() >= 1;
+}
+
+/**
+ * Subtracts the cost of a road from a player's resources if they have enough
+ * @return true if the resources were subtracted, false otherwise
+ */
+bool Player::buySettlement(){
+	if(canBuySettlement()){
+		addMultiple(-1,-1,0,-1,-1);
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Determine if the player has enough resources to buy a city.
+ * @return True if the player has enough resources to buy a city, false otherwise
+ */
+bool Player::canBuyCity(){
+	return getWheat() >= 2 && getOre() >= 3;
+}
+
+/**
+ * Subtracts the cost of a city from a player's resources if they have enough
+ * @return true if the resources were subtracted, false otherwise
+ */
+bool Player::buyCity(){
+	if(canBuyCity()){
+		addMultiple(0,0,-3,-2,0);
+	}
+	return false;
+}
+
+/**
+ * Determine if the player has enough resources to buy a wonder.
+ * @return True if the player has enough resources to buy a wonder, false otherwise
+ */
+bool Player::canBuyWonder(){
+	return getWood() >= 5 && getBrick() >= 5 && getWheat() >= 5 && getWool() >= 5 && getOre() >= 5;
+}
+
+/**
+ * Subtracts the cost of a wonder from a player's resources if they have enough
+ * @return true if the resources were subtracted, false otherwise
+ */
+bool Player::buyWonder(){
+	if(canBuyWonder()){
+		addMultiple(-5,-5,-5,-5,-5);
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Determine if the player has enough resources to buy a card.
+ * @return True if the player has enough resources to buy a card, false otherwise
+ */
+bool Player::canBuyCard(){
+	return getWheat() >= 1 && getWool() >= 1 && getOre() >= 1;
+}
+
+/**
+ * Subtracts the cost of a card from a player's resources if they have enough
+ * @return true if the resources were subtracted, false otherwise
+ */
+bool Player::buyCard(){
+	if(canBuyCard()){
+		addMultiple(0,0,-1,-1,-1);
+		return true;
+	}
 	return false;
 }
 
@@ -154,6 +232,14 @@ int Player::getVictoryPointCards()
 	return retVal;
 }
 
+int Player::getArmySize(){
+	return armySize;
+}
+
+int Player::getLongestRoad(){
+	return longestRoad;
+}
+
 
 /**
  * The number of victory points a player has.
@@ -164,41 +250,15 @@ int Player::getVictoryPoints()
     return victoryPoints;
 }
 
+
+
 /**
- * Acquire a development card.
- * @param card An owning pointer to the card the player acquired.
+ * Gets the current modifier for trading wood
+ * @return int, the trading value for wood
  */
-void Player::buyCard(std::unique_ptr<DevelopmentCard> card)
-{
-    developmentCards.push_back(std::move(card));
+int Player::getWoodModifier(){
+	return tradeModifiers[WOOD_INDEX];
 }
-
-
-//play method refactored for dev cards
-
-//void Player::playCard(int index)
-//{
-//	if(index >=developmentCards.size())
-//		return;
-//
-//	playCard(developmentCards[index]);
-//}
-
-
-//void Player::playCard(DevelopmentCard *card)
-//{
-//    auto cardTester = [card](std::unique_ptr<DevelopmentCard>& test) -> bool { return card == test.get(); };
-//    if(!std::any_of(developmentCards.begin(), developmentCards.end(), cardTester)) {
-//        return;
-//    }
-//    card->playCard(board);
-//    if (card->getType() == KNIGHT) {
-//        armySize++;
-//	}
-//
-//    std::remove_if(developmentCards.begin(), developmentCards.end(), cardTester);
-//}
-
 
 /**
  * Sets the trade modifier for Wood to 2:1
@@ -206,6 +266,14 @@ void Player::buyCard(std::unique_ptr<DevelopmentCard> card)
 void Player::setWoodModifier()
 {
 	tradeModifiers[WOOD_INDEX] = 2;
+}
+
+/**
+ * Gets the current modifier for trading brick
+ * @return int, the trading value for brick
+ */
+int Player::getBrickModifier(){
+	return tradeModifiers[BRICK_INDEX];
 }
 
 /**
@@ -217,6 +285,14 @@ void Player::setBrickModifier()
 }
 
 /**
+ * Gets the current modifier for trading ore
+ * @return int, the trading value for ore
+ */
+int Player::getOreModifier(){
+	return tradeModifiers[ORE_INDEX];
+}
+
+/**
  * Sets the trade modifier for Ore to 2:1
  */
 void Player::setOreModifier()
@@ -225,11 +301,27 @@ void Player::setOreModifier()
 }
 
 /**
+ * Gets the current modifier for trading wheat
+ * @return int, the trading value for wheat
+ */
+int Player::getWheatModifier(){
+	return tradeModifiers[WHEAT_INDEX];
+}
+
+/**
  * Sets the trade modifier for Wheat to 2:1
  */
 void Player::setWheatModifier()
 {
 	tradeModifiers[WHEAT_INDEX] = 2;
+}
+
+/**
+ * Gets the current modifier for trading wool
+ * @return int, the trading value for wool
+ */
+int Player::getWoolModifier(){
+	return tradeModifiers[WOOL_INDEX];
 }
 
 /**
@@ -243,7 +335,7 @@ void Player::setWoolModifier()
 /**
  * Sets the trade modifier for all resources to 3:1
  */
-void Player::setGenralModifier()
+void Player::setGeneralModifier()
 {
 	for(int i =0; i<5; i++)
 	{
@@ -434,7 +526,10 @@ int Player::getWool() const
 }
 
 
-
+/**
+ * Adds (or subtracts) the amount of wood a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addWood(int resource)
 {
 	if(resources[WOOD_INDEX] < (0-resource))
@@ -443,6 +538,10 @@ void Player::addWood(int resource)
 		resources[WOOD_INDEX] += resource;
 }
 
+/**
+ * Adds (or subtracts) the amount of brick a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addBrick(int resource)
 {
 	if(resources[BRICK_INDEX] < (0-resource))
@@ -451,6 +550,10 @@ void Player::addBrick(int resource)
 		resources[BRICK_INDEX] += resource;
 }
 
+/**
+ * Adds (or subtracts) the amount of ore a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addOre(int resource)
 {
 	if(resources[ORE_INDEX] < (0-resource))
@@ -459,6 +562,10 @@ void Player::addOre(int resource)
 		resources[ORE_INDEX] += resource;
 }
 
+/**
+ * Adds (or subtracts) the amount of wheat a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addWheat(int resource)
 {
 	if(resources[WHEAT_INDEX] < (0-resource))
@@ -467,12 +574,30 @@ void Player::addWheat(int resource)
 		resources[WHEAT_INDEX] += resource;
 }
 
+/**
+ * Adds (or subtracts) the amount of wool a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addWool(int resource)
 {
 	if(resources[WOOL_INDEX] < (0-resource))
 		resources[WOOL_INDEX] = 0;
 	else
 		resources[WOOL_INDEX] += resource;
+}
+
+/**
+ * Adds (or subtracts) the amount of resources a player has
+ * Param order: wood, brick, ore, wheat, wool
+ * @param [resource], the number to add (negative to subtract)
+ *
+ */
+void Player::addMultiple(int wood, int brick, int ore, int wheat, int wool){
+	addWood(wood);
+	addBrick(brick);
+	addOre(ore);
+	addWheat(wheat);
+	addWool(wool);
 }
 
 /**
@@ -491,8 +616,31 @@ std::string Player::getName() const
  * @param delta The change in the resource.
  */
 void Player::addResource(int resourceType, int delta) {
-	resources[resourceType] += delta;
+	if(resources[resourceType] < (0-delta))
+		resources[resourceType] = 0;
+	else
+		resources[resourceType] += delta;
 	
+}
+
+/**
+ * Check to see if a player's resources are equal to the input
+ * @param [resource]x5 the amount of (wood, brick, ore, wheat, wool) you are checking
+ * @return bool if the values match
+ */
+bool Player::validateResourceAmount(int wood, int brick, int ore, int wheat, int wool){
+	return wood==getWood() && brick==getBrick() && ore==getOre() && wheat==getWheat() && wool==getWool();
+}
+
+/**
+ * Check to see if a player's trade modifiers are equal to the input
+ * @param [resource]x5 the modifiers (wood, brick, ore, wheat, wool) you are checking
+ * @return bool if the values match
+ */
+bool Player::validateTradeModifiers(int wood, int brick, int ore, int wheat, int wool){
+	return wood==getWoodModifier() && brick==getBrickModifier() && ore==getOreModifier()
+			&& wheat==getWheatModifier() && wool==getWoolModifier();
+
 }
 
 /**

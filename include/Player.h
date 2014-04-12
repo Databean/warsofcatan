@@ -54,7 +54,10 @@ public:
 	Player(GameBoard& board, tinyxml2::XMLElement*);
 	~Player();
 
+	int getArmySize();
+	int getLongestRoad();
     int getVictoryPoints();
+
     void updateVictoryPoints();
 
     int getVictoryPointsWithoutCards();
@@ -62,7 +65,6 @@ public:
 
     int getDevCardsInHand();
 
-    void buyCard(std::unique_ptr<DevelopmentCard> card);
     std::string getName() const;
 
 //    void playCard(int index);
@@ -70,14 +72,27 @@ public:
 
     bool canBuyRoad();
     bool buyRoad();
+    bool canBuySettlement();
+    bool buySettlement();
+    bool canBuyCity();
+    bool buyCity();
+    bool canBuyWonder();
+    bool buyWonder();
+    bool canBuyCard();
+    bool buyCard();
 
+    int getWoodModifier();
     void setWoodModifier();
+    int getBrickModifier();
     void setBrickModifier();
+    int getOreModifier();
     void setOreModifier();
+    int getWheatModifier();
     void setWheatModifier();
+    int getWoolModifier();
     void setWoolModifier();
 
-    void setGenralModifier();			//3:1 port
+    void setGeneralModifier();			//3:1 port
 
     bool offerBankTrade(std::array<int, 5> offer, std::array<int, 5> demand);
 
@@ -98,9 +113,14 @@ public:
     void addOre(int resource);
     void addWheat(int resource);
     void addWool(int resource);
+    void addMultiple(int wood, int brick, int ore, int wheat, int wool);
 
     int getResource(int resourceType) const; //
     void addResource(int resourceType, int delta);
+
+    bool validateResourceAmount(int wood, int brick, int ore, int wheat, int wool);
+    bool validateTradeModifiers(int wood, int brick, int ore, int wheat, int wool);
+
 
 	void accept(GameVisitor& visitor);
 	bool operator==(const Player& player) const;

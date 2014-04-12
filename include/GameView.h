@@ -86,6 +86,7 @@ public:
 	virtual void visit(Player&);
 	virtual void visit(ResourceTile&);
 	virtual void visit(DevelopmentCard&);
+	virtual void visit(Wonder&);
 };
 
 /**

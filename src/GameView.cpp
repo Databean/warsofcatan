@@ -9,6 +9,7 @@
 #include "GameController.h"
 #include "Renderer.h"
 #include "City.h"
+#include "Wonder.h"
 
 using std::make_pair;
 using std::pair;
@@ -391,6 +392,25 @@ void DrawingGameVisitor::visit(City& city) {
 	glVertex2d(centerScreenPos.first + cityRadius, centerScreenPos.second - cityRadius);
 	glVertex2d(centerScreenPos.first - cityRadius, centerScreenPos.second - cityRadius);
 	glVertex2d(centerScreenPos.first - cityRadius, centerScreenPos.second + cityRadius);
+	glEnd();
+}
+
+/**
+ * Draw a wonder. Right now is just a square.
+ * @param wonder The city to draw.
+ */
+void DrawingGameVisitor::visit(Wonder& wonder) {
+	static const auto wonderRadius = 0.06;
+
+	auto centerScreenPos = coordToScreen(wonder.getLocation());
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3d(0., 0., 0.);
+	glBegin(GL_QUADS);
+	glVertex2d(centerScreenPos.first + wonderRadius, centerScreenPos.second + wonderRadius);
+	glVertex2d(centerScreenPos.first + wonderRadius, centerScreenPos.second - wonderRadius);
+	glVertex2d(centerScreenPos.first - wonderRadius, centerScreenPos.second - wonderRadius);
+	glVertex2d(centerScreenPos.first - wonderRadius, centerScreenPos.second + wonderRadius);
 	glEnd();
 }
 

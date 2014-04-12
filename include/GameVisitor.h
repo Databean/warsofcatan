@@ -8,6 +8,7 @@ class Road;
 class City;
 class Player;
 class DevelopmentCard;
+class Wonder;
 
 /**
  * A class to be extended with callbacks to handle the different classes in the model. 
@@ -28,6 +29,7 @@ public:
 	virtual void visit(Player&) = 0;
 	virtual void visit(ResourceTile&) = 0;
 	virtual void visit(DevelopmentCard&) = 0;
+	virtual void visit(Wonder&) = 0;
 };
 
 #endif
