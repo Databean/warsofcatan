@@ -167,7 +167,7 @@ bool Player::canBuyWonder(){
  * @return true if the resources were subtracted, false otherwise
  */
 bool Player::buyWonder(){
-	if(canBuySettlement()){
+	if(canBuyWonder()){
 		addMultiple(-5,-5,-5,-5,-5);
 		return true;
 	}
@@ -187,7 +187,7 @@ bool Player::canBuyCard(){
  * @return true if the resources were subtracted, false otherwise
  */
 bool Player::buyCard(){
-	if(canBuySettlement()){
+	if(canBuyCard()){
 		addMultiple(0,0,-1,-1,-1);
 		return true;
 	}
