@@ -211,6 +211,9 @@ void XMLVisitor::visit(ResourceTile& tile) {
 	tilesElement->InsertEndChild(newTileElement);
 }
 
+void XMLVisitor::visit(GameDice& dice){
+	
+}
 /**
  * Serialize a development card.
  * @param card The card to serialize.

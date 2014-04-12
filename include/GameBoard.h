@@ -16,7 +16,7 @@
 #include "Settlement.h"
 #include "tinyxml2.h"
 #include "Road.h"
-
+#include "GameDice.h"
 
 class GameVisitor;
 
@@ -28,6 +28,9 @@ private:
 	std::map<Coordinate, std::unique_ptr<CornerPiece>> corners;
 
 	std::map<Coordinate, std::unique_ptr<ResourceTile>> resources;
+
+	GameDice dice;
+
 
 
 	std::map<Coordinate, std::vector<std::shared_ptr<Road>>> roads;
