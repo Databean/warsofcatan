@@ -12,18 +12,6 @@
 #include "Wonder.h"
 
 //TEST CONSTRUCTORS
-TEST(CornerPiece_constructor){
-	Coordinate loc = Coordinate(0,0);
-	GameBoard board({"test board"});
-	Player& test_player = board.getPlayer(0);
-
-	CornerPiece test_cp(&board, loc, test_player);
-	CHECK_EQUAL(loc, test_cp.getLocation());
-	CHECK_EQUAL(&board, test_cp.getBoard());
-	CHECK_EQUAL(&test_player, test_cp.getOwner());
-	CHECK_EQUAL(0, test_cp.getVictoryPoints());
-}
-
 TEST(Settlement_constructor){
 	Coordinate loc = Coordinate(0,0);
 	GameBoard board({"test board"});
@@ -100,15 +88,6 @@ TEST(Wonder_upgrade_city_constructor){
 }
 
 //TEST RESOURCE MODIFIERS
-TEST(CornerPiece_Resource_Mod){
-	Coordinate loc = Coordinate(0,0);
-	GameBoard board({"test board"});
-	Player& test_player = board.getPlayer(0);
-
-	CornerPiece test_cp(&board, loc, test_player);
-	CHECK_EQUAL(0, test_cp.getResourceModifier());
-}
-
 TEST(Settlement_Resource_Mod){
 	Coordinate loc = Coordinate(0,0);
 	GameBoard board({"test board"});
@@ -137,15 +116,6 @@ TEST(Wonder_Resource_Mod){
 }
 
 //TEST VICTORY POINTS
-TEST(CornerPiece_Victory_Pts){
-	Coordinate loc = Coordinate(0,0);
-	GameBoard board({"test board"});
-	Player& test_player = board.getPlayer(0);
-
-	CornerPiece test_cp(&board, loc, test_player);
-	CHECK_EQUAL(0, test_cp.getVictoryPoints());
-}
-
 TEST(Settlement_Victory_Pts){
 	Coordinate loc = Coordinate(0,0);
 	GameBoard board({"test board"});
