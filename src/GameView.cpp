@@ -494,6 +494,14 @@ void DrawingGameVisitor::visit(DevelopmentCard& card) {
 	
 }
 
+/**
+ * Construct a trading view.
+ * @param initiating The player initiating the trade.
+ * @param receiving The other player involved in the trade.
+ * @param trade The callback for the "trade" button, invoked with the current offer.
+ * @param cancel The callback for the "cancel" button
+ * @param initialOffer The initial offer to display.
+ */
 TradingView::TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> initialOffer) : 
 	ViewElement({{0.1, 0.1},{0.9, 0.9}}), initiating(initiating), receiving(receiving),
 	trade(std::bind(trade, std::ref(offer), std::placeholders::_1), {{0.7, 0.1}, {0.9, 0.2}}, "resources/TypeWritersSubstitute-Black.ttf", 50, "Trade"),
@@ -502,10 +510,17 @@ TradingView::TradingView(Player& initiating, Player& receiving, std::function<bo
 	
 }
 
+/**
+ * Destroy the TradingView.
+ */
 TradingView::~TradingView() {
 	
 }
 
+/**
+ * Handle a user clicking on the TradingView.
+ * @param coord The coordinate clicked on.
+ */
 bool TradingView::clicked(ScreenCoordinate coord) {
 	if(cancel.handleClick(coord)) {
 		return true;
@@ -520,6 +535,9 @@ bool TradingView::clicked(ScreenCoordinate coord) {
 	return true;
 }
 
+/**
+ * Render the TradingView.
+ */
 void TradingView::render() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glColor3d(1, 1, 0);
