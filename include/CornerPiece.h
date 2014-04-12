@@ -20,7 +20,7 @@ public:
 	Player& getOwner();
 	const Player& getOwner() const;
 
-	void accept(GameVisitor& visitor)
+	void accept(GameVisitor& visitor);
 
 	virtual int getResourceModifier();
 
