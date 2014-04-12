@@ -95,7 +95,7 @@ public:
 
 	//void PlaceSettlement(Coordinate location, Player& Owner);
 	void PlaceCity(Coordinate location, Player& Owner);
-	void PlaceWonder(Coordinate location, Player& Owner)
+	void PlaceWonder(Coordinate location, Player& Owner);
 	bool PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
 
 	void accept(GameVisitor& visitor);
