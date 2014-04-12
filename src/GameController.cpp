@@ -108,7 +108,7 @@ bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
 	std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction([this, &initiating, &receiving](std::array<int, 5> offer, ScreenCoordinate coord) {
 		std::array<int, 5> initial{{0, 0, 0, 0, 0}};
 		std::array<int, 5> reverseOffer = negativeArr<5>(offer);
-		handleTradeOffer(coord, receiving, initial, receiving, reverseOffer);
+		handleTradeOffer(coord, receiving, initial, initiating, reverseOffer);
 		return true;
 	});
 	std::function<bool(ScreenCoordinate)> cancelFunction([this, priority](ScreenCoordinate coord) {
@@ -137,7 +137,7 @@ bool GameController::handleTradeOffer(ScreenCoordinate coord, Player& initiating
 		//std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction(std::bind(&GameController::handleTradeOffer, this, _2, std::ref(initiating), _1, std::ref(receiving)));
 		std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction([this, &initiating, &receiving, counterOffer](std::array<int, 5> offer, ScreenCoordinate coord) {
 			std::array<int, 5> reverseOffer = negativeArr<5>(offer);
-			handleTradeOffer(coord, receiving, counterOffer, receiving, reverseOffer);
+			handleTradeOffer(coord, receiving, counterOffer, initiating, reverseOffer);
 			return true;
 		});
 		std::function<bool(ScreenCoordinate)> cancelFunction([this, priority](ScreenCoordinate coord) {
