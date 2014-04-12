@@ -90,8 +90,8 @@ void GameView::render() {
 	DrawingGameVisitor visitor(*this);
 	model.accept(visitor);
 	
-	for(auto& it : viewElements) {
-		it.second->render();
+	for(auto it = viewElements.rbegin(); it != viewElements.rend(); it++) {
+		it->second->render();
 	}
 	
 	glColor3d(1, 1, 1);
@@ -133,7 +133,7 @@ void GameView::addElement(std::unique_ptr<ViewElement> element) {
  * Add a ViewElement with a specific priority. This may override an existing element.
  */
 void GameView::addElement(int newPriority, std::unique_ptr<ViewElement> element) {
-	viewElements.emplace(newPriority, std::move(element));
+	viewElements[newPriority] = std::move(element);
 }
 
 /**
@@ -395,7 +395,7 @@ void TradingView::render() {
 	std::string resources[] = {"Wood", "Brick", "Ore", "Wheat", "Wool"};
 	for(int i = 0; i < 5; i++) {
 		auto height = 0.13;
-		renderText(font, fontSize, {0.3, 0.1 + (i * height)}, {0.6, 0.1 + height + (i * height)}, toString(offer[i]) + " " + resources[i]);
+		renderText(font, fontSize, {0.3, 0.2 + (i * height)}, {0.6, 0.2 + height + (i * height)}, toString(offer[i]) + " " + resources[i]);
 	}
 	renderText(font, fontSize, {0.1, 0.8}, {0.9, 0.9}, initiating.getName() + " -> " + receiving.getName());
 }
