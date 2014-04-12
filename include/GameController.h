@@ -3,6 +3,8 @@
 
 #include "Util.h"
 
+#include <array>
+
 class GameBoard;
 class ClickCoordinateEvent;
 class GameView;
@@ -31,6 +33,7 @@ public:
 	bool handleRoadButtonEvent(ScreenCoordinate);
 	bool handleSettlementButtonEvent(ScreenCoordinate);
 	bool handlePlayerClick(ScreenCoordinate, Player&);
+	bool handleTradeOffer(ScreenCoordinate, Player& initiating, std::array<int, 5>, Player& receiving);
 };
 
 #endif

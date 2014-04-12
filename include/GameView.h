@@ -61,6 +61,7 @@ public:
 	void addElement(std::unique_ptr<ViewElement>);
 	void addElement(int priority, std::unique_ptr<ViewElement>);
 	
+	std::unique_ptr<ViewElement> removeElement(int priority);
 	std::unique_ptr<ViewElement> removeElement(const ViewElement*);
 	std::unique_ptr<ViewElement> removeElement(const ViewElement&);
 };
@@ -185,12 +186,15 @@ private:
 	
 	std::array<int, 5> offer;
 	
+	ViewButtonText trade;
+	ViewButtonText cancel;
+	
 	TradingView(TradingView& o) = delete;
 	TradingView& operator=(TradingView& o) = delete;
 protected:
 	virtual bool clicked(ScreenCoordinate coord);
 public:
-	TradingView(Player& initiating, Player& receiving);
+	TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel);
 	virtual ~TradingView();
 	
 	void render();

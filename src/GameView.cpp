@@ -162,6 +162,22 @@ unique_ptr<ViewElement> GameView::removeElement(const ViewElement& element) {
 }
 
 /**
+ * Remove a ViewElement from the list, and return its owning pointer.
+ * @param priority The priority of the element to remove.
+ * @return An owning pointer to the element that was removed.
+ */
+unique_ptr<ViewElement> GameView::removeElement(int priority) {
+	auto it = viewElements.find(priority);
+	if(it == viewElements.end()) {
+		return std::unique_ptr<ViewElement>();
+	} else {
+		auto ret = std::move(it->second);
+		viewElements.erase(it);
+		return ret;
+	}
+}
+
+/**
  * Construct a ViewButton.
  * @param action The action to take when the button is pressed.
  * @param rect The area on the screen that the button receives clicks from.
@@ -478,7 +494,10 @@ void DrawingGameVisitor::visit(DevelopmentCard& card) {
 	
 }
 
-TradingView::TradingView(Player& initiating, Player& receiving) : ViewElement({{0.1, 0.1},{0.9, 0.9}}), initiating(initiating), receiving(receiving) {
+TradingView::TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel) : ViewElement({{0.1, 0.1},{0.9, 0.9}}), initiating(initiating), receiving(receiving),
+	trade(std::bind(trade, std::ref(offer), std::placeholders::_1), {{0.7, 0.1}, {0.9, 0.2}}, "resources/TypeWritersSubstitute-Black.ttf", 50, "Trade"),
+	cancel(cancel, {{0.1, 0.1}, {0.3, 0.2}}, "resources/TypeWritersSubstitute-Black.ttf", 50, "Cancel") {
+	
 	for(auto& res : offer) {
 		res = 0;
 	}
@@ -489,8 +508,13 @@ TradingView::~TradingView() {
 }
 
 bool TradingView::clicked(ScreenCoordinate coord) {
+	if(cancel.handleClick(coord)) {
+		return true;
+	} else if(trade.handleClick(coord)) {
+		return true;
+	}
 	int modifier = coord.first <= 0.5 ? -1 : 1;
-	int resource = (coord.second - 0.1) / 0.13;
+	int resource = (coord.second - 0.2) / 0.13;
 	if(resource >= 0 && resource <= 5) {
 		offer[resource] += modifier;
 	}
@@ -518,4 +542,7 @@ void TradingView::render() {
 		renderText(font, fontSize, {0.3, 0.2 + (i * height)}, {0.6, 0.2 + height + (i * height)}, toString(offer[i]) + " " + resources[i]);
 	}
 	renderText(font, fontSize, {0.1, 0.8}, {0.9, 0.9}, initiating.getName() + " -> " + receiving.getName());
+	
+	cancel.render();
+	trade.render();
 }

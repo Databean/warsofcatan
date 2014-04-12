@@ -89,8 +89,35 @@ bool GameController::handleSettlementButtonEvent(ScreenCoordinate coord) {
  * @param player The player whose name was clicked on.
  */
 bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
-	view.addElement(-10, std::unique_ptr<ViewElement>(new TradingView(*model.getPlayers()[0], player)));
+	using namespace std::placeholders;
+	Player& initiating = *model.getPlayers()[0];
+	Player& receiving = player;
+	auto priority = -10;
+	
+	std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction(std::bind(&GameController::handleTradeOffer, this, _2, std::ref(initiating), _1, std::ref(receiving)));
+	std::function<bool(ScreenCoordinate)> cancelFunction([this, priority](ScreenCoordinate coord) {
+		view.removeElement(priority); 
+		return true;
+	});
+	
+	view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating, receiving, tradeFunction, cancelFunction)));
 	std::cout << player.getName() << std::endl;
+	return true;
+}
+
+/**
+ * Handle a trade offer from a player.
+ * @param coord The coordinate clicked on to initiate the trade.
+ * @param initiating The player initiating the trade.
+ * @param offer The offer the player is giving.
+ * @param receiving The other player in the trade.
+ */
+bool GameController::handleTradeOffer(ScreenCoordinate coord, Player& initiating, std::array<int, 5> offer, Player& receiving) {
+	std::cout << "Received trade offer of ";
+	for(auto& it : offer) {
+		std::cout << it << " ";
+	}
+	std::cout << std::endl;
 	return true;
 }
 
