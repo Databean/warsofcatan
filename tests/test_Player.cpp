@@ -8,6 +8,7 @@
 #include "UnitTest++.h"
 #include "Player.h"
 
+
 const int WOOD_INDEX = 0;
 const int BRICK_INDEX = 1;
 const int ORE_INDEX = 2;

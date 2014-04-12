@@ -10,6 +10,8 @@
 #include "Settlement.h"
 #include "City.h"
 #include "Wonder.h"
+#include "GameBoard.h"
+#include "Player.h"
 
 //TEST CONSTRUCTORS
 TEST(Settlement_constructor){
