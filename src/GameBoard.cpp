@@ -739,7 +739,7 @@ std::pair<int, int> GameBoard::startTurn()
     int die1 = std::rand() % 6 + 1;
     int die2 = std::rand() % 6 + 1;
     int roll = die1+die2;
-    std::cout << "\nDie 1: " << die1 << "\nDie 2: " << die2 << "\nRoll: " << roll <<"\n";
+
     dice.setFirst(die1);
     dice.setSecond(die2);
     if (roll==7)
