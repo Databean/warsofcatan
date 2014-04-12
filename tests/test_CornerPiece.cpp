@@ -21,7 +21,7 @@ TEST(Settlement_constructor){
 
 	Settlement test_cp(board, loc, test_player);
 	CHECK_EQUAL(loc, test_cp.getLocation());
-	CHECK_EQUAL(board, test_cp.getBoard());
+	CHECK(board==test_cp.getBoard());
 	CHECK_EQUAL(1, test_cp.getVictoryPoints());
 }
 
@@ -32,7 +32,7 @@ TEST(City_constructor){
 
 	City test_cp(board, loc, test_player);
 	CHECK_EQUAL(loc, test_cp.getLocation());
-	CHECK_EQUAL(board, test_cp.getBoard());
+	CHECK(board==test_cp.getBoard());
 	CHECK_EQUAL(2, test_cp.getVictoryPoints());
 }
 
@@ -43,7 +43,7 @@ TEST(Wonder_constructor){
 
 	Wonder test_cp(board, loc, test_player);
 	CHECK_EQUAL(loc, test_cp.getLocation());
-	CHECK_EQUAL(board, test_cp.getBoard());
+	CHECK(board==test_cp.getBoard());
 	CHECK_EQUAL(10, test_cp.getVictoryPoints());
 }
 
@@ -55,7 +55,7 @@ TEST(City_upgrade_constructor){
 	Settlement intermediate_cp(board, loc, test_player);
 	City test_cp(intermediate_cp);
 	CHECK_EQUAL(loc, test_cp.getLocation());
-	CHECK_EQUAL(board, test_cp.getBoard());
+	CHECK(board==test_cp.getBoard());
 	CHECK_EQUAL(2, test_cp.getVictoryPoints());
 }
 
@@ -67,7 +67,7 @@ TEST(Wonder_upgrade_settlement_constructor){
 	Settlement intermediate_cp(board, loc, test_player);
 	Wonder test_cp(intermediate_cp);
 	CHECK_EQUAL(loc, test_cp.getLocation());
-	CHECK_EQUAL(board, test_cp.getBoard());
+	CHECK(board==test_cp.getBoard());
 	CHECK_EQUAL(10, test_cp.getVictoryPoints());
 }
 
@@ -79,7 +79,7 @@ TEST(Wonder_upgrade_city_constructor){
 	City intermediate_cp(board, loc, test_player);
 	Wonder test_cp(intermediate_cp);
 	CHECK_EQUAL(loc, test_cp.getLocation());
-	CHECK_EQUAL(board, test_cp.getBoard());
+	CHECK(board==test_cp.getBoard());
 	CHECK_EQUAL(10, test_cp.getVictoryPoints());
 }
 
