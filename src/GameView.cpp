@@ -265,13 +265,13 @@ void drawTexturedRectangle(std::pair<float, float> texTopLeft, float sideLength,
 	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + 0.0f);
 
 
-	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + sideLength});
-	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + screenSideLength);
-
 	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + sideLength});
 	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + screenSideLength);
 
+	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + sideLength});
+	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + screenSideLength);
 
+	/*
 	//redraw the image for reasons
 	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + sideLength});
 	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + screenSideLength);
@@ -285,6 +285,7 @@ void drawTexturedRectangle(std::pair<float, float> texTopLeft, float sideLength,
 	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + 0.0f});
 	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + 0.0f);
 
+	*/
 	
 	
 
@@ -304,23 +305,32 @@ void DrawingGameVisitor::visit(GameDice& dice) {
 
 	glColor3d(1.0, 1.0, 1.0);	
 	static const std::map<int, std::pair<float, float>> topLeftOffset = {
-		make_pair(1, make_pair(4.f, 8.f)),
-		make_pair(2, make_pair(134.f, 8.f)),
-		make_pair(3, make_pair(264.f, 8.f)),
-		make_pair(4, make_pair(4.f, 142.f)),
+		make_pair(1, make_pair(9.f, 3.f)),
+		make_pair(2, make_pair(134.f, 3.f)),
+		make_pair(3, make_pair(259.f, 3.f)),
+		make_pair(4, make_pair(9.f, 142.f)),
 		make_pair(5, make_pair(134.f, 142.f)),
-		make_pair(6, make_pair(264.f, 142.f))
+		make_pair(6, make_pair(259.f, 142.f))
 	};
 
-	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, 96.f, 
-		make_pair(.8f, .9f), 0.03);
+	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, 95.f, 
+		make_pair(.7f, .9f), 0.06);
 		
 
-	drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, 96.f, 
-		make_pair(.84f, .9f), 0.03);
+	drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, 95.f, 
+		make_pair(.78f, .9f), 0.06);
+
+	
+
+	//render all dice
+	//drawTexturedRectangle(make_pair(9.f, 3.f), 95.f, make_pair(.6f, .9f), 0.06);
+	//drawTexturedRectangle(make_pair(8.f, 4.f), 96.f, make_pair(.67f, .95f), 0.06);
+	//drawTexturedRectangle(make_pair(16.f, 8.f), 96.f, make_pair(.74f, .95f), 0.06);
+	//drawTexturedRectangle(make_pair(2.f, 8.f), 96.f, make_pair(.6f, .95f), 0.06);
+	//drawTexturedRectangle(make_pair(2.f, 8.f), 96.f, make_pair(.6f, .95f), 0.06);
+	//drawTexturedRectangle(make_pair(2.f, 8.f), 96.f, make_pair(.6f, .95f), 0.06);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-
 	//hardcoded 2 die for testing
 	//drawTexturedRectangle(make_pair(4.f, 8.f), 96.f, make_pair(.7f, .9f), 0.03);
 
@@ -396,10 +406,7 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 
-	static const GLuint diceTextures = loadImageAsTexture("resources/catan_dice_new.bmp");
-	glBindTexture(GL_TEXTURE_2D, diceTextures);
-	drawTexturedRectangle(make_pair(4.f, 8.f), 96.f, make_pair(.7f, .9f), 0.03);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	
 
 	
 }
