@@ -13,6 +13,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <array>
 
 #include "tinyxml2.h"
 
@@ -45,7 +46,7 @@ private:
     int tradeModifiers[5];
 
 
-    void tradeWithBank(int offer[], int demand[]);
+    void tradeWithBank(std::array<int, 5> offer, std::array<int, 5> demand);
 
 public:
 
@@ -93,11 +94,9 @@ public:
 
     void setGeneralModifier();			//3:1 port
 
-    bool offerBankTrade(int offer[], int demand[]);
+    bool offerBankTrade(std::array<int, 5> offer, std::array<int, 5> demand);
 
-    bool offerTrade(Player* p, int offer[], int demand[]);
-    bool recieveOffer(Player* p, int offer[], int demand[]);
-    bool acceptOffer(Player* p, int offer[], int demand[]);
+    bool acceptOffer(Player& p, std::array<int, 5> offer, std::array<int, 5> demand);
 
     int getRandomResource();
 

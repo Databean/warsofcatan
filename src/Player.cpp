@@ -350,7 +350,7 @@ void Player::setGeneralModifier()
  *@param offer An array representing your offer to the bank
  *@param demand An array representing your demand
  */
-void Player::tradeWithBank(int offer[], int demand[])
+void Player::tradeWithBank(std::array<int, 5> offer, std::array<int, 5> demand)
 {
 	for(int i=0; i<5; i++)
 	{
@@ -365,12 +365,12 @@ void Player::tradeWithBank(int offer[], int demand[])
  * @param demand An array representing your demand
  * @return true if bank accepted and trade was successful.
  */
-bool Player::offerBankTrade(int offer[], int demand[])
+bool Player::offerBankTrade(std::array<int, 5> offer, std::array<int, 5> demand)
 {
-	if(!checkResources(offer))
+	if(!checkResources(offer.data()))
 		return false;
 
-	int offerToBank[5];
+	std::array<int, 5> offerToBank;
 
 	for(int i=0; i<5; i++)
 	{
@@ -385,65 +385,22 @@ bool Player::offerBankTrade(int offer[], int demand[])
 
 
 /**
- * Offer a trade to another player with an offer and a demand.
- * @param p The other player that is receiving the trade.
- * @param offer The resources this player is offering to the other player.
- * @param demand The resources that this player wants in return from the other player.
- * @return If the trade succeeded.
- */
-bool Player::offerTrade(Player* p, int offer[], int demand[])
-{
-	if(sizeof offer/sizeof(int) != 5 || sizeof demand/sizeof(int) != 5)
-		return false; //Invalid Trade
-
-	if(!this->checkResources(offer))
-		return false; //YOu dont have enough to offer this
-
-	return p->recieveOffer(this, offer, demand);
-}
-
-
-/**
- * Receive a trade offer from another player.
- * @param p The player offering the trade.
- * @param offer The resources the other player is giving.
- * @param demand The resources the other player wants in return.
- * @return If the trade succeeded.
- */
-bool Player::recieveOffer(Player* p, int offer[], int demand[])
-{
-	if( !this->checkResources(demand) )
-		return false;
-
-	bool input = true;
-
-	//TODO:Display Offer to User and wait for input
-
-	if(input)
-	{
-		this->acceptOffer(p, offer, demand);
-		return true;
-	}
-	else
-		return false;
-
-}
-
-
-/**
  * Accept the trade offer from another player.
  * @param p The player offering the trade.
  * @param offer The resources the other player is offering.
  * @param demand The resources the other player wants in return.
  */
 
-bool Player::acceptOffer(Player* p, int offer[], int demand[])
+bool Player::acceptOffer(Player& p, std::array<int, 5> offer, std::array<int, 5> demand)
 {
-	p->addWood(demand[WOOD_INDEX] - offer[WOOD_INDEX]);
-	p->addBrick(demand[BRICK_INDEX] - offer[BRICK_INDEX]);
-	p->addOre(demand[ORE_INDEX] - offer[ORE_INDEX]);
-	p->addWheat(demand[WHEAT_INDEX] - offer[WHEAT_INDEX]);
-	p->addWool(demand[WOOL_INDEX] - offer[WOOL_INDEX]);
+	if(!checkResources(offer.data()) || !p.checkResources(demand.data())) {
+		return false;
+	}
+	p.addWood(demand[WOOD_INDEX] - offer[WOOD_INDEX]);
+	p.addBrick(demand[BRICK_INDEX] - offer[BRICK_INDEX]);
+	p.addOre(demand[ORE_INDEX] - offer[ORE_INDEX]);
+	p.addWheat(demand[WHEAT_INDEX] - offer[WHEAT_INDEX]);
+	p.addWool(demand[WOOL_INDEX] - offer[WOOL_INDEX]);
 
 	this->addWood(offer[WOOD_INDEX] - demand[WOOD_INDEX]);
 	this->addBrick(offer[BRICK_INDEX] - demand[BRICK_INDEX]);
