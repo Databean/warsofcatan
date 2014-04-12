@@ -37,7 +37,7 @@ TEST(multiplePlayerSerialization) {
 	
 	CHECK(testBoard == copyBoard);
 }
-
+/*
 TEST(testCardSerialization) {
 	GameBoard testBoard({"test"});
 	Player& testPlayer = testBoard.getPlayer(0);
@@ -53,7 +53,7 @@ TEST(testCardSerialization) {
 	GameBoard copyBoard(stream);
 	
 	CHECK(testBoard == copyBoard);
-}
+}*/
 
 TEST(roadSerialization) {
 	GameBoard testBoard({"test", "test2"});
