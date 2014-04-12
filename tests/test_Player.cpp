@@ -7,6 +7,7 @@
 
 #include "UnitTest++.h"
 #include "Player.h"
+#include "GameBoard.h"
 
 
 const int WOOD_INDEX = 0;
