@@ -9,6 +9,7 @@ class City;
 class Player;
 class DevelopmentCard;
 class Wonder;
+class CornerPiece;
 
 /**
  * A class to be extended with callbacks to handle the different classes in the model. 
