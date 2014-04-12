@@ -10,6 +10,7 @@
 #include "Settlement.h"
 #include "Road.h"
 #include "DevelopmentCard.h"
+#include "Wonder.h"
 
 using std::map;
 using std::runtime_error;

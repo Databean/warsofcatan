@@ -9,6 +9,7 @@
 #include "GameController.h"
 #include "Renderer.h"
 #include "City.h"
+#include "Wonder.h"
 
 using std::make_pair;
 using std::pair;
