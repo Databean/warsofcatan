@@ -216,4 +216,20 @@ std::unique_ptr<ViewElement> makeViewButtonText(Fn fn, std::pair<ScreenCoordinat
 	return std::unique_ptr<ViewElement>(new ViewButtonText<Fn>(fn, rect, font, fontSize, text));
 }
 
+class TradingView : public ViewElement {
+private:
+	Player& initiating;
+	Player& receiving;
+	
+	TradingView(TradingView& o) : ViewElement({{0, 0},{0, 0}}), initiating(o.initiating), receiving(o.receiving) {} //deleted
+	TradingView& operator=(TradingView& o) { return *this; } //deleted
+protected:
+	virtual bool clicked(ScreenCoordinate coord);
+public:
+	TradingView(Player& initiating, Player& receiving);
+	virtual ~TradingView();
+	
+	void render();
+};
+
 #endif

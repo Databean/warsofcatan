@@ -150,8 +150,9 @@ unique_ptr<ViewElement> GameView::removeElement(const ViewElement& element) {
 	return removeElement(&element);
 }
 
-/*
+/**
  * Construct a DrawingGameVisitor with the view that it is drawing to.
+ * @param view The view to draw to.
  */
 DrawingGameVisitor::DrawingGameVisitor(GameView& view) : view(view) {
 	
@@ -344,4 +345,29 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
  */
 void DrawingGameVisitor::visit(DevelopmentCard& card) {
 	
+}
+
+TradingView::TradingView(Player& initiating, Player& receiving) : ViewElement({{0.2, 0.2},{0.8, 0.8}}), initiating(initiating), receiving(receiving) {
+	
+}
+
+TradingView::~TradingView() {
+	
+}
+
+bool TradingView::clicked(ScreenCoordinate coord) {
+	return true;
+}
+
+void TradingView::render() {
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3d(1, 1, 0);
+	auto topLeft = ViewElement::getRect().first;
+	auto bottomRight = ViewElement::getRect().second;
+	glBegin(GL_QUADS);
+	glVertex2f(topLeft.first, topLeft.second);
+	glVertex2f(bottomRight.first, topLeft.second);
+	glVertex2f(bottomRight.first, bottomRight.second);
+	glVertex2f(topLeft.first, bottomRight.second);
+	glEnd();
 }
