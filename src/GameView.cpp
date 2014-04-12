@@ -494,13 +494,12 @@ void DrawingGameVisitor::visit(DevelopmentCard& card) {
 	
 }
 
-TradingView::TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel) : ViewElement({{0.1, 0.1},{0.9, 0.9}}), initiating(initiating), receiving(receiving),
+TradingView::TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> initialOffer) : 
+	ViewElement({{0.1, 0.1},{0.9, 0.9}}), initiating(initiating), receiving(receiving),
 	trade(std::bind(trade, std::ref(offer), std::placeholders::_1), {{0.7, 0.1}, {0.9, 0.2}}, "resources/TypeWritersSubstitute-Black.ttf", 50, "Trade"),
-	cancel(cancel, {{0.1, 0.1}, {0.3, 0.2}}, "resources/TypeWritersSubstitute-Black.ttf", 50, "Cancel") {
+	cancel(cancel, {{0.1, 0.1}, {0.3, 0.2}}, "resources/TypeWritersSubstitute-Black.ttf", 50, "Cancel"),
+	offer(initialOffer) {
 	
-	for(auto& res : offer) {
-		res = 0;
-	}
 }
 
 TradingView::~TradingView() {

@@ -184,17 +184,17 @@ private:
 	Player& initiating;
 	Player& receiving;
 	
-	std::array<int, 5> offer;
-	
 	ViewButtonText trade;
 	ViewButtonText cancel;
+	
+	std::array<int, 5> offer;
 	
 	TradingView(TradingView& o) = delete;
 	TradingView& operator=(TradingView& o) = delete;
 protected:
 	virtual bool clicked(ScreenCoordinate coord);
 public:
-	TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel);
+	TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> offer);
 	virtual ~TradingView();
 	
 	void render();

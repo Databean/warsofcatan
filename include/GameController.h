@@ -33,7 +33,7 @@ public:
 	bool handleRoadButtonEvent(ScreenCoordinate);
 	bool handleSettlementButtonEvent(ScreenCoordinate);
 	bool handlePlayerClick(ScreenCoordinate, Player&);
-	bool handleTradeOffer(ScreenCoordinate, Player& initiating, std::array<int, 5>, Player& receiving);
+	bool handleTradeOffer(ScreenCoordinate, Player& initiating, std::array<int, 5>, Player& receiving, std::array<int, 5>);
 };
 
 #endif

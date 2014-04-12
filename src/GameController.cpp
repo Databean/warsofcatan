@@ -83,6 +83,14 @@ bool GameController::handleSettlementButtonEvent(ScreenCoordinate coord) {
 	return true;
 }
 
+template<int size>
+auto negativeArr(std::array<int, size> arr) -> std::array<int, size> {
+	for(auto& it : arr) {
+		it = -it;
+	}
+	return arr;
+}
+
 /**
  * Handles a click on one of the Player names at the top right of the screen.
  * @param coord The coordinate clicked on.
@@ -94,13 +102,21 @@ bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
 	Player& receiving = player;
 	auto priority = -10;
 	
-	std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction(std::bind(&GameController::handleTradeOffer, this, _2, std::ref(initiating), _1, std::ref(receiving)));
+	std::array<int, 5> initial = {0, 0, 0, 0, 0};
+	
+	//std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction(std::bind(&GameController::handleTradeOffer, this, _2, std::ref(initiating), _1, std::ref(receiving)));
+	std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction([this, &initiating, &receiving](std::array<int, 5> offer, ScreenCoordinate coord) {
+		std::array<int, 5> initial = {0, 0, 0, 0, 0};
+		std::array<int, 5> reverseOffer = negativeArr<5>(offer);
+		handleTradeOffer(coord, receiving, initial, receiving, reverseOffer);
+		return true;
+	});
 	std::function<bool(ScreenCoordinate)> cancelFunction([this, priority](ScreenCoordinate coord) {
 		view.removeElement(priority); 
 		return true;
 	});
 	
-	view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating, receiving, tradeFunction, cancelFunction)));
+	view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating, receiving, tradeFunction, cancelFunction, initial)));
 	std::cout << player.getName() << std::endl;
 	return true;
 }
@@ -112,12 +128,25 @@ bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
  * @param offer The offer the player is giving.
  * @param receiving The other player in the trade.
  */
-bool GameController::handleTradeOffer(ScreenCoordinate coord, Player& initiating, std::array<int, 5> offer, Player& receiving) {
-	std::cout << "Received trade offer of ";
-	for(auto& it : offer) {
-		std::cout << it << " ";
+bool GameController::handleTradeOffer(ScreenCoordinate coord, Player& initiating, std::array<int, 5> offer, Player& receiving, std::array<int, 5> counterOffer) {
+	auto priority = -10;
+	if(offer == negativeArr<5>(counterOffer)) {
+		view.removeElement(priority);
+		//TODO: perform trade
+	} else {
+		//std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction(std::bind(&GameController::handleTradeOffer, this, _2, std::ref(initiating), _1, std::ref(receiving)));
+		std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction([this, &initiating, &receiving, counterOffer](std::array<int, 5> offer, ScreenCoordinate coord) {
+			std::array<int, 5> reverseOffer = negativeArr<5>(offer);
+			handleTradeOffer(coord, receiving, counterOffer, receiving, reverseOffer);
+			return true;
+		});
+		std::function<bool(ScreenCoordinate)> cancelFunction([this, priority](ScreenCoordinate coord) {
+			view.removeElement(priority); 
+			return true;
+		});
+		
+		view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating, receiving, tradeFunction, cancelFunction, counterOffer)));
 	}
-	std::cout << std::endl;
 	return true;
 }
 
