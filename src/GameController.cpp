@@ -129,6 +129,7 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 				std::bind(&GameController::handleCancelRoadCard, this, _1), {{.2, .3}, {.8, .6}}));
 			pushState(MODALSTATE);
 		}
+		break;
 	case KNIGHT_DEVCARD:
 		model.getCurrentPlayer().playKnight(coord);
 		break;

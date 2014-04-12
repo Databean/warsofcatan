@@ -61,7 +61,7 @@ public:
 
     int getDevCardsInHand();
 
-    bool buyCard(std::unique_ptr<DevelopmentCard> card);
+    bool buyCard(std::unique_ptr<DevelopmentCard> &card);
     std::string getName() const;
 
     GameBoard* getBoard();
@@ -90,6 +90,7 @@ public:
     int getWheat() const;
     int getWool() const;
 
+    int getDevelopmentCards(int card_type) const;
     int getVictoryCards() const;
     int getKnightCards() const;
     int getYearOfPlentyCards() const;

@@ -18,6 +18,7 @@
 
 
 #include "DevelopmentCard.h"
+#include "GameBoard.h"
 
 
 using tinyxml2::XMLElement;
@@ -166,7 +167,7 @@ void Player::setBoard(GameBoard * newboard){
  * Acquire a development card.
  * @param card An owning pointer to the card the player acquired.
  */
-bool Player::buyCard(std::unique_ptr<DevelopmentCard> card)
+bool Player::buyCard(std::unique_ptr<DevelopmentCard>& card)
 {
 	if(getWood() > 0 && getOre() > 0 && getWool() > 0){
 		developmentCards[card->getType()]++;
@@ -187,7 +188,7 @@ bool Player::playVictoryCard(){
 bool Player::playKnight(Coordinate location){
 	if(developmentCards[KNIGHT] > 0){
 		developmentCards[KNIGHT]--;
-		//board->moveRobber(location);
+		board->moveRobber(location);
 		//@ TODO need to steal resources
 		return true;
 	}
@@ -214,16 +215,20 @@ bool Player::playMonopoly(int resourceType){
 bool Player::playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2){
 	std::cout << "PLAYING ROADBUILDINGCARD\n";
 	if(developmentCards[ROADBUILDING] > 0){
-//		if(board->verifyRoadPlacement(start1, end1, this) && board->verifyRoadPlacement(start2, end2, this)){
-//			board->PlaceRoad(start1, end1, this);
-//			board->PlaceRoad(start2, end2, this);
-//			developmentCards[ROADBUILDING]--;
-//			return true;
-//		}
+		if(board->verifyRoadPlacement(start1, end1, *this) && board->verifyRoadPlacement(start2, end2, *this)){
+			board->PlaceRoad(start1, end1, *this);
+			board->PlaceRoad(start2, end2, *this);
+			developmentCards[ROADBUILDING]--;
+			return true;
+		}
 	}
 	return false;
 }
 
+
+int Player::getDevelopmentCards(int card_type) const{
+	return developmentCards[card_type];
+}
 
 int Player::getVictoryCards() const{
 	return developmentCards[VICTORYPOINT];
