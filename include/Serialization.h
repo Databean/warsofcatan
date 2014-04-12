@@ -19,6 +19,8 @@ private:
 	std::map<std::string, tinyxml2::XMLElement*> playerElementMap;
 	std::set<Road*> serializedRoads;
 	
+	Player* lastPlayer;
+	
 	tinyxml2::XMLElement* coordinateElement(const Coordinate& c);
 public:
 	XMLVisitor();
@@ -32,6 +34,7 @@ public:
 	virtual void visit(ResourceTile&);
 	virtual void visit(DevelopmentCard&);
 	virtual void visit(GameDice&);
+	virtual void visit(Wonder&);
 	
 	const tinyxml2::XMLDocument& getXMLDoc() const;
 };

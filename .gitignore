@@ -19,3 +19,6 @@ warsofcatan
 *.test
 /Default
 *.wocs
+
+documentation/*
+/Debug

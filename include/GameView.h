@@ -80,6 +80,7 @@ public:
 	virtual void visit(ResourceTile&);
 	virtual void visit(DevelopmentCard&);
 	virtual void visit(GameDice&);
+	virtual void visit(Wonder&);
 };
 
 /**

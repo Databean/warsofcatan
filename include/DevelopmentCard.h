@@ -20,93 +20,82 @@
 enum DevCardType { KNIGHT, VICTORYPOINT, YEAROFPLENTY, MONOPOLY, ROADBUILDING };
 
 
-/**
- * A card which can be held in a player's hand and be used to perform an action.
- */
+
 class DevelopmentCard {
 
-private:
-    Player* owner;
+protected:
     DevCardType type;
+    GameBoard& board;
 public:
-    DevelopmentCard(Player* player);
+    DevelopmentCard(GameBoard& board);
     virtual ~DevelopmentCard();
 
     virtual DevCardType getType() const = 0;
-    virtual void playCard() = 0;
 
-    virtual Player* getOwner();
 	virtual void accept(GameVisitor& visitor);
 	virtual bool operator==(const DevelopmentCard&);
 };
 
-/**
- * A development card used to move the robber and take a resource from another player.
- */
+
+
 class KnightCard : public DevelopmentCard {
 private:
 
 public:
-	KnightCard(Player* player);
+	KnightCard(GameBoard& board);
 //	virtual ~KnightCard();
 
     virtual DevCardType getType() const;
-    virtual void playCard();
+    void playCard(Player *player, Coordinate target);
 
 };
 
-/**
- * A development card that gives a permanent victory point on usage.
- */
+
+
 class VictoryPointCard : public DevelopmentCard {
 public:
-    VictoryPointCard(Player* player);
+    VictoryPointCard(GameBoard& board);
 //    virtual ~VictoryPointCard();
 
     virtual DevCardType getType() const;
-    virtual void playCard();
 
 };
 
-/**
- * A development card used to retrieve two resources of any type from the bank.
- */
+
 class YearOfPlentyCard : public DevelopmentCard {
 public:
-    YearOfPlentyCard(Player* player);
+    YearOfPlentyCard(GameBoard& board);
 //    virtual ~YearOfPlentyCard();
 
     virtual DevCardType getType() const;
-    virtual void playCard();
+    void playCard(Player *player, int rType1, int rType2);
 
 };
 
-/**
- * A development card used to take all resources of a particular type from all players.
- */
+
+
+
 class MonopolyCard : public DevelopmentCard {
 public:
-    MonopolyCard(Player* player);
+    MonopolyCard(GameBoard& board);
 //    virtual ~MonopolyCard();
 
     virtual DevCardType getType() const;
-    virtual void playCard();
+    void playCard(Player *player, int rType);
 
 };
 
-/**
- * A development card used to build two roads at no cost.
- */
+
+
 class RoadBuildingCard : public DevelopmentCard {
 private:
 
 public:
-	RoadBuildingCard(Player* player);
+	RoadBuildingCard(GameBoard& board);
 //	virtual ~RoadBuildingCard();
 
     virtual DevCardType getType() const;
-    virtual void playCard();
-    void playCard(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2);
+    void playCard(Player* player, Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2);
 };
 
 

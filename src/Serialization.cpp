@@ -10,6 +10,7 @@
 #include "Settlement.h"
 #include "Road.h"
 #include "DevelopmentCard.h"
+#include "Wonder.h"
 
 using std::map;
 using std::runtime_error;
@@ -21,7 +22,7 @@ using tinyxml2::XMLText;
 /**
  * Construct the serialization visitor.
  */
-XMLVisitor::XMLVisitor() {
+XMLVisitor::XMLVisitor() : lastPlayer(nullptr) {
 	xmldoc.InsertEndChild(xmldoc.NewElement("catangame"));
 	//xmldoc.RootElement()->SetName("catangame");
 }
@@ -112,6 +113,26 @@ void XMLVisitor::visit(City& city) {
 }
 
 /**
+ * Serialize a wonder.
+ * @param wonder The city to serialize.
+ */
+void XMLVisitor::visit(Wonder& wonder) {
+	if(!xmldoc.RootElement()->FirstChildElement("wonders")) {
+		xmldoc.RootElement()->InsertEndChild(xmldoc.NewElement("wonders"));
+	}
+	XMLElement* wondersElement = xmldoc.RootElement()->FirstChildElement("wonders");
+	XMLElement* newWonderElement = xmldoc.NewElement("wonder");
+
+	XMLElement* ownerElement = xmldoc.NewElement("owner");
+	ownerElement->InsertEndChild(xmldoc.NewText(wonder.getOwner().getName().c_str()));
+	newWonderElement->InsertEndChild(ownerElement);
+
+	newWonderElement->InsertEndChild(coordinateElement(wonder.getLocation()));
+
+	wondersElement->InsertEndChild(newWonderElement);
+}
+
+/**
  * Serialize a player.
  * @param player The player to serialize.
  */
@@ -150,6 +171,8 @@ void XMLVisitor::visit(Player& player) {
 	
 	playersElement->InsertEndChild(newPlayerElement);
 	playerElementMap[player.getName()] = newPlayerElement;
+	
+	lastPlayer = &player;
 }
 
 /**
@@ -196,7 +219,10 @@ void XMLVisitor::visit(GameDice& dice){
  * @param card The card to serialize.
  */
 void XMLVisitor::visit(DevelopmentCard& card) {
-	auto playerElementIt = playerElementMap.find(card.getOwner()->getName());
+	if(lastPlayer == nullptr) {
+		throw runtime_error("Don't know which player to assign this card to.");
+	}
+	auto playerElementIt = playerElementMap.find(lastPlayer->getName());
 	if(playerElementIt == playerElementMap.end()) {
 		throw runtime_error("This card belongs to a player that hasn't been saved!");
 	}

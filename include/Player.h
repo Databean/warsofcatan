@@ -27,13 +27,10 @@ const int WOOL_INDEX = 4;
 
 class DevelopmentCard;
 class Deck;
-class GameBoard;
 
 
-/**
- * One of the players interacting with the Settlers of Catan game. Contains her name, victory points,
- * development cards, and resources.
- */
+
+
 class Player {
 private:
     std::string name;
@@ -43,19 +40,23 @@ private:
     int armySize;
     int longestRoad;
     int victoryPoints;
-    GameBoard* board;
+    GameBoard& board;
     int resources[5];
+    int tradeModifiers[5];
 
 
-
+    void tradeWithBank(int offer[], int demand[]);
 
 public:
 
-	Player(std::string playerName);
-	Player(tinyxml2::XMLElement*);
+	Player(GameBoard& board, std::string playerName);
+	Player(GameBoard& board, tinyxml2::XMLElement*);
 	~Player();
 
+	int getArmySize();
+	int getLongestRoad();
     int getVictoryPoints();
+
     void updateVictoryPoints();
 
     int getVictoryPointsWithoutCards();
@@ -63,20 +64,42 @@ public:
 
     int getDevCardsInHand();
 
-    void buyCard(std::unique_ptr<DevelopmentCard> card);
     std::string getName() const;
 
-    GameBoard* getBoard();
-    void setBoard(GameBoard* newboard);
-
-    void playCard(DevelopmentCard* card);
+//    void playCard(int index);
+//    void playCard(DevelopmentCard* card);
 
     bool canBuyRoad();
     bool buyRoad();
+    bool canBuySettlement();
+    bool buySettlement();
+    bool canBuyCity();
+    bool buyCity();
+    bool canBuyWonder();
+    bool buyWonder();
+    bool canBuyCard();
+    bool buyCard();
+
+    int getWoodModifier();
+    void setWoodModifier();
+    int getBrickModifier();
+    void setBrickModifier();
+    int getOreModifier();
+    void setOreModifier();
+    int getWheatModifier();
+    void setWheatModifier();
+    int getWoolModifier();
+    void setWoolModifier();
+
+    void setGeneralModifier();			//3:1 port
+
+    bool offerBankTrade(int offer[], int demand[]);
 
     bool offerTrade(Player* p, int offer[], int demand[]);
     bool recieveOffer(Player* p, int offer[], int demand[]);
     bool acceptOffer(Player* p, int offer[], int demand[]);
+
+    int getRandomResource();
 
     bool checkResources(int resourceList[]);
 
@@ -91,8 +114,14 @@ public:
     void addOre(int resource);
     void addWheat(int resource);
     void addWool(int resource);
+    void addMultiple(int wood, int brick, int ore, int wheat, int wool);
 
+    int getResource(int resourceType) const; //
     void addResource(int resourceType, int delta);
+
+    bool validateResourceAmount(int wood, int brick, int ore, int wheat, int wool);
+    bool validateTradeModifiers(int wood, int brick, int ore, int wheat, int wool);
+
 
 	void accept(GameVisitor& visitor);
 	bool operator==(const Player& player) const;
