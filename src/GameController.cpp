@@ -102,11 +102,11 @@ bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
 	Player& receiving = player;
 	auto priority = -10;
 	
-	std::array<int, 5> initial = {0, 0, 0, 0, 0};
+	std::array<int, 5> initial{{0, 0, 0, 0, 0}};
 	
 	//std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction(std::bind(&GameController::handleTradeOffer, this, _2, std::ref(initiating), _1, std::ref(receiving)));
 	std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction([this, &initiating, &receiving](std::array<int, 5> offer, ScreenCoordinate coord) {
-		std::array<int, 5> initial = {0, 0, 0, 0, 0};
+		std::array<int, 5> initial{{0, 0, 0, 0, 0}};
 		std::array<int, 5> reverseOffer = negativeArr<5>(offer);
 		handleTradeOffer(coord, receiving, initial, receiving, reverseOffer);
 		return true;
