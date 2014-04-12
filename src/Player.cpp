@@ -250,44 +250,7 @@ int Player::getVictoryPoints()
     return victoryPoints;
 }
 
-/**
- * Acquire a development card.
- * @param card An owning pointer to the card the player acquired.
- */
-void Player::buyCard(std::unique_ptr<DevelopmentCard> card);
-{
-	if(canBuyCard()){
-		buyCard();
-		developmentCards.push_back(std::move(card));
-	}
 
-}
-
-
-//play method refactored for dev cards
-
-//void Player::playCard(int index)
-//{
-//	if(index >=developmentCards.size())
-//		return;
-//
-//	playCard(developmentCards[index]);
-//}
-
-
-//void Player::playCard(DevelopmentCard *card)
-//{
-//    auto cardTester = [card](std::unique_ptr<DevelopmentCard>& test) -> bool { return card == test.get(); };
-//    if(!std::any_of(developmentCards.begin(), developmentCards.end(), cardTester)) {
-//        return;
-//    }
-//    card->playCard(board);
-//    if (card->getType() == KNIGHT) {
-//        armySize++;
-//	}
-//
-//    std::remove_if(developmentCards.begin(), developmentCards.end(), cardTester);
-//}
 
 /**
  * Gets the current modifier for trading wood

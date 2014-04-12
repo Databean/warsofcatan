@@ -64,7 +64,6 @@ public:
 
     int getDevCardsInHand();
 
-    void buyCard(std::unique_ptr<DevelopmentCard> card);
     std::string getName() const;
 
 //    void playCard(int index);
