@@ -511,11 +511,11 @@ void DrawingGameVisitor::visit(GameDice& dice) {
 	};
 
 	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, 95.f, 
-		make_pair(.7f, .9f), 0.06);
+		make_pair(.7f, .8f), 0.06);
 		
 
 	drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, 95.f, 
-		make_pair(.78f, .9f), 0.06);
+		make_pair(.78f, .8f), 0.06);
 
 	
 
