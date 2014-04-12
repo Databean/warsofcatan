@@ -704,6 +704,26 @@ void Player::addResource(int resourceType, int delta) {
 }
 
 /**
+ * Check to see if a player's resources are equal to the input
+ * @param [resource]x5 the amount of (wood, brick, ore, wheat, wool) you are checking
+ * @return bool if the values match
+ */
+bool Player::validateResourceAmount(int wood, int brick, int ore, int wheat, int wool){
+	return wood==getWood() && brick==getBrick() && ore==getOre() && wheat==getWheat() && wool==getWool();
+}
+
+/**
+ * Check to see if a player's trade modifiers are equal to the input
+ * @param [resource]x5 the modifiers (wood, brick, ore, wheat, wool) you are checking
+ * @return bool if the values match
+ */
+bool Player::validateTradeModifiers(int wood, int brick, int ore, int wheat, int wool){
+	return wood==getWoodModifier() && brick==getBrickModifier() && ore==getOreModifier()
+			&& wheat==getWheatModifier() && wool==getWoolModifier();
+
+}
+
+/**
  * Visitor double-dispatch method.
  * @param visitor The visiting instance.
  */

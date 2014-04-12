@@ -14,22 +14,16 @@ const int ORE_INDEX = 2;
 const int WHEAT_INDEX = 3;
 const int WOOL_INDEX = 4;
 
+
 TEST(Player_constructor){
 	Player tp(NULL, "Buster");
 	CHECK_EQUAL("Buster", tp.getName());
 	CHECK_EQUAL(0, tp.getLongestRoad());
 	CHECK_EQUAL(0, tp.getArmySize());
 	CHECK_EQUAL(0, tp.getDevCardsInHand());
-	CHECK_EQUAL(0, tp.getWood());
-	CHECK_EQUAL(0, tp.getBrick());
-	CHECK_EQUAL(0, tp.getOre());
-	CHECK_EQUAL(0, tp.getWheat());
-	CHECK_EQUAL(0, tp.getOre());
-	CHECK_EQUAL(4, tp.getWoodModifier());
-	CHECK_EQUAL(4, tp.getBrickModifier());
-	CHECK_EQUAL(4, tp.getOreModifier());
-	CHECK_EQUAL(4, tp.getWheatModifier());
-	CHECK_EQUAL(4, tp.getOreModifier());
+
+	CHECK(tp.validateResourceAmount(0,0,0,0,0));
+	CHECK(tp.validateTradeModifiers(4,4,4,4,4));
 }
 
 TEST(Adders_Positive){
@@ -39,17 +33,9 @@ TEST(Adders_Positive){
 	tp.addOre(1);
 	tp.addWheat(1);
 	tp.addWool(1);
-	CHECK_EQUAL(1, tp.getWood());
-	CHECK_EQUAL(1, tp.getBrick());
-	CHECK_EQUAL(1, tp.getOre());
-	CHECK_EQUAL(1, tp.getWheat());
-	CHECK_EQUAL(1, tp.getOre());
+	CHECK(tp.validateResourceAmount(1,1,1,1,1));
 	tp.addMultiple(1,1,1,1,1);
-	CHECK_EQUAL(2, tp.getWood());
-	CHECK_EQUAL(2, tp.getBrick());
-	CHECK_EQUAL(2, tp.getOre());
-	CHECK_EQUAL(2, tp.getWheat());
-	CHECK_EQUAL(2, tp.getOre());
+	CHECK(tp.validateResourceAmount(2,2,2,2,2));
 }
 
 TEST(Adders_Negative_Normal){
@@ -60,17 +46,9 @@ TEST(Adders_Negative_Normal){
 	tp.addOre(-1);
 	tp.addWheat(-1);
 	tp.addWool(-1);
-	CHECK_EQUAL(4, tp.getWood());
-	CHECK_EQUAL(4, tp.getBrick());
-	CHECK_EQUAL(4, tp.getOre());
-	CHECK_EQUAL(4, tp.getWheat());
-	CHECK_EQUAL(4, tp.getOre());
+	CHECK(tp.validateResourceAmount(4,4,4,4,4));
 	tp.addMultiple(-1,-1,-1,-1,-1);
-	CHECK_EQUAL(3, tp.getWood());
-	CHECK_EQUAL(3, tp.getBrick());
-	CHECK_EQUAL(3, tp.getOre());
-	CHECK_EQUAL(3, tp.getWheat());
-	CHECK_EQUAL(3, tp.getOre());
+	CHECK(tp.validateResourceAmount(3,3,3,3,3));
 }
 
 TEST(Adders_Negative_Excessive){
@@ -81,78 +59,47 @@ TEST(Adders_Negative_Excessive){
 	tp.addOre(-2);
 	tp.addWheat(-2);
 	tp.addWool(-2);
-	CHECK_EQUAL(0, tp.getWood());
-	CHECK_EQUAL(0, tp.getBrick());
-	CHECK_EQUAL(0, tp.getOre());
-	CHECK_EQUAL(0, tp.getWheat());
-	CHECK_EQUAL(0, tp.getOre());
+	CHECK(tp.validateResourceAmount(0,0,0,0,0));
 	tp.addMultiple(1,1,1,1,1);
 	tp.addMultiple(-2,-2,-2,-2,-2);
-	CHECK_EQUAL(0, tp.getWood());
-	CHECK_EQUAL(0, tp.getBrick());
-	CHECK_EQUAL(0, tp.getOre());
-	CHECK_EQUAL(0, tp.getWheat());
-	CHECK_EQUAL(0, tp.getOre());
+	CHECK(tp.validateResourceAmount(0,0,0,0,0));
 }
 
+//TRADE MODIFIERS
 TEST(Trade_Modifiers_Brick){
 	Player tp(NULL, "Buster");
 	tp.setBrickModifier();
-	CHECK_EQUAL(4, tp.getWoodModifier());
-	CHECK_EQUAL(2, tp.getBrickModifier());
-	CHECK_EQUAL(4, tp.getOreModifier());
-	CHECK_EQUAL(4, tp.getWheatModifier());
-	CHECK_EQUAL(4, tp.getOreModifier());
+	CHECK(tp.validateTradeModifiers(4,2,4,4,4));
 }
 
 TEST(Trade_Modifiers_Wood){
 	Player tp(NULL, "Buster");
 	tp.setWoodModifier();
-	CHECK_EQUAL(2, tp.getWoodModifier());
-	CHECK_EQUAL(4, tp.getBrickModifier());
-	CHECK_EQUAL(4, tp.getOreModifier());
-	CHECK_EQUAL(4, tp.getWheatModifier());
-	CHECK_EQUAL(4, tp.getOreModifier());
+	CHECK(tp.validateTradeModifiers(2,4,4,4,4));
 }
 
 TEST(Trade_Modifiers_Ore){
 	Player tp(NULL, "Buster");
 	tp.setOreModifier();
-	CHECK_EQUAL(4, tp.getWoodModifier());
-	CHECK_EQUAL(4, tp.getBrickModifier());
-	CHECK_EQUAL(2, tp.getOreModifier());
-	CHECK_EQUAL(4, tp.getWheatModifier());
-	CHECK_EQUAL(4, tp.getOreModifier());
+	CHECK(tp.validateTradeModifiers(4,4,2,4,4));
 }
 
 TEST(Trade_Modifiers_Wheat){
 	Player tp(NULL, "Buster");
 	tp.setWheatModifier();
-	CHECK_EQUAL(4, tp.getWoodModifier());
-	CHECK_EQUAL(4, tp.getBrickModifier());
-	CHECK_EQUAL(4, tp.getOreModifier());
-	CHECK_EQUAL(2, tp.getWheatModifier());
-	CHECK_EQUAL(4, tp.getOreModifier());
+	CHECK(tp.validateTradeModifiers(4,4,4,2,4));
 }
 
 TEST(Trade_Modifiers_Wool){
 	Player tp(NULL, "Buster");
 	tp.setWoolModifier();
-	CHECK_EQUAL(4, tp.getWoodModifier());
-	CHECK_EQUAL(4, tp.getBrickModifier());
-	CHECK_EQUAL(4, tp.getOreModifier());
-	CHECK_EQUAL(4, tp.getWheatModifier());
-	CHECK_EQUAL(2, tp.getOreModifier());
+	CHECK(tp.validateTradeModifiers(4,4,4,4,2));
 }
 
 TEST(Trade_Modifiers_3){
 	Player tp(NULL, "Buster");
 	tp.setGeneralModifier();
-	CHECK_EQUAL(3, tp.getWoodModifier());
-	CHECK_EQUAL(3, tp.getBrickModifier());
-	CHECK_EQUAL(3, tp.getOreModifier());
-	CHECK_EQUAL(3, tp.getWheatModifier());
-	CHECK_EQUAL(3, tp.getOreModifier());
+	CHECK(tp.validateTradeModifiers(3,3,3,3,3));
 }
 
 TEST(Trade_Modifiers_Mixed){
@@ -160,23 +107,16 @@ TEST(Trade_Modifiers_Mixed){
 	tp.setWheatModifier();
 	tp.setOreModifier();
 	tp.setGeneralModifier();
-	CHECK_EQUAL(3, tp.getWoodModifier());
-	CHECK_EQUAL(3, tp.getBrickModifier());
-	CHECK_EQUAL(3, tp.getOreModifier());
-	CHECK_EQUAL(2, tp.getWheatModifier());
-	CHECK_EQUAL(2, tp.getOreModifier());
+	CHECK(tp.validateTradeModifiers(3,3,2,2,3));
 }
 
+//PLAYER PURCHASES
 TEST(Buy_Settlement_True){
 	Player tp(NULL, "Buster");
 	tp.addMultiple(5,5,5,5,5);
 	CHECK_EQUAL(true, tp.canBuySettlement());
 	tp.buySettlement();
-	CHECK_EQUAL(4, tp.getWood());
-	CHECK_EQUAL(4, tp.getBrick());
-	CHECK_EQUAL(5, tp.getOre());
-	CHECK_EQUAL(4, tp.getWheat());
-	CHECK_EQUAL(4, tp.getOre());
+	CHECK(tp.validateResourceAmount(4,4,5,4,4));
 }
 
 TEST(Buy_Settlement_False){
@@ -184,11 +124,7 @@ TEST(Buy_Settlement_False){
 	tp.addMultiple(0,1,1,1,1);
 	CHECK_EQUAL(false, tp.canBuySettlement());
 	tp.buySettlement();
-	CHECK_EQUAL(0, tp.getWood());
-	CHECK_EQUAL(1, tp.getBrick());
-	CHECK_EQUAL(1, tp.getOre());
-	CHECK_EQUAL(1, tp.getWheat());
-	CHECK_EQUAL(1, tp.getOre());
+	CHECK(tp.validateResourceAmount(0,1,1,1,1));
 }
 
 TEST(Buy_Road_True){
@@ -196,11 +132,7 @@ TEST(Buy_Road_True){
 	tp.addMultiple(5,5,5,5,5);
 	CHECK_EQUAL(true, tp.canBuyRoad());
 	tp.buyRoad();
-	CHECK_EQUAL(4, tp.getWood());
-	CHECK_EQUAL(4, tp.getBrick());
-	CHECK_EQUAL(5, tp.getOre());
-	CHECK_EQUAL(5, tp.getWheat());
-	CHECK_EQUAL(5, tp.getOre());
+	CHECK(tp.validateResourceAmount(4,4,5,5,5));
 }
 
 TEST(Buy_Road_False){
@@ -208,11 +140,7 @@ TEST(Buy_Road_False){
 	tp.addMultiple(0,1,1,1,1);
 	CHECK_EQUAL(false, tp.canBuyRoad());
 	tp.buyRoad();
-	CHECK_EQUAL(0, tp.getWood());
-	CHECK_EQUAL(1, tp.getBrick());
-	CHECK_EQUAL(1, tp.getOre());
-	CHECK_EQUAL(1, tp.getWheat());
-	CHECK_EQUAL(1, tp.getOre());
+	CHECK(tp.validateResourceAmount(0,1,1,1,1));
 }
 
 TEST(Buy_City_True){
@@ -220,11 +148,7 @@ TEST(Buy_City_True){
 	tp.addMultiple(5,5,5,5,5);
 	CHECK_EQUAL(true, tp.canBuyCity());
 	tp.buyCity();
-	CHECK_EQUAL(5, tp.getWood());
-	CHECK_EQUAL(5, tp.getBrick());
-	CHECK_EQUAL(2, tp.getOre());
-	CHECK_EQUAL(3, tp.getWheat());
-	CHECK_EQUAL(5, tp.getOre());
+	CHECK(tp.validateResourceAmount(5,5,2,3,5));
 }
 
 TEST(Buy_City_False){
@@ -232,11 +156,7 @@ TEST(Buy_City_False){
 	tp.addMultiple(1,1,1,1,1);
 	CHECK_EQUAL(false, tp.canBuyCity());
 	tp.buyCity();
-	CHECK_EQUAL(1, tp.getWood());
-	CHECK_EQUAL(1, tp.getBrick());
-	CHECK_EQUAL(1, tp.getOre());
-	CHECK_EQUAL(1, tp.getWheat());
-	CHECK_EQUAL(1, tp.getOre());
+	CHECK(tp.validateResourceAmount(1,1,1,1,1));
 }
 
 TEST(Buy_Wonder_True){
@@ -244,11 +164,7 @@ TEST(Buy_Wonder_True){
 	tp.addMultiple(6,6,6,6,6);
 	CHECK_EQUAL(true, tp.canBuyWonder());
 	tp.buyWonder();
-	CHECK_EQUAL(1, tp.getWood());
-	CHECK_EQUAL(1, tp.getBrick());
-	CHECK_EQUAL(1, tp.getOre());
-	CHECK_EQUAL(1, tp.getWheat());
-	CHECK_EQUAL(1, tp.getOre());
+	CHECK(tp.validateResourceAmount(1,1,1,1,1));
 }
 
 TEST(Buy_Wonder_False){
@@ -256,11 +172,7 @@ TEST(Buy_Wonder_False){
 	tp.addMultiple(5,5,1,5,5);
 	CHECK_EQUAL(false, tp.canBuyWonder());
 	tp.buyWonder();
-	CHECK_EQUAL(5, tp.getWood());
-	CHECK_EQUAL(5, tp.getBrick());
-	CHECK_EQUAL(1, tp.getOre());
-	CHECK_EQUAL(5, tp.getWheat());
-	CHECK_EQUAL(5, tp.getOre());
+	CHECK(tp.validateResourceAmount(5,5,1,5,5));
 }
 
 TEST(Buy_DevCard_True){
@@ -268,11 +180,7 @@ TEST(Buy_DevCard_True){
 	tp.addMultiple(5,5,5,5,5);
 	CHECK_EQUAL(true, tp.canBuyCard());
 	tp.buyCard();
-	CHECK_EQUAL(5, tp.getWood());
-	CHECK_EQUAL(5, tp.getBrick());
-	CHECK_EQUAL(4, tp.getOre());
-	CHECK_EQUAL(4, tp.getWheat());
-	CHECK_EQUAL(4, tp.getOre());
+	CHECK(tp.validateResourceAmount(5,5,4,4,4));
 }
 
 TEST(Buy_DevCard_False){
@@ -280,11 +188,7 @@ TEST(Buy_DevCard_False){
 	tp.addMultiple(1,1,0,1,1);
 	CHECK_EQUAL(false, tp.canBuyCard());
 	tp.buyCard();
-	CHECK_EQUAL(1, tp.getWood());
-	CHECK_EQUAL(1, tp.getBrick());
-	CHECK_EQUAL(0, tp.getOre());
-	CHECK_EQUAL(1, tp.getWheat());
-	CHECK_EQUAL(1, tp.getOre());
+	CHECK(tp.validateResourceAmount(1,1,0,1,1));
 }
 
 
@@ -295,3 +199,5 @@ TEST(Buy_DevCard_False){
 
 
 //INSERT TRADING TESTS HERE
+
+

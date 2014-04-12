@@ -120,6 +120,10 @@ public:
     int getResource(int resourceType) const; //
     void addResource(int resourceType, int delta);
 
+    bool validateResourceAmount(int wood, int brick, int ore, int wheat, int wool);
+    bool validateTradeModifiers(int wood, int brick, int ore, int wheat, int wool);
+
+
 	void accept(GameVisitor& visitor);
 	bool operator==(const Player& player) const;
 };
