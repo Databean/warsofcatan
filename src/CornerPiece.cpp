@@ -18,14 +18,6 @@ CornerPiece::~CornerPiece() {
 }
 
 /**
- * Visitor double-dispatch method.
- * @param visitor The visiting instance.
- */
-void CornerPiece::accept(GameVisitor& visitor) {
-	visitor.visit(*this);
-}
-
-/**
  * Getter for the owner of the piece.
  * @return The piece's owner.
  */
