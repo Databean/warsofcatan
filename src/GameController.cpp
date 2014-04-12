@@ -89,7 +89,7 @@ bool GameController::handleSettlementButtonEvent(ScreenCoordinate coord) {
  * @param player The player whose name was clicked on.
  */
 bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
-	view.addElement(std::unique_ptr<ViewElement>(new TradingView(*model.getPlayers()[0], player)));
+	view.addElement(-10, std::unique_ptr<ViewElement>(new TradingView(*model.getPlayers()[0], player)));
 	std::cout << player.getName() << std::endl;
 	return true;
 }

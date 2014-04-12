@@ -46,7 +46,7 @@ class GameView {
 private:
 	GameBoard& model;
 	
-	std::vector<std::unique_ptr<ViewElement>> viewElements;
+	std::map<int, std::unique_ptr<ViewElement>> viewElements;
 	
 	GameView(const GameView& o) : model(o.model) {} //deleted
 	GameView& operator=(const GameView& o) { return *this; } //deleted
@@ -58,6 +58,8 @@ public:
 	bool acceptInput(SDL_Event& event);
 	
 	void addElement(std::unique_ptr<ViewElement>);
+	void addElement(int priority, std::unique_ptr<ViewElement>);
+	
 	std::unique_ptr<ViewElement> removeElement(const ViewElement*);
 	std::unique_ptr<ViewElement> removeElement(const ViewElement&);
 };
@@ -220,6 +222,8 @@ class TradingView : public ViewElement {
 private:
 	Player& initiating;
 	Player& receiving;
+	
+	int offer[5];
 	
 	TradingView(TradingView& o) : ViewElement({{0, 0},{0, 0}}), initiating(o.initiating), receiving(o.receiving) {} //deleted
 	TradingView& operator=(TradingView& o) { return *this; } //deleted

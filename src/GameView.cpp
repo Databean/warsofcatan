@@ -91,7 +91,7 @@ void GameView::render() {
 	model.accept(visitor);
 	
 	for(auto& it : viewElements) {
-		it->render();
+		it.second->render();
 	}
 	
 	glColor3d(1, 1, 1);
@@ -109,7 +109,7 @@ bool GameView::acceptInput(SDL_Event& event) {
 	} else if(event.type == SDL_MOUSEBUTTONUP) {
 		ScreenCoordinate screen = {(float) event.button.x / 900.f, 1.f - (float) event.button.y / 800.f};
 		for(auto& it : viewElements) {
-			if(it->handleClick(screen)) {
+			if(it.second->handleClick(screen)) {
 				break;
 			}
 		}
@@ -118,11 +118,22 @@ bool GameView::acceptInput(SDL_Event& event) {
 }
 
 /**
- * Add a ViewElement to be rendered and accept input.
+ * Add a ViewElement to be rendered and accept input. Defaults to the lowest priority.
  * @param element An owning pointer to the element to be added.
  */
 void GameView::addElement(std::unique_ptr<ViewElement> element) {
-	viewElements.emplace_back(std::move(element));
+	int newPriority = 0;
+	if(viewElements.size() > 0) {
+		newPriority = viewElements.rbegin()->first + 1;
+	}
+	addElement(newPriority, std::move(element));
+}
+
+/**
+ * Add a ViewElement with a specific priority. This may override an existing element.
+ */
+void GameView::addElement(int newPriority, std::unique_ptr<ViewElement> element) {
+	viewElements.emplace(newPriority, std::move(element));
 }
 
 /**
@@ -132,8 +143,8 @@ void GameView::addElement(std::unique_ptr<ViewElement> element) {
  */
 unique_ptr<ViewElement> GameView::removeElement(const ViewElement* element) {
 	for(auto it = viewElements.begin(); it != viewElements.end(); it++) {
-		if(it->get() == element) {
-			auto ret = std::move(*it);
+		if(it->second.get() == element) {
+			auto ret = std::move(it->second);
 			viewElements.erase(it);
 			return ret;
 		}
@@ -347,8 +358,10 @@ void DrawingGameVisitor::visit(DevelopmentCard& card) {
 	
 }
 
-TradingView::TradingView(Player& initiating, Player& receiving) : ViewElement({{0.2, 0.2},{0.8, 0.8}}), initiating(initiating), receiving(receiving) {
-	
+TradingView::TradingView(Player& initiating, Player& receiving) : ViewElement({{0.1, 0.1},{0.9, 0.9}}), initiating(initiating), receiving(receiving) {
+	for(auto& res : offer) {
+		res = 0;
+	}
 }
 
 TradingView::~TradingView() {
@@ -356,6 +369,11 @@ TradingView::~TradingView() {
 }
 
 bool TradingView::clicked(ScreenCoordinate coord) {
+	int modifier = coord.first <= 0.5 ? -1 : 1;
+	int resource = (coord.second - 0.1) / 0.13;
+	if(resource >= 0 && resource <= 5) {
+		offer[resource] += modifier;
+	}
 	return true;
 }
 
@@ -370,4 +388,14 @@ void TradingView::render() {
 	glVertex2f(bottomRight.first, bottomRight.second);
 	glVertex2f(topLeft.first, bottomRight.second);
 	glEnd();
+	
+	auto font = "resources/TypeWritersSubstitute-Black.ttf";
+	auto fontSize = 50;
+	
+	std::string resources[] = {"Wood", "Brick", "Ore", "Wheat", "Wool"};
+	for(int i = 0; i < 5; i++) {
+		auto height = 0.13;
+		renderText(font, fontSize, {0.3, 0.1 + (i * height)}, {0.6, 0.1 + height + (i * height)}, toString(offer[i]) + " " + resources[i]);
+	}
+	renderText(font, fontSize, {0.1, 0.8}, {0.9, 0.9}, initiating.getName() + " -> " + receiving.getName());
 }
