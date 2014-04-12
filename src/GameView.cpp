@@ -97,6 +97,9 @@ void GameView::render() {
 		highlightPoint(it);
 	}
 	
+	glColor3d(1, 1, 1);
+	renderText("resources/TypeWritersSubstitute-Black.ttf", 50, {.2, .9}, {.8, 1}, "Settlers of Catan");
+	
 	glFlush();
 }
 
