@@ -243,9 +243,7 @@ void drawTexturedCircle(std::pair<float, float> texCenter, float texRadius, std:
 		double angle = ((double) i) * (2. * M_PI) / (double)articulation;
 		double tangle = ((double) -i) * (2. * M_PI) / (double)articulation;
 		texCoordPair({texCenter.first + texRadius * std::cos(tangle), texCenter.second + texRadius * std::sin(tangle)});
-		//std::cout << texCenter.first + texRadius << "\n";
 		glVertex2d(screenCenter.first + (screenRadius * std::cos(angle)), screenCenter.second + (screenRadius * std::sin(angle)));
-		//std::cout << screenCenter.first + (screenRadius * std::cos(angle));
 		
 	}
 	glEnd();
@@ -253,10 +251,10 @@ void drawTexturedCircle(std::pair<float, float> texCenter, float texRadius, std:
 
 void drawTexturedRectangle(std::pair<float, float> texTopLeft, float sideLength, std::pair<float, float> screenTopLeft, float screenSideLength) {
 	
-	static const GLuint diceTextures = loadImageAsTexture("resources/catan_dice_new.bmp");
-	glBindTexture(GL_TEXTURE_2D, diceTextures);
+	
 
 	glBegin(GL_QUADS);
+
 
 	
 
@@ -293,7 +291,7 @@ void drawTexturedRectangle(std::pair<float, float> texTopLeft, float sideLength,
 	glEnd();
 
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	
 
 
 
@@ -301,28 +299,30 @@ void drawTexturedRectangle(std::pair<float, float> texTopLeft, float sideLength,
 
 void DrawingGameVisitor::visit(GameDice& dice) {
 
-	
+	static const GLuint diceTextures = loadImageAsTexture("resources/catan_dice_new.bmp");
+	glBindTexture(GL_TEXTURE_2D, diceTextures);
 
-	
-	/*static const std::map<int, std::pair<float, float>> topLeftOffset = {
+	glColor3d(1.0, 1.0, 1.0);	
+	static const std::map<int, std::pair<float, float>> topLeftOffset = {
 		make_pair(1, make_pair(4.f, 8.f)),
 		make_pair(2, make_pair(134.f, 8.f)),
 		make_pair(3, make_pair(264.f, 8.f)),
 		make_pair(4, make_pair(4.f, 142.f)),
 		make_pair(5, make_pair(134.f, 142.f)),
 		make_pair(6, make_pair(264.f, 142.f))
-	};*/
-/*
+	};
+
 	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, 96.f, 
 		make_pair(.8f, .9f), 0.03);
-		*/
+		
 
-	//drawTexturedRectangle(make_pair(134.f, 8.f), 96.f, make_pair(.8f, .9f), 0.03);
+	drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, 96.f, 
+		make_pair(.84f, .9f), 0.03);
 
-	//drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, 96.f, 
-		//make_pair(.84f, .9f), 0.03);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-	drawTexturedRectangle(make_pair(4.f, 8.f), 1000.f, make_pair(.7f, .9f), 0.03);
+	//hardcoded 2 die for testing
+	//drawTexturedRectangle(make_pair(4.f, 8.f), 96.f, make_pair(.7f, .9f), 0.03);
 
 
 	
@@ -393,6 +393,12 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 	if(tile.getDiceValue() != 0) {
 		drawTexturedCircle(numberTexPoints.find(tile.getDiceValue())->second, radius, coordToScreen(coord), 0.04);
 	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+
+	static const GLuint diceTextures = loadImageAsTexture("resources/catan_dice_new.bmp");
+	glBindTexture(GL_TEXTURE_2D, diceTextures);
+	drawTexturedRectangle(make_pair(4.f, 8.f), 96.f, make_pair(.7f, .9f), 0.03);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	
