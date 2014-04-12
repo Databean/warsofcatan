@@ -35,6 +35,9 @@ private:
 	std::vector<std::unique_ptr<Player>> players;
 	Coordinate robber;
 
+	int currentTurn;
+
+	int maxVictoryPoints;
 
     void addResource(int x, int y, resourceType res, int val);
     bool checkRolls(int* rolls);
@@ -74,7 +77,11 @@ public:
 
 	const std::map<Coordinate, std::unique_ptr<ResourceTile>>& getResources() const;
 
+	void endTurn();
+	Player& getCurrentPlayer() const;
 
+	int getMaxVictoryPoints();
+	void setMaxVictoryPoints(int maxVicPts);
 
 	const std::shared_ptr<Road> getRoad(Coordinate start, Coordinate end) const;
 	const std::vector<std::shared_ptr<Road>>& getRoads(Coordinate loc) const;
