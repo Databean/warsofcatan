@@ -162,6 +162,126 @@ unique_ptr<ViewElement> GameView::removeElement(const ViewElement& element) {
 }
 
 /**
+ * Construct a ViewButton.
+ * @param action The action to take when the button is pressed.
+ * @param rect The area on the screen that the button receives clicks from.
+ */
+ViewButton::ViewButton(std::function<bool(ScreenCoordinate)> action, std::pair<ScreenCoordinate, ScreenCoordinate> rect) : ViewElement(rect), action(action) {
+	
+}
+
+/**
+ * Destroy the ViewButton.
+ */
+ViewButton::~ViewButton() {
+	
+}
+
+/**
+ * Render the ViewButton.
+ */
+void ViewButton::render() {
+	
+}
+
+/**
+ * Process a click that happens on this ViewButton.
+ * @param coord The coordinate clicked on.
+ * @return If the ViewButton handled the event.
+ */
+bool ViewButton::clicked(ScreenCoordinate coord) {
+	return action(coord);
+}
+
+/**
+ * Construct the ViewButtonColor.
+ * @param action The action to take when the button is clicked.
+ * @param rect The rectangle the button receives clicks from and is drawn in.
+ * @param color The color to draw the button.
+ */
+ViewButtonColor::ViewButtonColor(std::function<bool(ScreenCoordinate)> action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::tuple<float, float, float> color) : ViewButton(action, rect), color(color) {
+	
+}
+
+/**
+ * Destroy the ViewButtonColor.
+ */
+ViewButtonColor::~ViewButtonColor() {
+	
+}
+
+/**
+ * Render the ViewButtonColor as a solid rectangle in the rect given.
+ */
+void ViewButtonColor::render() {
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
+	auto topLeft = ViewElement::getRect().first;
+	auto bottomRight = ViewElement::getRect().second;
+	glBegin(GL_QUADS);
+	glVertex2f(topLeft.first, topLeft.second);
+	glVertex2f(bottomRight.first, topLeft.second);
+	glVertex2f(bottomRight.first, bottomRight.second);
+	glVertex2f(topLeft.first, bottomRight.second);
+	glEnd();
+}
+
+/**
+ * Construct a ViewButtonText.
+ * @param action The callback to invoke on clicking the button.
+ * @param rect The rectangle to draw it to the screen to and accept inputs from.
+ * @param font The path to the font of the text to render.
+ * @param fontSize The font size to draw the text at.
+ * @param text The text to show.
+ */
+ViewButtonText::ViewButtonText(std::function<bool(ScreenCoordinate)> action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, const std::string& font, int fontSize, const std::string& text)
+	: ViewButton(action, rect), texture(0) {
+	
+	setText(font, fontSize, text);
+}
+
+/**
+ * Destroy the ViewButtonText.
+ */
+ViewButtonText::~ViewButtonText() {
+	glDeleteTextures(1, &texture);
+}
+
+/**
+ * Change the text displayed by the ViewButtonText.
+ * @param font The path to the font to draw the text in.
+ * @param fontSize The size of the font to draw the text as.
+ * @param text The text to draw.
+ */
+void ViewButtonText::setText(const std::string& font, int fontSize, const std::string& text) {
+	if(texture != 0) {
+		glDeleteTextures(1, &texture);
+	}
+	texture = loadTextAsTexture(font, fontSize, text);
+}
+
+/**
+ * Render the ViewButtonText with the given text.
+ */
+void ViewButtonText::render() {
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glColor3f(1.0, 1.0, 1.0);
+	auto topLeft = ViewElement::getRect().first;
+	auto bottomRight = ViewElement::getRect().second;
+	glBegin(GL_QUADS);
+	glTexCoord2i(0, 1);
+	glVertex2f(topLeft.first, topLeft.second);
+	glTexCoord2i(1, 1);
+	glVertex2f(bottomRight.first, topLeft.second);
+	glTexCoord2i(1, 0);
+	glVertex2f(bottomRight.first, bottomRight.second);
+	glTexCoord2i(0, 0);
+	glVertex2f(topLeft.first, bottomRight.second);
+	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+/**
  * Construct a DrawingGameVisitor with the view that it is drawing to.
  * @param view The view to draw to.
  */
