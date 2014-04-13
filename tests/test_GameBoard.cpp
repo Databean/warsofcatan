@@ -259,6 +259,9 @@ TEST(buy_road_good){
 
 
 	test_board.PlaceSettlement(start, test_player);
+
+	test_player.addBrick(1);
+	test_player.addWood(1);
 	test_board.buyRoad(start, end, test_player);
 
 	std::shared_ptr<Road> test_road = test_board.getRoad(start, end);
@@ -354,7 +357,19 @@ TEST(updateLongestRoadPlayer){
 	CHECK(test_player2.hasLongestRoad() == false);
 }
 
+/**
+TEST(canRobberRob){
+	GameBoard test_board({"tester1", "tester2"});
+	Player& test_player1 = test_board.getPlayer(0);
+	Player& test_player2 = test_board.getPlayer(1);
 
+
+	CHECK(test_board.canRobberRob(test_player1, Coordinate(0,1)) == false);
+
+	test_board.PlaceSettlement(Coordinate(0,0), test_player1);
+	CHECK(test_board.canRobberRob(test_player1, Coordinate(0,1)) == true);
+}
+**/
 
 
 

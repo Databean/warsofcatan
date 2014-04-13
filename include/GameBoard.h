@@ -114,6 +114,7 @@ public:
 
     void moveRobber(Coordinate newRobber);
     Coordinate getRobber() const;
+    bool canRobberRob(Player& opponent, Coordinate location);
 
 };
 

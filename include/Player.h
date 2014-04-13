@@ -17,11 +17,12 @@
 #include "Util.h"
 #include "GameVisitor.h"
 
-const int WOOD_INDEX = 0;
-const int BRICK_INDEX = 1;
+// WHEAT, SHEEP, STONE, BRICK, WOOD is the order because it matches the enum in GamePiece.h
+const int WHEAT_INDEX = 0;
+const int WOOL_INDEX = 1;
 const int ORE_INDEX = 2;
-const int WHEAT_INDEX = 3;
-const int WOOL_INDEX = 4;
+const int BRICK_INDEX = 3;
+const int WOOD_INDEX = 4;
 
 
 class DevelopmentCard;
@@ -79,7 +80,7 @@ public:
 
     //KNIGHT, VICTORYPOINT, YEAROFPLENTY, MONOPOLY, ROADBUILDING
     bool playVictoryCard();
-    bool playKnight(Coordinate location);
+    bool playKnight(Coordinate location, Player& opponent);
     bool playYearOfPlenty(int resource);
     bool playMonopoly(int resource);
     bool playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2);

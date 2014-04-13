@@ -422,10 +422,26 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
  */
 void GameBoard::moveRobber(Coordinate newRobber) {
 
-	robber = newRobber;
-
-	//force trade	
+	//Bounds check
+	if(resources.count(newRobber) > 0)
+		robber = newRobber;
 }
+
+/**
+ * DOES NOT WORK BECAUSE getNeighboringCorners() does not work
+ */
+bool GameBoard::canRobberRob(Player& opponent, Coordinate location){
+	std::cout << GetNeighboringCorners(location).size() << "\n";
+
+	for(auto corner : GetNeighboringCorners(location)){
+		std::cout << corner->getOwner().getName() << "derp\n";
+		if(corner->getOwner() == opponent){
+			return true;
+		}
+	}
+	return false;
+}
+
 
 /**
  * The robber's location on the board.

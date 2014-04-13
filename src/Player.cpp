@@ -320,18 +320,25 @@ bool Player::playVictoryCard(){
 	return false;
 }
 
-bool Player::playKnight(Coordinate location){
-	if(developmentCards[KNIGHT] > 0){
-		developmentCards[KNIGHT]--;
-		armySize++;
-		board.moveRobber(location);
-		//@ TODO need to steal resources
+bool Player::playKnight(Coordinate location, Player& opponent){
+	if(developmentCards[KNIGHT] > 0 && board.canRobberRob(opponent, location)){
+				board.moveRobber(location);
+		int resourceToSteal = opponent.getRandomResource();
+		if(resourceToSteal >= 0){
+			addResource(resourceToSteal, 1);
+			opponent.addResource(resourceToSteal, -1);
+		}
 
+		armySize++;
+		developmentCards[KNIGHT]--;
 		return true;
 	}
 	return false;
 }
 bool Player::playYearOfPlenty(int resourceType){
+	if(resourceType >= 5)
+		return false;
+
 	if(developmentCards[YEAROFPLENTY] > 0){
 		developmentCards[YEAROFPLENTY]--;
 		addResource(resourceType, 2);
@@ -340,6 +347,9 @@ bool Player::playYearOfPlenty(int resourceType){
 	return false;
 }
 bool Player::playMonopoly(int resourceType){
+	if (resourceType >= 5)
+		return false;
+
 	if(developmentCards[MONOPOLY] > 0){
 		developmentCards[MONOPOLY]--;
 		for(auto& player : board.getPlayers()) {

@@ -131,7 +131,7 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		}
 		break;
 	case KNIGHT_DEVCARD:
-		model.getCurrentPlayer().playKnight(coord);
+		//model.getCurrentPlayer().playKnight(coord, opponent);
 		break;
 	case YEAROFPLENTY_DEVCARD:
 		//@ TODO Need to select a resource
