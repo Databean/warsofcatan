@@ -115,10 +115,8 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		}
 		break;
 	case ROBBER:
-		std::cout << "ROBBER\n";
-		model.moveRobber(coord);
-		if (getState() == KNIGHT_DEVCARD)
-			popState();
+		//model.moveRobber(coord);
+		popState();
 		break;
 	case BUILDROAD_DEVCARD:
 		storeClick(coord);
@@ -132,13 +130,20 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		break;
 	case KNIGHT_DEVCARD:
 		//model.getCurrentPlayer().playKnight(coord, opponent);
+		popState();
 		break;
 	case YEAROFPLENTY_DEVCARD:
-		//@ TODO Need to select a resource
-		model.getCurrentPlayer().playYearOfPlenty(0);
+		model.getCurrentPlayer().playYearOfPlenty(model.getResourceTile(coord).getType());
+		popState();
+		break;
 	case MONOPOLY_DEVCARD:
-		//@TODO Need to select a resource
-		model.getCurrentPlayer().playMonopoly(0);
+		model.getCurrentPlayer().playYearOfPlenty(model.getResourceTile(coord).getType());
+		popState();
+		break;
+	case VICTORYPOINT_DEVCARD:
+		model.getCurrentPlayer().playVictoryCard();
+		popState();
+		break;
 	case BUILDSETTLEMENT:
 		std::cout << "BUILDSETTLEMENT\n";
 		model.PlaceSettlement(coord, *model.getPlayers()[0]);
@@ -223,12 +228,18 @@ bool GameController::handleYearOfPlentyCardButtonEvent(ScreenCoordinate){
 	return true;
 }
 bool GameController::handleMonopolyCardButtonEvent(ScreenCoordinate){
-	std::cout <<"CONFIRMED!!!";
+	if(getState() != BASESTATE){
+		return true;
+	}
+	pushState(MONOPOLY_DEVCARD);
 	return true;
 }
 
 bool GameController::handleVictoryPointCardButtonEvent(ScreenCoordinate){
-	std::cout << "CANCELED!!!";
+	if(getState() != BASESTATE){
+		return true;
+	}
+	pushState(VICTORYPOINT_DEVCARD);
 	return true;
 }
 
