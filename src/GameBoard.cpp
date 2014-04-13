@@ -822,8 +822,13 @@ const std::vector<std::unique_ptr<Player>>& GameBoard::getPlayers() const {
 	return players;
 }
 
+/**
+ * WARNING THIS FUNCTION GIVES THE PLAYERS CHEATS SO I COULD DEBUG
+ */
 Player& GameBoard::getCurrentPlayer(){
-	return *(players[0]);
+	Player & curr_player = getPlayer(0);
+	curr_player.giveDevCardBoon();
+	return getPlayer(0);
 }
 
 /**

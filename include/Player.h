@@ -112,6 +112,8 @@ public:
     int getWheat() const;
     int getWool() const;
 
+    void giveDevCardBoon();
+
     int getDevelopmentCards(int card_type) const;
     int getVictoryCards() const;
     int getKnightCards() const;

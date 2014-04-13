@@ -41,7 +41,7 @@ public:
 	bool handleCancelButtonEvent(ScreenCoordinate);
 
 	bool handleConfirmRoadCard(ScreenCoordinate);
-	bool handleCancelRoadCard(ScreenCoordinate);
+	bool handleCancelDialogueEvent(ScreenCoordinate);
 
 	void pushState(ControlState);
 	ControlState getState();

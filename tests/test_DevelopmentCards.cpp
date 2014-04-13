@@ -90,16 +90,17 @@ TEST(RoadBuildingCard){
 	test_board.PlaceSettlement(Coordinate(0,0), test_player);
 	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new RoadBuildingCard());
 
-	test_player.addOre(3);
-	test_player.addWheat(3);
-	test_player.addWool(3);
+	test_player.addOre(4);
+	test_player.addWheat(4);
+	test_player.addWool(4);
+	test_player.buyCard(test_card);
 	test_player.buyCard(test_card);
 	test_player.buyCard(test_card);
 	test_player.buyCard(test_card);
 
-
+	testRoadBuildingCard(test_player, true, test_board, Coordinate(0,0), Coordinate(-1,1), Coordinate(-1,1), Coordinate(-1,2));
 	testRoadBuildingCard(test_player, true, test_board, Coordinate(0,0), Coordinate(1,0), Coordinate(1,0), Coordinate(1,1));
-	testRoadBuildingCard(test_player, true, test_board, Coordinate(0,2), Coordinate(1,1), Coordinate(-1,1), Coordinate(0,0));
+	testRoadBuildingCard(test_player, true, test_board, Coordinate(0,2), Coordinate(1,1), Coordinate(1,1), Coordinate(2,1));
 	testRoadBuildingCard(test_player, true, test_board, Coordinate(1,3), Coordinate(0,3), Coordinate(0,3), Coordinate(0,2));
 
 	testRoadBuildingCard(test_player, false, test_board, Coordinate(-500,200), Coordinate(100,340), Coordinate(21123,12312), Coordinate(343,321));

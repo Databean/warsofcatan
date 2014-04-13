@@ -126,7 +126,7 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 			using namespace std::placeholders;
 			view.addElement(makeConfirmationDialogue(
 				std::bind(&GameController::handleConfirmRoadCard, this, _1),
-				std::bind(&GameController::handleCancelRoadCard, this, _1), {{.2, .3}, {.8, .6}}));
+				std::bind(&GameController::handleCancelDialogueEvent, this, _1), {{.2, .3}, {.8, .6}}));
 			pushState(MODALSTATE);
 		}
 		break;
@@ -196,15 +196,12 @@ bool GameController::handleRoadCardButtonEvent(ScreenCoordinate coord){
 }
 
 bool GameController::handleConfirmRoadCard(ScreenCoordinate coord){
-	//play card
-	std::cout << "CONFIRMED!";
 	model.getCurrentPlayer().playRoadBuilding(getPastClick(3), getPastClick(2), getPastClick(1), getPastClick(0));
 	view.removeLastElement();
 	return handleCancelButtonEvent(coord);
 }
 
-bool GameController::handleCancelRoadCard(ScreenCoordinate coord){
-	std::cout << "CANCELLED!";
+bool GameController::handleCancelDialogueEvent(ScreenCoordinate coord){
 	view.removeLastElement();
 	return handleCancelButtonEvent(coord);
 }
@@ -215,7 +212,6 @@ bool GameController::handleKnightCardButtonEvent(ScreenCoordinate){
 		return true;
 	}
 	pushState(KNIGHT_DEVCARD);
-	pushState(ROBBER);
 	return true;
 }
 

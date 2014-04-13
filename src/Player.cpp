@@ -378,6 +378,12 @@ bool Player::playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate sta
 }
 
 
+void Player::giveDevCardBoon(){
+	for(int i = 0; i < 5; i++){
+		developmentCards[i]+=5;
+	}
+}
+
 int Player::getDevelopmentCards(int card_type) const{
 	return developmentCards[card_type];
 }
