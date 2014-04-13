@@ -17,9 +17,7 @@
 //using std::stringstream;
 //
 //TEST(emptyBoardSerialization) {
-//	vector<unique_ptr<Player>> players;
-//
-//	GameBoard testBoard(std::move(players));
+//	GameBoard testBoard({});
 //
 //	stringstream stream;
 //	testBoard.save(stream);
@@ -30,11 +28,7 @@
 //}
 //
 //TEST(multiplePlayerSerialization) {
-//	vector<unique_ptr<Player>> players;
-//	players.emplace_back(unique_ptr<Player>(new Player("test")));
-//	players.emplace_back(unique_ptr<Player>(new Player("test2")));
-//
-//	GameBoard testBoard(std::move(players));
+//	GameBoard testBoard({"test", "test2"});
 //
 //	stringstream stream;
 //	testBoard.save(stream);
@@ -45,9 +39,8 @@
 //}
 //
 //TEST(testCardSerialization) {
-//	vector<unique_ptr<Player>> players;
-//	players.emplace_back(unique_ptr<Player>(new Player("test")));
-//
+//	GameBoard testBoard({"test"});
+//	Player& testPlayer = testBoard.getPlayer(0);
 //
 //	unique_ptr<DevelopmentCard> knight = unique_ptr<DevelopmentCard>(new KnightCard());
 //	unique_ptr<DevelopmentCard> victory = unique_ptr<DevelopmentCard>(new VictoryPointCard());
@@ -55,13 +48,15 @@
 //	unique_ptr<DevelopmentCard> monopoly = unique_ptr<DevelopmentCard>(new MonopolyCard());
 //	unique_ptr<DevelopmentCard> roadbuilding = unique_ptr<DevelopmentCard>(new RoadBuildingCard());
 //
-//	players[0]->buyCard(knight);
-//	players[0]->buyCard(victory);
-//	players[0]->buyCard(yearofplenty);
-//	players[0]->buyCard(monopoly);
-//	players[0]->buyCard(roadbuilding);
+//	testPlayer.addOre(5);
+//	testPlayer.addWheat(5);
+//	testPlayer.addWool(5);
 //
-//	GameBoard testBoard(std::move(players));
+//	testPlayer.buyCard(knight);
+//	testPlayer.buyCard(victory);
+//	testPlayer.buyCard(yearofplenty);
+//	testPlayer.buyCard(monopoly);
+//	testPlayer.buyCard(roadbuilding);
 //
 //	stringstream stream;
 //	testBoard.save(stream);
@@ -72,15 +67,9 @@
 //}
 //
 //TEST(roadSerialization) {
-//	vector<unique_ptr<Player>> players;
-//	players.emplace_back(unique_ptr<Player>(new Player("test")));
-//	players.emplace_back(unique_ptr<Player>(new Player("test2")));
-//	std::cout << __LINE__ << "\n";
-//	Player& firstPlayer = *players[0];
-//	Player& secondPlayer = *players[1];
-//	std::cout << __LINE__ << "\n";
-//
-//	GameBoard testBoard(std::move(players));
+//	GameBoard testBoard({"test", "test2"});
+//	Player& firstPlayer = testBoard.getPlayer(0);
+//	Player& secondPlayer = testBoard.getPlayer(1);
 //
 //	testBoard.PlaceSettlement(Coordinate(0,0), firstPlayer);
 //	testBoard.PlaceSettlement(Coordinate(-1,1), secondPlayer);
@@ -96,12 +85,8 @@
 //}
 //
 //TEST(settlementSerialization) {
-//	vector<unique_ptr<Player>> players;
-//	players.emplace_back(unique_ptr<Player>(new Player("test")));
-//
-//	Player& player = *players[0];
-//
-//	GameBoard testBoard(std::move(players));
+//	GameBoard testBoard({"test"});
+//	Player& player = testBoard.getPlayer(0);
 //
 //	testBoard.PlaceSettlement(Coordinate(0, 0), player);
 //	testBoard.PlaceSettlement(Coordinate(1, 1), player);

@@ -21,7 +21,7 @@ using tinyxml2::XMLText;
 /**
  * Construct the serialization visitor.
  */
-XMLVisitor::XMLVisitor() {
+XMLVisitor::XMLVisitor(){
 	xmldoc.InsertEndChild(xmldoc.NewElement("catangame"));
 	//xmldoc.RootElement()->SetName("catangame");
 }
@@ -213,23 +213,20 @@ void XMLVisitor::visit(ResourceTile& tile) {
  * @param card The card to serialize.
  */
 void XMLVisitor::visit(DevelopmentCard& card) {
-	XMLElement* newCardElement = xmldoc.NewElement("card");
-	
-	static const map<DevCardType, std::string> typeToText = {
-		make_pair(KNIGHT, "knight"),
-		make_pair(VICTORYPOINT, "victorypoint"),
-		make_pair(YEAROFPLENTY, "yearofplenty"),
-		make_pair(MONOPOLY, "monopoly"),
-		make_pair(ROADBUILDING, "roadbuilding")
-	};
-	auto typeIt = typeToText.find(card.getType());
-	if(typeIt == typeToText.end()) {
-		throw runtime_error("Unknown card type");
+/**
+	if(lastPlayer == nullptr) {
+		throw runtime_error("Don't know which player to assign this card to.");
 	}
-	
-	XMLElement* typeElement = xmldoc.NewElement("type");
-	typeElement->InsertEndChild(xmldoc.NewText(typeIt->second.c_str()));
-	newCardElement->InsertEndChild(typeElement);
+	auto playerElementIt = playerElementMap.find(lastPlayer->getName());
+	if(playerElementIt == playerElementMap.end()) {
+		throw runtime_error("This card belongs to a player that hasn't been saved!");
+	}
+	XMLElement* playerElement = playerElementIt->second;
+	if(!playerElement->FirstChildElement("cards")) {
+		playerElement->InsertEndChild(xmldoc.NewElement("cards"));
+	}
+	XMLElement* cardsElement = playerElement->FirstChildElement("cards");
+	**/
 }
 
 /**

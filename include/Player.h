@@ -27,10 +27,7 @@ const int WOOL_INDEX = 4;
 class DevelopmentCard;
 class Deck;
 
-/**
- * One of the players interacting with the Settlers of Catan game. Contains her name, victory points,
- * development cards, and resources.
- */
+
 class Player {
 private:
     std::string name;
@@ -39,22 +36,36 @@ private:
     int developmentCards[5];
 
     int armySize;
-    int longestRoad;
+    bool largestArmy;
+    int longestRoadSize;
+    bool longestRoad;
+
+    int baseVictoryPoints;
     int victoryPoints;
-    GameBoard* board;
+    GameBoard& board;
     int resources[5];
+    int tradeModifiers[5];
 
 
-
+    void tradeWithBank(int offer[], int demand[]);
 
 public:
 
-	Player(std::string playerName);
-	Player(tinyxml2::XMLElement*);
+	Player(GameBoard& board, std::string playerName);
+	Player(GameBoard& board, tinyxml2::XMLElement*);
 	~Player();
 
     int getVictoryPoints();
     void updateVictoryPoints();
+
+    int getArmySize() const;
+    bool hasLargestArmy() const;
+    void setLargestArmy(bool);
+    int getLongestRoadSize() const;
+    bool hasLongestRoad() const;
+    void setLongestRoad(bool);
+    void setLongestRoadSize(int);
+
 
     int getVictoryPointsWithoutCards();
     int getVictoryPointCards();
@@ -63,7 +74,6 @@ public:
 
     bool buyCard(std::unique_ptr<DevelopmentCard> &card);
     std::string getName() const;
-
     GameBoard* getBoard();
     void setBoard(GameBoard* newboard);
 
@@ -74,13 +84,24 @@ public:
     bool playMonopoly(int resource);
     bool playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2);
 
-
     bool canBuyRoad();
     bool buyRoad();
+
+    void setWoodModifier();
+    void setBrickModifier();
+    void setOreModifier();
+    void setWheatModifier();
+    void setWoolModifier();
+
+    void setGenralModifier();			//3:1 port
+
+    bool offerBankTrade(int offer[], int demand[]);
 
     bool offerTrade(Player* p, int offer[], int demand[]);
     bool recieveOffer(Player* p, int offer[], int demand[]);
     bool acceptOffer(Player* p, int offer[], int demand[]);
+
+    int getRandomResource();
 
     bool checkResources(int resourceList[]);
 
@@ -105,6 +126,7 @@ public:
     void addWheat(int resource);
     void addWool(int resource);
 
+    int getResource(int resourceType) const; //
     void addResource(int resourceType, int delta);
     int giveAllResources(int resourceType);
 

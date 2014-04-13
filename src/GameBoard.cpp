@@ -32,7 +32,11 @@ using std::vector;
  * Board tiles and roll numbers are randomized.
  * @param players A vector of the players playing the game.
  */
-GameBoard::GameBoard(vector<unique_ptr<Player>>&& players) : players(std::move(players)) {
+GameBoard::GameBoard(const vector<std::string>& playerNames) {
+	for(auto& name : playerNames) {
+		players.push_back(std::unique_ptr<Player>(new Player(*this, name)));
+	}
+	
 	std::srand(std::time(0));
 	
 	const static vector<resourceType> boardResources {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP};
@@ -104,7 +108,11 @@ void GameBoard::insertTile(Coordinate location, vector<resourceType>& resources,
  * @param resourceLocations A mapping from coordinates to resource types and dice values, representing the tiles.
  * @throws std::runtime_error When the configuration is invalid.
  */
-GameBoard::GameBoard(std::vector<std::unique_ptr<Player>>&& players, const std::map<Coordinate, std::pair<resourceType, int>>& resourceLocations) : players(std::move(players)) {
+GameBoard::GameBoard(const std::vector<std::string>& playerNames, const std::map<Coordinate, std::pair<resourceType, int>>& resourceLocations) {
+	for(auto& name : playerNames) {
+		players.push_back(std::unique_ptr<Player>(new Player(*this, name)));
+	}
+	
 	for(auto& resource : resourceLocations) {
 		resources[resource.first] = std::unique_ptr<ResourceTile>(new ResourceTile(*this, resource.first, resource.second.first, resource.second.second));
 	}
@@ -152,7 +160,7 @@ GameBoard::GameBoard(istream& in) {
 	auto playerElements = doc.RootElement()->FirstChildElement("players");
 	if(playerElements) {
 		for(auto playerElement = playerElements->FirstChildElement(); playerElement; playerElement = playerElement->NextSiblingElement()) {
-			unique_ptr<Player> player(new Player(playerElement));
+			unique_ptr<Player> player(new Player(*this, playerElement));
 			players.emplace_back(std::move(player));
 		}
 	}
@@ -451,7 +459,28 @@ bool GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 	roads[end].push_back(newRoad);
 	
     startTurn();
-    
+	return true;
+}
+
+
+bool GameBoard::canPlayBuildRoadCard(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2, Player& Owner){
+	if(outOfBounds(start1) || outOfBounds(end1) || outOfBounds(start2) || outOfBounds(end2))
+		return false;
+
+	if(roadExists(start1, end1) || roadExists(start2, end2))
+		return false;
+
+	if(start1 == start2 || start1 == end2 || start2 == end1 || end1 == end2){
+		if(!isRoadConnectionPoint(start1, Owner) && !isRoadConnectionPoint(end1, Owner) && !isRoadConnectionPoint(start2, Owner) && !isRoadConnectionPoint(end2, Owner)){
+			return false;
+		}
+	} else if((!isRoadConnectionPoint(start1, Owner) && !isRoadConnectionPoint(end1, Owner)) || (!isRoadConnectionPoint(start2, Owner) && !isRoadConnectionPoint(end2, Owner))){
+		return false;
+	}
+
+	if(!Road::isValidRoad(start1, end1) || !Road::isValidRoad(start2, end2))
+		return false;
+
 	return true;
 }
 
@@ -560,6 +589,56 @@ int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, const Player & owner, 
 	marked[curr] = false;
 	return longest_path;
 }
+
+
+int GameBoard::CountCornerPoints(Player& owner){
+	int point_sum = 0;
+
+	for (std::map<Coordinate, std::unique_ptr<CornerPiece>>::iterator cp= corners.begin(); cp!=corners.end(); ++cp){
+		if(cp->second->getOwner() == owner){
+			point_sum += cp->second->getVictoryPoints();
+		}
+	}
+	return point_sum;
+}
+
+void GameBoard::updateLongestRoadPlayer(){
+	int longestRoad = -1;
+	int longestPlayer = 0;
+
+	for(int i = 0; i < getNoOfPlayers(); i++){
+		getPlayer(i).setLongestRoadSize(FindLongestRoad(getPlayer(i)));
+		getPlayer(i).setLongestRoad(false);
+		if(getPlayer(i).getLongestRoadSize() > longestRoad){
+			longestRoad = getPlayer(i).getLongestRoadSize();
+			longestPlayer = i;
+		}
+	}
+
+	if(longestRoad >= 5){
+		getPlayer(longestPlayer).setLongestRoad(true);
+	}
+
+}
+
+void GameBoard::updateLargestArmyPlayer(){
+	int largestArmy = -1;
+	int largestPlayer = 0;
+
+	for(int i = 0; i < getNoOfPlayers(); i++){
+		getPlayer(i).setLargestArmy(false);
+		if(getPlayer(i).getArmySize() > largestArmy){
+			largestArmy = getPlayer(i).getArmySize();
+			largestPlayer = i;
+		}
+	}
+
+	if(largestArmy >= 3){
+		getPlayer(largestPlayer).setLargestArmy(true);
+	}
+
+}
+
 
 /**
  * Place a settlement on the board.
@@ -730,6 +809,28 @@ const std::vector<std::unique_ptr<Player>>& GameBoard::getPlayers() const {
 Player& GameBoard::getCurrentPlayer(){
 	return *(players[0]);
 }
+
+/**
+ * @return no of players
+ */
+int GameBoard::getNoOfPlayers()
+{
+	return players.size();
+}
+
+
+/**
+ * @param index The index to look at.
+ * @return player at index index
+ */
+Player& GameBoard::getPlayer(int index)
+{
+	if(index >= getNoOfPlayers())
+		throw std::runtime_error("Invalid player index.");
+
+	return *players[index];
+}
+
 
 /**
  *  When a player begins their turn, this rolls the dice and takes the required action (paying resources or enabling robber movement)
