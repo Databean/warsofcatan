@@ -76,8 +76,7 @@ int main(int argc, char *argv[]) {
 
 	updateViewport(windowWidth, windowHeight);
 	
-	
-	GameBoard model({"testPlayer"});
+	GameBoard model({"testPlayer", "testPlayer2"});
 	GameView view(model);
 	GameController controller(model, view);
 	

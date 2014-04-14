@@ -20,7 +20,6 @@ City::~City() {
 }
 
 /**
- * 
  * @param visitor The visiting member.
  */
 void City::accept(GameVisitor& visitor) {
@@ -29,11 +28,16 @@ void City::accept(GameVisitor& visitor) {
 
 /**
  * Test for equality with another game piece.
- * @param p The piece to test with
+ * @param other The piece to test with
  * @return True if this object is equal to the other, false if not.
  */
-bool City::operator==(const GamePiece& p) const {
-	return false; //TODO: Actually compare.
+bool City::operator==(const GamePiece& other) const {
+	auto city = dynamic_cast<const City*>(&other);
+	if(city) {
+		return getOwner().getName() == city->getOwner().getName() && getLocation() == city->getLocation();
+	} else {
+		return false;
+	}
 }
 
 /**
@@ -49,7 +53,7 @@ int City::getResourceModifier() {
  * @return The victory points the player gets from the city.
  */
 int City::getVictoryPoints() {
-	return 2; //TODO: implement robber check here
+	return 2;
 }
 
 /**
@@ -59,3 +63,5 @@ int City::getVictoryPoints() {
 City::City(CornerPiece& sett) : CornerPiece(sett.getBoard(), sett.getLocation(), sett.getOwner()) {
 
 }
+
+

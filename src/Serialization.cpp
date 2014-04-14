@@ -10,6 +10,7 @@
 #include "Settlement.h"
 #include "Road.h"
 #include "DevelopmentCard.h"
+#include "Wonder.h"
 
 using std::map;
 using std::runtime_error;
@@ -112,6 +113,26 @@ void XMLVisitor::visit(City& city) {
 }
 
 /**
+ * Serialize a wonder.
+ * @param wonder The city to serialize.
+ */
+void XMLVisitor::visit(Wonder& wonder) {
+	if(!xmldoc.RootElement()->FirstChildElement("wonders")) {
+		xmldoc.RootElement()->InsertEndChild(xmldoc.NewElement("wonders"));
+	}
+	XMLElement* wondersElement = xmldoc.RootElement()->FirstChildElement("wonders");
+	XMLElement* newWonderElement = xmldoc.NewElement("wonder");
+
+	XMLElement* ownerElement = xmldoc.NewElement("owner");
+	ownerElement->InsertEndChild(xmldoc.NewText(wonder.getOwner().getName().c_str()));
+	newWonderElement->InsertEndChild(ownerElement);
+
+	newWonderElement->InsertEndChild(coordinateElement(wonder.getLocation()));
+
+	wondersElement->InsertEndChild(newWonderElement);
+}
+
+/**
  * Serialize a player.
  * @param player The player to serialize.
  */
@@ -206,6 +227,9 @@ void XMLVisitor::visit(ResourceTile& tile) {
 	tilesElement->InsertEndChild(newTileElement);
 }
 
+void XMLVisitor::visit(GameDice& dice){
+	
+}
 /**
  * CODE MAY BE OBSOLETE AFTER DEV CARD REFACTORING
  *

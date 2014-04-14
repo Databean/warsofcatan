@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <array>
 
 #include "tinyxml2.h"
 #include "Util.h"
@@ -48,7 +49,7 @@ private:
     int tradeModifiers[5];
 
 
-    void tradeWithBank(int offer[], int demand[]);
+    void tradeWithBank(std::array<int, 5> offer, std::array<int, 5> demand);
 
 public:
 
@@ -57,6 +58,7 @@ public:
 	~Player();
 
     int getVictoryPoints();
+
     void updateVictoryPoints();
 
     int getArmySize() const;
@@ -87,20 +89,35 @@ public:
 
     bool canBuyRoad();
     bool buyRoad();
+    bool canBuySettlement();
+    bool buySettlement();
+    bool canBuyCity();
+    bool buyCity();
+    bool canBuyWonder();
+    bool buyWonder();
+    bool canBuyCard();
+    bool buyCard();
 
+    int getWoodModifier();
     void setWoodModifier();
+    int getBrickModifier();
     void setBrickModifier();
+    int getOreModifier();
     void setOreModifier();
+    int getWheatModifier();
     void setWheatModifier();
+    int getWoolModifier();
     void setWoolModifier();
 
     void setGenralModifier();			//3:1 port
 
     bool offerBankTrade(int offer[], int demand[]);
 
-    bool offerTrade(Player* p, int offer[], int demand[]);
-    bool recieveOffer(Player* p, int offer[], int demand[]);
-    bool acceptOffer(Player* p, int offer[], int demand[]);
+    void setGeneralModifier();			//3:1 port
+
+    bool offerBankTrade(std::array<int, 5> offer, std::array<int, 5> demand);
+
+    bool acceptOffer(Player& p, std::array<int, 5> offer, std::array<int, 5> demand);
 
     int getRandomResource();
 
@@ -128,10 +145,15 @@ public:
     void addOre(int resource);
     void addWheat(int resource);
     void addWool(int resource);
+    void addMultiple(int wood, int brick, int ore, int wheat, int wool);
 
     int getResource(int resourceType) const; //
     void addResource(int resourceType, int delta);
     int giveAllResources(int resourceType);
+
+    bool validateResourceAmount(int wood, int brick, int ore, int wheat, int wool);
+    bool validateTradeModifiers(int wood, int brick, int ore, int wheat, int wool);
+
 
 	void accept(GameVisitor& visitor);
 	bool operator==(const Player& player) const;

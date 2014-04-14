@@ -4,9 +4,12 @@
 #include "Util.h"
 #include <vector>
 
+#include <array>
+
 class GameBoard;
 class ClickCoordinateEvent;
 class GameView;
+class Player;
 
 
 enum ControlState {BASESTATE, MODALSTATE, BUILDROAD, BUILDSETTLEMENT, ROBBER,
@@ -47,7 +50,7 @@ public:
 	void pushState(ControlState);
 	ControlState getState();
 	ControlState popState();
-
+bool handleTradeOffer(ScreenCoordinate, Player& initiating, std::array<int, 5>, Player& receiving, std::array<int, 5>);
 	void storeClick(Coordinate clickCoordinate);
 	Coordinate getLastClick();
 	Coordinate getPastClick(int howLongAgo);
@@ -59,6 +62,8 @@ public:
 
 
 
+	bool handlePlayerClick(ScreenCoordinate, Player&);
+	bool handleTradeOffer(ScreenCoordinate, Player& initiating, std::array<int, 5>, Player& receiving, std::array<int, 5>);
 };
 
 #endif

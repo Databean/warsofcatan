@@ -16,7 +16,7 @@
 #include "Settlement.h"
 #include "tinyxml2.h"
 #include "Road.h"
-
+#include "GameDice.h"
 
 class GameVisitor;
 
@@ -31,6 +31,9 @@ private:
 
 	std::map<Coordinate, std::unique_ptr<ResourceTile>> resources;
 
+	GameDice dice;
+
+
 
 	std::map<Coordinate, std::vector<std::shared_ptr<Road>>> roads;
 
@@ -42,6 +45,7 @@ private:
     bool checkRolls(int* rolls);
 
 	bool isValidBoard() const;
+
 
 	bool outOfBounds(const Coordinate& coord) const;
 	bool roadExists(Coordinate start, Coordinate end) const;
@@ -90,7 +94,7 @@ public:
 
 	void PlaceSettlement(Coordinate location, Player& Owner);
 	void UpgradeSettlement(Coordinate location);
-	//void PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
+	void UpgradeToWonder(Coordinate location);
 
 
 	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const;
@@ -98,6 +102,7 @@ public:
 
 	//void PlaceSettlement(Coordinate location, Player& Owner);
 	void PlaceCity(Coordinate location, Player& Owner);
+	void PlaceWonder(Coordinate location, Player& Owner);
 	bool PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
 	bool canPlayBuildRoadCard(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2, Player& Owner);
 
