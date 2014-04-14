@@ -13,3 +13,12 @@
 *.a
 
 checkers-spike
+warsofcatan
+
+*.d
+*.test
+/Default
+*.wocs
+
+documentation/*
+/Debug

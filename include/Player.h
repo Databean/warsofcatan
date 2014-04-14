@@ -1,0 +1,129 @@
+//
+//  Player.h
+//  Catan parts
+//
+//  Created by Ankit Bhutani on 2/22/14.
+//  Copyright (c) 2014 Ankit Bhutani. All rights reserved.
+//
+
+#ifndef PLAYER_H
+#define PLAYER_H
+
+
+#include <vector>
+#include <string>
+#include <memory>
+#include <array>
+
+#include "tinyxml2.h"
+
+#include "GameVisitor.h"
+
+const int WOOD_INDEX = 0;
+const int BRICK_INDEX = 1;
+const int ORE_INDEX = 2;
+const int WHEAT_INDEX = 3;
+const int WOOL_INDEX = 4;
+
+
+class DevelopmentCard;
+class Deck;
+
+
+
+
+class Player {
+private:
+    std::string name;
+
+    std::vector<std::unique_ptr<DevelopmentCard>> developmentCards;
+
+    int armySize;
+    int longestRoad;
+    int victoryPoints;
+    GameBoard& board;
+    int resources[5];
+    int tradeModifiers[5];
+
+
+    void tradeWithBank(std::array<int, 5> offer, std::array<int, 5> demand);
+
+public:
+
+	Player(GameBoard& board, std::string playerName);
+	Player(GameBoard& board, tinyxml2::XMLElement*);
+	~Player();
+
+	int getArmySize();
+	int getLongestRoad();
+    int getVictoryPoints();
+
+    void updateVictoryPoints();
+
+    int getVictoryPointsWithoutCards();
+    int getVictoryPointCards();
+
+    int getDevCardsInHand();
+
+    std::string getName() const;
+
+//    void playCard(int index);
+//    void playCard(DevelopmentCard* card);
+
+    bool canBuyRoad();
+    bool buyRoad();
+    bool canBuySettlement();
+    bool buySettlement();
+    bool canBuyCity();
+    bool buyCity();
+    bool canBuyWonder();
+    bool buyWonder();
+    bool canBuyCard();
+    bool buyCard();
+
+    int getWoodModifier();
+    void setWoodModifier();
+    int getBrickModifier();
+    void setBrickModifier();
+    int getOreModifier();
+    void setOreModifier();
+    int getWheatModifier();
+    void setWheatModifier();
+    int getWoolModifier();
+    void setWoolModifier();
+
+    void setGeneralModifier();			//3:1 port
+
+    bool offerBankTrade(std::array<int, 5> offer, std::array<int, 5> demand);
+
+    bool acceptOffer(Player& p, std::array<int, 5> offer, std::array<int, 5> demand);
+
+    int getRandomResource();
+
+    bool checkResources(int resourceList[]);
+
+    int getWood() const;
+    int getBrick() const;
+    int getOre() const;
+    int getWheat() const;
+    int getWool() const;
+
+    void addWood(int resource);
+    void addBrick(int resource);
+    void addOre(int resource);
+    void addWheat(int resource);
+    void addWool(int resource);
+    void addMultiple(int wood, int brick, int ore, int wheat, int wool);
+
+    int getResource(int resourceType) const; //
+    void addResource(int resourceType, int delta);
+
+    bool validateResourceAmount(int wood, int brick, int ore, int wheat, int wool);
+    bool validateTradeModifiers(int wood, int brick, int ore, int wheat, int wool);
+
+
+	void accept(GameVisitor& visitor);
+	bool operator==(const Player& player) const;
+};
+
+#endif

@@ -1,12 +1,14 @@
 export OBJ_HOME := $(realpath obj)
 export SRC_HOME := $(realpath src)
 export INCL_HOME := $(realpath include)
-EXECUTABLE := checkers-spike
+export TEST_LINK_FILES := $(realpath UnitTest++)/libUnitTest++.a
+export TEST_INCLUDE := $(realpath UnitTest++/src)
+export EXECUTABLE := warsofcatan
 ALLFILES := $(wildcard $(SRC_HOME)/*) $(wildcard $(INCL_HOME)/*)
-export CXX := g++ -c
+export CXX := g++
 export LD := g++
-export CXXFLAGS := -g -I$(INCL_HOME) -std=gnu++0x
-export LDFLAGS := -lSDL2 -lGL -lGLU
+export CXXFLAGS := -g -I$(INCL_HOME) -std=c++0x -I/usr/include/SDL2 -I/usr/local/include/SDL2 -Wall
+export LDFLAGS := -L/usr/local/lib -lSDL2 -lSDL2_ttf -lGL -lGLU -Wl,-R/usr/local/lib
 
 .PHONY: all
 all: $(EXECUTABLE)
@@ -14,3 +16,13 @@ all: $(EXECUTABLE)
 $(EXECUTABLE): $(ALLFILES)
 	cd src && $(MAKE)
 	${LD} obj/*.o $(LDFLAGS) -o $(EXECUTABLE)
+
+.PHONY: tests
+tests: $(EXECUTABLE)
+	cd UnitTest++ && $(MAKE) libUnitTest++.a
+	cd tests && $(MAKE)
+
+.PHONY: clean
+clean:
+	rm -f $(EXECUTABLE)
+	rm -f obj/*.o
