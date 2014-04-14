@@ -31,8 +31,9 @@ GameController::~GameController() {
 /**
  *  calls a function to advance turn, check for victory and roll dice
  */
-void GameController::nextTurn(ScreenCoordinate) {
+bool GameController::nextTurn(ScreenCoordinate) {
 	model.endTurn();
+	return true;
 }
 
 
