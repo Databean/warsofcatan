@@ -40,6 +40,8 @@ GameBoard::GameBoard(const vector<std::string>& playerNames) {
 		players.push_back(std::unique_ptr<Player>(new Player(*this, name)));
 	}
 	
+	currentTurn = 0;
+
 	std::srand(std::time(0));
 	
 	const static vector<resourceType> boardResources {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP};
@@ -126,6 +128,7 @@ GameBoard::GameBoard(const std::vector<std::string>& playerNames, const std::map
 	if(!isValidBoard()) {
 		throw std::runtime_error("Board is invalid.");
 	}
+	currentTurn = 0;
 }
 
 /**
@@ -253,6 +256,8 @@ GameBoard::GameBoard(istream& in) {
 	if(!isValidBoard()) {
 		throw std::runtime_error("Board is invalid.");
 	}
+
+	currentTurn = 0; //have to update <<--
 }
 
 /**
@@ -306,6 +311,50 @@ ResourceTile& GameBoard::getResourceTile(Coordinate location) const
 
 	return *(resources.find(location)->second);
 }
+
+
+/**
+ * Ends current players turn and moves the current turn marker
+ */
+void GameBoard::endTurn()
+{
+	if(getCurrentPlayer().getVictoryPoints() >= getMaxVictoryPoints())
+		std::cout<<"GG Bitches";
+
+	currentTurn++;
+	if(currentTurn >= getNoOfPlayers())
+		currentTurn = 0;
+
+	startTurn();
+}
+
+/**
+ * @return reference to the current Player
+ */
+Player& GameBoard::getCurrentPlayer() const
+{
+	return *players[currentTurn];
+}
+
+
+/**
+ * @return The no of Victory points needed to win the game
+ */
+int GameBoard::getMaxVictoryPoints()
+{
+	return maxVictoryPoints;
+}
+
+
+/**
+ * Sets the no of victory points needed to win the game
+ * @param maxVicPts victory points needed to win the game
+ */
+void GameBoard::setMaxVictoryPoints(int maxVicPts)
+{
+	maxVictoryPoints = maxVicPts;
+}
+
 
 /**
  * Finds settlements neighboring a particular coordinate.
@@ -481,7 +530,7 @@ bool GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 	roads[start].push_back(newRoad);
 	roads[end].push_back(newRoad);
 	
-    startTurn();
+//    startTurn();
     
 	return true;
 }

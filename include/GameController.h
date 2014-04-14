@@ -29,6 +29,7 @@ public:
 	GameController(GameBoard&, GameView& view);
 	~GameController();
 	
+	bool nextTurn(ScreenCoordinate);
 	bool handleBoardEvent(ScreenCoordinate);
 	bool handleRoadButtonEvent(ScreenCoordinate);
 	bool handleSettlementButtonEvent(ScreenCoordinate);
