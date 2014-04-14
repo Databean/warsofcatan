@@ -492,6 +492,7 @@ void DrawingGameVisitor::visit(GameDice& dice) {
 	static std::map<int, std::pair<float, float>> topLeftOffset;
 	//construct offset map
 	for (int i = 1; i < 7; i++) {
+		
 		//topLeftOffset.emplace(i, make_pair(DiceXCoords[(i-1)%3], DiceYCoords[i/4]));
 		topLeftOffset.insert(make_pair(i, make_pair(DiceXCoords[(i-1)%3], DiceYCoords[i/4])));
 	}
