@@ -16,6 +16,7 @@ class GameController;
 class ViewElement;
 class GameView;
 
+
 /**
  * An element that is drawn on screen and can receive inputs from the user. These all occupy a rectangular area on screen
  * and can choose to handle clicks from the user that are inside their area.
