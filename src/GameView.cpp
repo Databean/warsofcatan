@@ -18,6 +18,10 @@ using std::string;
 
 float DiceXCoords[3] = {9.f, 134.f, 259.f};
 float DiceYCoords[2] = {3.f, 142.f};
+std::pair<float, float> lDieScreenLoc= make_pair(0.7f, 0.8f);
+std::pair<float, float> rDieScreenLoc= make_pair(0.78f, 0.8f);
+
+#define DIE_SIDE_LENGTH 0.06f
 
 #define EMPLACE_SQUARE_VERTEX(imXOff, imYOff, scXOff, scYOff) \
 texCoordPair({texTopLeft.first + imXOff, texTopLeft.second + imYOff}); \
@@ -296,18 +300,6 @@ void drawTexturedRectangle(std::pair<float, float> texTopLeft, float sideLength,
 	EMPLACE_SQUARE_VERTEX(sideLength,	sideLength,	screenSideLength,	screenSideLength)
 	EMPLACE_SQUARE_VERTEX(0.0f,			sideLength,	0.0f,				screenSideLength)
 
-
-
-	/*texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + 0.0f});
-	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + 0.0f);
-
-
-	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + sideLength});
-	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + screenSideLength);
-
-	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + sideLength});
-	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + screenSideLength);*/
-
 	glEnd();
 
 }
@@ -330,11 +322,11 @@ void DrawingGameVisitor::visit(GameDice& dice) {
 	
 
 	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, 95.f, 
-		make_pair(.7f, .8f), 0.06);
+		lDieScreenLoc, DIE_SIDE_LENGTH);
 		
 
 	drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, 95.f, 
-		make_pair(.78f, .8f), 0.06);
+		rDieScreenLoc, DIE_SIDE_LENGTH);
 
 
 	glBindTexture(GL_TEXTURE_2D, 0);
