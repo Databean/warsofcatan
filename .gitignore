@@ -21,3 +21,4 @@ warsofcatan
 *.wocs
 
 documentation/*
+/Debug

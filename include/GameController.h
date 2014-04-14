@@ -3,9 +3,12 @@
 
 #include "Util.h"
 
+#include <array>
+
 class GameBoard;
 class ClickCoordinateEvent;
 class GameView;
+class Player;
 
 /**
  * Takes interpreted Catan events from the View and calls the appropriate functions on the model to changee the state
@@ -30,6 +33,8 @@ public:
 	bool handleBoardEvent(ScreenCoordinate);
 	bool handleRoadButtonEvent(ScreenCoordinate);
 	bool handleSettlementButtonEvent(ScreenCoordinate);
+	bool handlePlayerClick(ScreenCoordinate, Player&);
+	bool handleTradeOffer(ScreenCoordinate, Player& initiating, std::array<int, 5>, Player& receiving, std::array<int, 5>);
 };
 
 #endif

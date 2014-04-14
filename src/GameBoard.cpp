@@ -13,8 +13,11 @@
 #include "tinyxml2.h"
 
 #include "CornerPiece.h"
+#include "GameDice.h"
 
+#include "Settlement.h"
 #include "City.h"
+#include "Wonder.h"
 
 using std::shared_ptr;
 using std::random_shuffle;
@@ -45,6 +48,10 @@ GameBoard::GameBoard(const vector<std::string>& playerNames) {
 	const static vector<int> boardRolls = {0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
 	
 	bool valid = false;
+
+	
+
+
 	
 	const static Coordinate center {0, 4};
 	
@@ -202,7 +209,7 @@ GameBoard::GameBoard(istream& in) {
 				}
 			}
 			if(owner == nullptr) {
-				throw std::runtime_error("Road is owned by a nonexistant player.");
+				throw std::runtime_error("Settlement is owned by a nonexistant player.");
 			}
 			PlaceSettlement(location, *owner);
 		}
@@ -221,7 +228,26 @@ GameBoard::GameBoard(istream& in) {
 				}
 			}
 			if(owner == nullptr) {
-				throw std::runtime_error("Road is owned by a nonexistant player.");
+				throw std::runtime_error("City is owned by a nonexistant player.");
+			}
+			PlaceCity(location, *owner);
+		}
+	}
+
+	auto wonderElements = doc.RootElement()->FirstChildElement("wonders");
+	if(wonderElements) {
+		for(auto wonderElement = wonderElements->FirstChildElement(); wonderElement; wonderElement = wonderElement->NextSiblingElement()) {
+			Coordinate location = xmlElementToCoord(*(wonderElement->FirstChildElement("coordinate")));
+
+			std::string ownerName = wonderElement->FirstChildElement("owner")->FirstChild()->Value();
+			Player* owner = nullptr;
+			for(auto& playerUnique : players) {
+				if(playerUnique->getName() == ownerName) {
+					owner = playerUnique.get();
+				}
+			}
+			if(owner == nullptr) {
+				throw std::runtime_error("Wonder is owned by a nonexistant player.");
 			}
 			PlaceCity(location, *owner);
 		}
@@ -637,12 +663,31 @@ void GameBoard::PlaceCity(Coordinate location, Player& Owner){
 }
 
 /**
+ * Place a city on the board.
+ * @param location Where to place it on the board.
+ * @param Owner The player placing the city.
+ */
+void GameBoard::PlaceWonder(Coordinate location, Player& Owner){
+	corners[location] = std::unique_ptr<CornerPiece>(new Wonder(*this, location, Owner));
+
+}
+
+/**
  * Upgrade a settlement to a city.
  * @param location Where the settlement being upgraded is.
  */
 void GameBoard::UpgradeSettlement(Coordinate location){
 	if(corners.find(location) != corners.end())
-	corners[location] = std::unique_ptr<CornerPiece>(new City(*corners[location])); //TODO test for memory leak
+		corners[location] = std::unique_ptr<CornerPiece>(new City(*corners[location])); //TODO test for memory leak
+}
+
+/**
+ * Upgrade a settlement to a city.
+ * @param location Where the settlement being upgraded is.
+ */
+void GameBoard::UpgradeToWonder(Coordinate location){
+	if(corners.find(location) != corners.end())
+		corners[location] = std::unique_ptr<CornerPiece>(new Wonder(*corners[location])); //TODO test for memory leak
 }
 
 /**
@@ -674,6 +719,7 @@ void GameBoard::accept(GameVisitor& visitor) {
 			it->accept(visitor);
 		}
 	}
+	dice.accept(visitor);
 }
 
 /**
@@ -814,8 +860,9 @@ std::pair<int, int> GameBoard::startTurn()
     int die1 = std::rand() % 6 + 1;
     int die2 = std::rand() % 6 + 1;
     int roll = die1+die2;
-    std::cout << "\nDie 1: " << die1 << "\nDie 2: " << die2 << "\nRoll: " << roll <<"\n";
-    
+
+    dice.setFirst(die1);
+    dice.setSecond(die2);
     if (roll==7)
         enableRobber();
     
