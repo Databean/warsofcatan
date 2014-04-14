@@ -23,6 +23,7 @@ std::pair<float, float> lDieScreenLoc= make_pair(0.7f, 0.8f);
 std::pair<float, float> rDieScreenLoc= make_pair(0.78f, 0.8f);
 
 #define DIE_SIDE_LENGTH 0.06f
+#define DIE_SCREEN_SIDE_LENGTH 95.f
 
 #define EMPLACE_SQUARE_VERTEX(imXOff, imYOff, scXOff, scYOff) \
 texCoordPair({texTopLeft.first + imXOff, texTopLeft.second + imYOff}); \
@@ -496,11 +497,11 @@ void DrawingGameVisitor::visit(GameDice& dice) {
 	}
 	
 
-	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, 95.f, 
+	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, DIE_SCREEN_SIDE_LENGTH, 
 		lDieScreenLoc, DIE_SIDE_LENGTH);
 		
 
-	drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, 95.f, 
+	drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, DIE_SCREEN_SIDE_LENGTH, 
 		rDieScreenLoc, DIE_SIDE_LENGTH);
 
 
