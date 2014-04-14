@@ -16,13 +16,17 @@ public:
 	CornerPiece(CornerPiece&) = delete;
 	~CornerPiece();
 	CornerPiece& operator=(CornerPiece&) = delete;
-	
+
 	Player& getOwner();
 	const Player& getOwner() const;
+
+	virtual void accept(GameVisitor& visitor)=0;
 
 	virtual int getResourceModifier();
 
 	virtual int getVictoryPoints();
+
+	virtual bool operator==(const GamePiece&) const;
 };
 
 #endif

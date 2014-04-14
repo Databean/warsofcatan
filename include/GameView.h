@@ -64,6 +64,7 @@ public:
 
 	void addPointOfInterest(ScreenCoordinate);
 	void clearPointsOfInterest();
+	void addElement(std::unique_ptr<ViewElement> element);
 	void addElement(int priority, std::unique_ptr<ViewElement>);
 	
 	std::unique_ptr<ViewElement> removeElement(int priority);

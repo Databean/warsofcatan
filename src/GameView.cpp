@@ -302,26 +302,6 @@ void ViewButtonText::render() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-/**
- * Removes the element pointed to so that it will no longer be rendered
- * @param a pointer to the element we want to remove
- */
-bool GameView::removeElement(ViewElement* element_sought){
-	for (std::vector<std::unique_ptr<ViewElement>>::iterator element = viewElements.begin() ; element != viewElements.end(); ++element)
-	{
-		if (element->get() == element_sought){
-			viewElements.erase(element);
-			return true;
-		}
-	}
-	return false;
-}
-
-bool GameView::removeLastElement(){
-	viewElements.pop_back();
-	return true;
-}
-
 void GameView::addPointOfInterest(ScreenCoordinate coord){
 	pointsOfInterest.push_back(coord);
 }

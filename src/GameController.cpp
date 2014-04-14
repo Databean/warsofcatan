@@ -136,7 +136,7 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		storeClick(coord);
 		if(getClickHistorySize() >= 4){
 			using namespace std::placeholders;
-			view.addElement(makeConfirmationDialogue(
+			view.addElement(28, makeConfirmationDialogue(
 				std::bind(&GameController::handleConfirmRoadCard, this, _1),
 				std::bind(&GameController::handleCancelDialogueEvent, this, _1), {{.2, .3}, {.8, .6}}));
 			pushState(MODALSTATE);
@@ -216,12 +216,12 @@ bool GameController::handleRoadCardButtonEvent(ScreenCoordinate coord){
 
 bool GameController::handleConfirmRoadCard(ScreenCoordinate coord){
 	model.getCurrentPlayer().playRoadBuilding(getPastClick(3), getPastClick(2), getPastClick(1), getPastClick(0));
-	view.removeLastElement();
+	view.removeElement(28);
 	return handleCancelButtonEvent(coord);
 }
 
 bool GameController::handleCancelDialogueEvent(ScreenCoordinate coord){
-	view.removeLastElement();
+	view.removeElement(28);
 	return handleCancelButtonEvent(coord);
 }
 

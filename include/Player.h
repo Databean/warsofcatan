@@ -109,11 +109,9 @@ public:
     int getWoolModifier();
     void setWoolModifier();
 
+    void setGeneralModifier();
+
     void setGenralModifier();			//3:1 port
-
-    bool offerBankTrade(int offer[], int demand[]);
-
-    void setGeneralModifier();			//3:1 port
 
     bool offerBankTrade(std::array<int, 5> offer, std::array<int, 5> demand);
 

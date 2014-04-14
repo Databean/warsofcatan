@@ -50,17 +50,12 @@ public:
 	void pushState(ControlState);
 	ControlState getState();
 	ControlState popState();
-bool handleTradeOffer(ScreenCoordinate, Player& initiating, std::array<int, 5>, Player& receiving, std::array<int, 5>);
 	void storeClick(Coordinate clickCoordinate);
 	Coordinate getLastClick();
 	Coordinate getPastClick(int howLongAgo);
 	void clearClickHistory();
 	bool hasClickHistory();
 	int getClickHistorySize();
-
-
-
-
 
 	bool handlePlayerClick(ScreenCoordinate, Player&);
 	bool handleTradeOffer(ScreenCoordinate, Player& initiating, std::array<int, 5>, Player& receiving, std::array<int, 5>);

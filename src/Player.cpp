@@ -38,6 +38,7 @@ Player::Player(GameBoard& board, std::string playerName) : name(playerName), boa
 	longestRoadSize = 0;
 	longestRoad = false;
 	victoryPoints = 0;
+	baseVictoryPoints = 0;
 	for(auto& r : resources) {
 		r = 0;
 	}
@@ -300,6 +301,17 @@ bool Player::buyCard(std::unique_ptr<DevelopmentCard>& card)
 	return false;
 }
 
+/**
+ * Sets the trade modifier for all resources to 3:1
+ */
+void Player::setGeneralModifier()
+{
+	for(int i =0; i<5; i++)
+	{
+		if(tradeModifiers[i] == 4)
+			tradeModifiers[i] = 3;
+	}
+}
 
 /**
  * Sets the trade modifier for Wood to 2:1
@@ -334,7 +346,13 @@ void Player::setWheatModifier()
 	tradeModifiers[WHEAT_INDEX] = 2;
 }
 
-
+/**
+ * Sets the trade modifier for Wool to 2:1
+ */
+void Player::setWoolModifier()
+{
+	tradeModifiers[WOOL_INDEX] = 2;
+}
 
 /**
  * Gets the current modifier for trading wood
@@ -345,28 +363,37 @@ int Player::getWoodModifier(){
 }
 
 /**
- * Sets the trade modifier for Wood to 2:1
+ * Gets the current modifier for trading brick
+ * @return int, the trading value for brick
  */
-void Player::setWoodModifier()
-{
-	tradeModifiers[WOOD_INDEX] = 2;
+int Player::getWheatModifier(){
+	return tradeModifiers[WHEAT_INDEX];
 }
 
 /**
  * Gets the current modifier for trading brick
  * @return int, the trading value for brick
  */
+int Player::getWoolModifier(){
+	return tradeModifiers[WOOL_INDEX];
+}
+
+/**
+ * Gets the current modifier for trading wood
+ * @return int, the trading value for wood
+ */
 int Player::getBrickModifier(){
 	return tradeModifiers[BRICK_INDEX];
 }
 
 /**
- * Sets the trade modifier for Wool to 2:1
+ * Gets the current modifier for trading brick
+ * @return int, the trading value for brick
  */
-void Player::setWoolModifier()
-{
-	tradeModifiers[WOOL_INDEX] = 2;
+int Player::getOreModifier(){
+	return tradeModifiers[ORE_INDEX];
 }
+
 
 /**
  * Sets the trade modifier for all resources to 3:1
@@ -380,46 +407,6 @@ void Player::setGenralModifier()
 	}
 }
 
-
-/**
- *Performs a trade with bank according to the trade modifiers for each resource
- *@param offer An array representing your offer to the bank
- *@param demand An array representing your demand
- */
-void Player::tradeWithBank(int offer[], int demand[])
-{
-	for(int i=0; i<5; i++)
-	{
-		resources[i] -= offer[i]*tradeModifiers[i];
-		resources[i] += demand[i];
-	}
-	tradeModifiers[ORE_INDEX] = 2;
-}
-
-
-/**
- * Offer the bank a trade
- * @param offer An array representing your offer to the bank
- * @param demand An array representing your demand
- * @return true if bank accepted and trade was successful.
- */
-bool Player::offerBankTrade(int offer[], int demand[])
-{
-	if(!checkResources(offer))
-		return false;
-
-	int offerToBank[5];
-
-	for(int i=0; i<5; i++)
-	{
-		if(offer[i]%tradeModifiers[i] != 0)
-			return false;
-		offerToBank[i] = offer[i]/tradeModifiers[i];
-	}
-
-	this->tradeWithBank(offerToBank, demand);
-	return true;
-}
 
 bool Player::playVictoryCard(){
 	if(developmentCards[VICTORYPOINT] > 0){
@@ -521,51 +508,6 @@ int Player::giveAllResources(int resourceType){
 	return resource_count;
 }
 
-
-/**
- * Offer a trade to another player with an offer and a demand.
- * @param p The other player that is receiving the trade.
- * @param offer The resources this player is offering to the other player.
- * @param demand The resources that this player wants in return from the other player.
- * @return If the trade succeeded.
- */
-bool Player::offerTrade(Player* p, int offer[], int demand[])
-{
-	if(sizeof offer/sizeof(int) != 5 || sizeof demand/sizeof(int) != 5)
-		return false; //Invalid Trade
-
-	if(!this->checkResources(offer))
-		return false; //YOu dont have enough to offer this
-
-	return p->recieveOffer(this, offer, demand);
-}
-
-
-/**
- * Receive a trade offer from another player.
- * @param p The player offering the trade.
- * @param offer The resources the other player is giving.
- * @param demand The resources the other player wants in return.
- * @return If the trade succeeded.
- */
-bool Player::recieveOffer(Player* p, int offer[], int demand[])
-{
-	if( !this->checkResources(demand) )
-		return false;
-
-	bool input = true;
-
-	//TODO:Display Offer to User and wait for input
-
-	if(input)
-	{
-		this->acceptOffer(p, offer, demand);
-		return true;
-	}
-	else
-		return false;
-
-}
 
 
 /**

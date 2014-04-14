@@ -20,8 +20,6 @@
 
 class GameVisitor;
 
-class GameVisitor;
-
 /**
  * A game of Settlers of Catan, including resource tiles, settlements, cities, roads, and players.
  */
