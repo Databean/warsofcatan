@@ -44,7 +44,7 @@ void updateViewport(int width, int height) {
 	gluOrtho2D(0, 1, 0, 1);
 	
 	glMatrixMode(GL_MODELVIEW);
-	return 0;
+	//return 0;
 }
 
 /**
