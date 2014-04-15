@@ -27,7 +27,12 @@ src = src/AssertException.cpp \
 	src/XmlTestReporter.cpp \
 	src/CurrentTest.cpp
 	
+ifeq ($(MSYSTEM), MINGW32)
   src += src/Win32/TimeHelpers.cpp
+else
+  src += src/Posix/SignalTranslator.cpp \
+	src/Posix/TimeHelpers.cpp
+endif
 
 test_src = src/tests/Main.cpp \
 	src/tests/TestAssertHandler.cpp \
