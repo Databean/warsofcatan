@@ -58,12 +58,18 @@ GameController::~GameController() {
 	
 }
 
+/**
+ * Pushes the given state onto the control stack
+ */
 void GameController::pushState(ControlState newState){
 	if (newState != BASESTATE){
 		stateStack.push_back(newState);
 	}
 }
 
+/**
+ * Pops the latest state from the control stack
+ */
 ControlState GameController::popState(){
 	ControlState currState = getState();
 	if(currState == BASESTATE){
@@ -73,19 +79,32 @@ ControlState GameController::popState(){
 	return currState;
 }
 
+/**
+ * returns the current state of the controller
+ */
 ControlState GameController::getState(){
 	return stateStack.back();
 }
 
+/**
+ * Stores a Coordinate in the clikc history
+ */
 void GameController::storeClick(Coordinate clickCoordinate){
 	view.addPointOfInterest(coordToScreen(clickCoordinate));
 	clickHistory.push_back(clickCoordinate);
 }
 
+/**
+ * Returns the last click stored in the history
+ */
 Coordinate GameController::getLastClick(){
 	return getPastClick(0);
 }
 
+/**
+ * Gets a click from param clicks ago
+ * @ param an integer
+ */
 Coordinate GameController::getPastClick(int howLongAgo){
 	if (howLongAgo < clickHistory.size()){
 		return clickHistory[clickHistory.size() - 1 - howLongAgo];
@@ -93,16 +112,24 @@ Coordinate GameController::getPastClick(int howLongAgo){
 	return Coordinate(-100,-100);
 }
 
+/**
+ * Clears the history of clicks
+ */
 void GameController::clearClickHistory(){
 	view.clearPointsOfInterest();
 	clickHistory.clear();
 }
 
+/**
+ * checks if there is a history of past clicks
+ */
 bool GameController::hasClickHistory(){
 	return !clickHistory.empty();
 }
 
-
+/**
+ * Returns the number of past clicks recorded
+ */
 int GameController::getClickHistorySize(){
 	return clickHistory.size();
 }

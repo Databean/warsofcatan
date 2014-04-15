@@ -411,7 +411,10 @@ void Player::setGenralModifier()
 	}
 }
 
-
+/**
+ * Plays a victory point card if it exists. This means, the Player will 'consume' the card to gain a baseVictoryPoint
+ * @ return true if the card was played, false otherwise
+ */
 bool Player::playVictoryCard(){
 	if(developmentCards[VICTORYPOINT] > 0){
 		developmentCards[VICTORYPOINT]--;
@@ -421,6 +424,11 @@ bool Player::playVictoryCard(){
 	return false;
 }
 
+/**
+ * Plays a knight card if it exists. This means the player will move the Knight and gain 1 random resource from a player around the robber's new position
+ * @ param Coordinate of the robber's new position and Player& of the opponent to rob
+ * @return true if the card was used, false otherwise
+ */
 bool Player::playKnight(Coordinate location, Player& opponent){
 	if(developmentCards[KNIGHT] > 0 && board.canRobberRob(opponent, location)){
 				board.moveRobber(location);
@@ -436,6 +444,12 @@ bool Player::playKnight(Coordinate location, Player& opponent){
 	}
 	return false;
 }
+
+/**
+ * Plays a year of plenty card if it exists. This means the player will gain 2 of 1 resource of their choice
+ * @ param the resource the player will recieve
+ * @ returns true if the card was played, false otherwise
+ */
 bool Player::playYearOfPlenty(int resourceType){
 	if(resourceType >= 5)
 		return false;
@@ -447,6 +461,12 @@ bool Player::playYearOfPlenty(int resourceType){
 	}
 	return false;
 }
+
+/**
+ * Plays a monopoly card if it exists. This means the player will steal all of 1 resource type from all the other players
+ * @ param the resource type the player wants to steal
+ * @ return true if the card was played, false otherwise
+ */
 bool Player::playMonopoly(int resourceType){
 	if (resourceType >= 5)
 		return false;
@@ -460,6 +480,12 @@ bool Player::playMonopoly(int resourceType){
 	}
 	return false;
 }
+
+/**
+ * Plays a road building card if it exists. This means the player will place two roads of their choosing for free
+ * @ param the start and end Coordinates of the two roads the Player wants to place
+ * @ return true if the card was played
+ */
 bool Player::playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2){
 	if(developmentCards[ROADBUILDING] > 0){
 		if(board.canPlayBuildRoadCard(start1, end1, start2, end2, *this)){
@@ -478,12 +504,15 @@ bool Player::playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate sta
 	return false;
 }
 
-
+/**
+ * A cheat class that gives the player 5 of every development card, meant for debugging
+ */
 void Player::giveDevCardBoon(){
 	for(int i = 0; i < 5; i++){
 		developmentCards[i]+=5;
 	}
 }
+
 
 int Player::getDevelopmentCards(int card_type) const{
 	return developmentCards[card_type];
@@ -505,7 +534,11 @@ int Player::getRoadBuildingCards() const{
 	return developmentCards[ROADBUILDING];
 }
 
-
+/**
+ * The player gives all their resources of a specific resource type. Meant to compliment the Monopoly card
+ * @ param the resource type to give
+ * @ return the number of resources given
+ */
 int Player::giveAllResources(int resourceType){
 	int resource_count = resources[resourceType];
 	resources[resourceType] = 0;
