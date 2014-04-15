@@ -325,15 +325,6 @@ void GameBoard::endTurn()
 }
 
 /**
- * @return reference to the current Player
- */
-Player& GameBoard::getCurrentPlayer() const
-{
-	return *players[currentTurn];
-}
-
-
-/**
  * @return The no of Victory points needed to win the game
  */
 int GameBoard::getMaxVictoryPoints()
@@ -915,11 +906,12 @@ const std::vector<std::unique_ptr<Player>>& GameBoard::getPlayers() const {
 
 /**
  * WARNING THIS FUNCTION GIVES THE PLAYERS CHEATS SO I COULD DEBUG
+ * @return reference to the current Player
  */
-Player& GameBoard::getCurrentPlayer(){
-	Player & curr_player = getPlayer(0);
-	curr_player.giveDevCardBoon();
-	return getPlayer(0);
+Player& GameBoard::getCurrentPlayer() const
+{
+	(*players[currentTurn]).giveDevCardBoon();
+	return *players[currentTurn];
 }
 
 /**
