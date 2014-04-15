@@ -19,11 +19,11 @@ using std::unique_ptr;
 
 float DiceXCoords[3] = {9.f, 134.f, 259.f};
 float DiceYCoords[2] = {3.f, 142.f};
-std::pair<float, float> lDieScreenLoc= make_pair(0.7f, 0.8f);
-std::pair<float, float> rDieScreenLoc= make_pair(0.78f, 0.8f);
+std::pair<float, float> lDieScreenLoc= make_pair(0.6f, 0.82f);
+std::pair<float, float> rDieScreenLoc= make_pair(0.68f, 0.82f);
 
 #define DIE_SIDE_LENGTH 0.06f
-#define DIE_SCREEN_SIDE_LENGTH 95.f
+#define DIE_SCREEN_SIDE_LENGTH 105.f
 
 #define EMPLACE_SQUARE_VERTEX(imXOff, imYOff, scXOff, scYOff) \
 texCoordPair({texTopLeft.first + imXOff, texTopLeft.second + imYOff}); \

@@ -37,7 +37,7 @@ void initOpenGL() {
  * @param width The new width of the viewport.
  * @param height The new height of the viewport.
  */
-int updateViewport(int width, int height) {
+void updateViewport(int width, int height) {
 	glViewport(0, 0, width, height); 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity ();
