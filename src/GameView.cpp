@@ -17,6 +17,19 @@ using std::runtime_error;
 using std::string;
 using std::unique_ptr;
 
+float DiceXCoords[3] = {9.f, 134.f, 259.f};
+float DiceYCoords[2] = {3.f, 142.f};
+std::pair<float, float> lDieScreenLoc= make_pair(0.7f, 0.8f);
+std::pair<float, float> rDieScreenLoc= make_pair(0.78f, 0.8f);
+
+#define DIE_SIDE_LENGTH 0.06f
+#define DIE_SCREEN_SIDE_LENGTH 95.f
+
+#define EMPLACE_SQUARE_VERTEX(imXOff, imYOff, scXOff, scYOff) \
+texCoordPair({texTopLeft.first + imXOff, texTopLeft.second + imYOff}); \
+glVertex2d(screenTopLeft.first + scXOff, screenTopLeft.second + scYOff);
+
+
 /**
  * Construct a ViewElement covering a particular rectangle on screen.
  * @param rect The rectangle on screen that the view element occupies.
@@ -471,97 +484,55 @@ void drawTexturedCircle(std::pair<float, float> texCenter, float texRadius, std:
 	glEnd();
 }
 
+/**
+ * Draw a textured square oriented parallel to the ground
+ * @param texTopLeft image coordinates of the top left side of our square texture
+ * @param sideLength image domain side length (in pixels)
+ * @param screenTopLeft GL coordinates for the top left of our square to render
+ * @param screenSideLength GL image domain square side length
+ */
 void drawTexturedRectangle(std::pair<float, float> texTopLeft, float sideLength, std::pair<float, float> screenTopLeft, float screenSideLength) {
 	
-	
-
 	glBegin(GL_QUADS);
 
-
-	
-
-	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + 0.0f});
-	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + 0.0f);
-
-	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + 0.0f});
-	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + 0.0f);
-
-
-	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + sideLength});
-	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + screenSideLength);
-
-	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + sideLength});
-	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + screenSideLength);
-
-	/*
-	//redraw the image for reasons
-	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + sideLength});
-	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + screenSideLength);
-
-	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + sideLength});
-	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + screenSideLength);
-
-	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + 0.0f});
-	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + 0.0f);
-
-	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + 0.0f});
-	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + 0.0f);
-
-	*/
-	
-	
+	EMPLACE_SQUARE_VERTEX(0.0f,			0.0f, 		0.0f,				0.0f)
+	EMPLACE_SQUARE_VERTEX(sideLength,	0.0f, 		screenSideLength,	0.0f)
+	EMPLACE_SQUARE_VERTEX(sideLength,	sideLength,	screenSideLength,	screenSideLength)
+	EMPLACE_SQUARE_VERTEX(0.0f,			sideLength,	0.0f,				screenSideLength)
 
 	glEnd();
 
-
-	
-
-
-
 }
 
+/**
+ * Draw both dice.
+ * @param dice the dice data structure for the board
+ */
 void DrawingGameVisitor::visit(GameDice& dice) {
 
 	static const GLuint diceTextures = loadImageAsTexture("resources/catan_dice_new.bmp");
 	glBindTexture(GL_TEXTURE_2D, diceTextures);
 
 	glColor3d(1.0, 1.0, 1.0);	
-	static const std::map<int, std::pair<float, float>> topLeftOffset = {
-		make_pair(1, make_pair(9.f, 3.f)),
-		make_pair(2, make_pair(134.f, 3.f)),
-		make_pair(3, make_pair(259.f, 3.f)),
-		make_pair(4, make_pair(9.f, 142.f)),
-		make_pair(5, make_pair(134.f, 142.f)),
-		make_pair(6, make_pair(259.f, 142.f))
-	};
+	static std::map<int, std::pair<float, float>> topLeftOffset;
+	//construct offset map
+	for (int i = 1; i < 7; i++) {
+		
+		//topLeftOffset.emplace(i, make_pair(DiceXCoords[(i-1)%3], DiceYCoords[i/4]));
+		topLeftOffset.insert(make_pair(i, make_pair(DiceXCoords[(i-1)%3], DiceYCoords[i/4])));
+	}
+	
 
-	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, 95.f, 
-		make_pair(.7f, .8f), 0.06);
+	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, DIE_SCREEN_SIDE_LENGTH, 
+		lDieScreenLoc, DIE_SIDE_LENGTH);
 		
 
-	drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, 95.f, 
-		make_pair(.78f, .8f), 0.06);
+	drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, DIE_SCREEN_SIDE_LENGTH, 
+		rDieScreenLoc, DIE_SIDE_LENGTH);
 
-	
-
-	//render all dice
-	//drawTexturedRectangle(make_pair(9.f, 3.f), 95.f, make_pair(.6f, .9f), 0.06);
-	//drawTexturedRectangle(make_pair(8.f, 4.f), 96.f, make_pair(.67f, .95f), 0.06);
-	//drawTexturedRectangle(make_pair(16.f, 8.f), 96.f, make_pair(.74f, .95f), 0.06);
-	//drawTexturedRectangle(make_pair(2.f, 8.f), 96.f, make_pair(.6f, .95f), 0.06);
-	//drawTexturedRectangle(make_pair(2.f, 8.f), 96.f, make_pair(.6f, .95f), 0.06);
-	//drawTexturedRectangle(make_pair(2.f, 8.f), 96.f, make_pair(.6f, .95f), 0.06);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-	//hardcoded 2 die for testing
-	//drawTexturedRectangle(make_pair(4.f, 8.f), 96.f, make_pair(.7f, .9f), 0.03);
-
-
 	
-
-
-	//std::cout << dice.getFirst() << "\n";
-
 }
 
 /**
