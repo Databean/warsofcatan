@@ -163,6 +163,7 @@ GameBoard::GameBoard(istream& in) {
 		resources[coord] = unique_ptr<ResourceTile>(new ResourceTile(*this, coord, type, diceValue));
 	}
 	
+
 	auto playerElements = doc.RootElement()->FirstChildElement("players");
 	if(playerElements) {
 		for(auto playerElement = playerElements->FirstChildElement(); playerElement; playerElement = playerElement->NextSiblingElement()) {
@@ -171,6 +172,7 @@ GameBoard::GameBoard(istream& in) {
 		}
 	}
 	
+
 	auto roadElements = doc.RootElement()->FirstChildElement("roads");
 	if(roadElements) {
 		for(auto roadElement = roadElements->FirstChildElement(); roadElement; roadElement = roadElement->NextSiblingElement()) {

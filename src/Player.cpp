@@ -61,6 +61,9 @@ Player::Player(GameBoard& board, XMLElement* elem) : board(board)
 	for(auto& r : resources) {
 		r = 0;
 	}
+	for(auto& t : tradeModifiers) {
+			t = 4;
+		}
 	for(auto& c : developmentCards) {
 		c = 0;
 	}
@@ -71,15 +74,16 @@ Player::Player(GameBoard& board, XMLElement* elem) : board(board)
 	addWheat(fromString<int>(elem->FirstChildElement("wheat")->FirstChild()->Value()));
 	addWool(fromString<int>(elem->FirstChildElement("wool")->FirstChild()->Value()));
 
-	developmentCards[KNIGHT]+=fromString<int>(elem->FirstChildElement("knight")->FirstChild()->Value());
-	developmentCards[VICTORYPOINT]+=fromString<int>(elem->FirstChildElement("victorypoint")->FirstChild()->Value());
-	developmentCards[YEAROFPLENTY]+=fromString<int>(elem->FirstChildElement("yearofplenty")->FirstChild()->Value());
-	developmentCards[MONOPOLY]+=fromString<int>(elem->FirstChildElement("monopoly")->FirstChild()->Value());
-	developmentCards[ROADBUILDING]+=fromString<int>(elem->FirstChildElement("roadbuilding")->FirstChild()->Value());
+	developmentCards[VICTORYPOINT] = (fromString<int>(elem->FirstChildElement("victory_point")->FirstChild()->Value()));
+	developmentCards[KNIGHT]+= (fromString<int>(elem->FirstChildElement("knight")->FirstChild()->Value()));
+	developmentCards[YEAROFPLENTY]+= (fromString<int>(elem->FirstChildElement("year_of_plenty")->FirstChild()->Value()));
+	developmentCards[MONOPOLY]+= (fromString<int>(elem->FirstChildElement("monopoly")->FirstChild()->Value()));
+	developmentCards[ROADBUILDING]+= (fromString<int>(elem->FirstChildElement("road_building")->FirstChild()->Value()));
 
 	armySize = 0;
 	longestRoad = 0;
 	victoryPoints = 0;
+	baseVictoryPoints = 0;
 }
 
 /**

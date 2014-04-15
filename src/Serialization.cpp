@@ -166,27 +166,28 @@ void XMLVisitor::visit(Player& player) {
 	XMLElement* woolElement = xmldoc.NewElement("wool");
 	woolElement->InsertEndChild(xmldoc.NewText(toString(player.getWool()).c_str()));
 	newPlayerElement->InsertEndChild(woolElement);
+
 	
-	XMLElement* victoryElement = xmldoc.NewElement("victorypoint");
-	woolElement->InsertEndChild(xmldoc.NewText(toString(player.getVictoryCards()).c_str()));
+	XMLElement* victoryElement = xmldoc.NewElement("victory_point");
+	victoryElement->InsertEndChild(xmldoc.NewText(toString(player.getVictoryCards()).c_str()));
 	newPlayerElement->InsertEndChild(victoryElement);
 
 	XMLElement* knightElement = xmldoc.NewElement("knight");
-	woolElement->InsertEndChild(xmldoc.NewText(toString(player.getKnightCards()).c_str()));
+	knightElement->InsertEndChild(xmldoc.NewText(toString(player.getKnightCards()).c_str()));
 	newPlayerElement->InsertEndChild(knightElement);
 
-	XMLElement* yearOfPlentyElement = xmldoc.NewElement("yearofplenty");
-	woolElement->InsertEndChild(xmldoc.NewText(toString(player.getYearOfPlentyCards()).c_str()));
+	XMLElement* yearOfPlentyElement = xmldoc.NewElement("year_of_plenty");
+	yearOfPlentyElement->InsertEndChild(xmldoc.NewText(toString(player.getYearOfPlentyCards()).c_str()));
 	newPlayerElement->InsertEndChild(yearOfPlentyElement);
 
 	XMLElement* monopolyElement = xmldoc.NewElement("monopoly");
-	woolElement->InsertEndChild(xmldoc.NewText(toString(player.getMonopolyCards()).c_str()));
+	monopolyElement->InsertEndChild(xmldoc.NewText(toString(player.getMonopolyCards()).c_str()));
 	newPlayerElement->InsertEndChild(monopolyElement);
 
-	XMLElement* roadBuildingElement = xmldoc.NewElement("roadbuilding");
-	woolElement->InsertEndChild(xmldoc.NewText(toString(player.getRoadBuildingCards()).c_str()));
+	XMLElement* roadBuildingElement = xmldoc.NewElement("road_building");
+	roadBuildingElement->InsertEndChild(xmldoc.NewText(toString(player.getRoadBuildingCards()).c_str()));
 	newPlayerElement->InsertEndChild(roadBuildingElement);
-	
+
 	playersElement->InsertEndChild(newPlayerElement);
 	playerElementMap[player.getName()] = newPlayerElement;
 }
