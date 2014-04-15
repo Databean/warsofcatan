@@ -44,7 +44,6 @@ void updateViewport(int width, int height) {
 	gluOrtho2D(0, 1, 0, 1);
 	
 	glMatrixMode(GL_MODELVIEW);
-	//return 0;
 }
 
 /**
@@ -76,7 +75,6 @@ int main(int argc, char *argv[]) {
 	initOpenGL();
 
 	updateViewport(windowWidth, windowHeight);
-	
 	
 	GameBoard model({"testPlayer", "testPlayer2"});
 	GameView view(model);

@@ -20,14 +20,15 @@
 enum DevCardType { KNIGHT, VICTORYPOINT, YEAROFPLENTY, MONOPOLY, ROADBUILDING };
 
 
-
+/**
+ * A card which can be held in a player's hand and be used to perform an action.
+ */
 class DevelopmentCard {
 
-protected:
+private:
     DevCardType type;
-    GameBoard& board;
 public:
-    DevelopmentCard(GameBoard& board);
+    DevelopmentCard() {}
     virtual ~DevelopmentCard();
 
     virtual DevCardType getType() const = 0;
@@ -36,66 +37,53 @@ public:
 	virtual bool operator==(const DevelopmentCard&);
 };
 
-
-
+/**
+ * A development card used to move the robber and take a resource from another player.
+ */
 class KnightCard : public DevelopmentCard {
 private:
 
 public:
-	KnightCard(GameBoard& board);
-//	virtual ~KnightCard();
-
+	KnightCard() {}
     virtual DevCardType getType() const;
-    void playCard(Player *player, Coordinate target);
-
 };
 
-
-
+/**
+ * A development card that gives a permanent victory point on usage.
+ */
 class VictoryPointCard : public DevelopmentCard {
 public:
-    VictoryPointCard(GameBoard& board);
-//    virtual ~VictoryPointCard();
-
+    VictoryPointCard() {}
     virtual DevCardType getType() const;
-
 };
 
-
+/**
+ * A development card used to retrieve two resources of any type from the bank.
+ */
 class YearOfPlentyCard : public DevelopmentCard {
 public:
-    YearOfPlentyCard(GameBoard& board);
-//    virtual ~YearOfPlentyCard();
-
+    YearOfPlentyCard() {}
     virtual DevCardType getType() const;
-    void playCard(Player *player, int rType1, int rType2);
-
 };
 
-
-
-
+/**
+ * A development card used to take all resources of a particular type from all players.
+ */
 class MonopolyCard : public DevelopmentCard {
 public:
-    MonopolyCard(GameBoard& board);
-//    virtual ~MonopolyCard();
-
+    MonopolyCard() {}
     virtual DevCardType getType() const;
-    void playCard(Player *player, int rType);
-
 };
 
-
-
+/**
+ * A development card used to build two roads at no cost.
+ */
 class RoadBuildingCard : public DevelopmentCard {
 private:
 
 public:
-	RoadBuildingCard(GameBoard& board);
-//	virtual ~RoadBuildingCard();
-
+	RoadBuildingCard() {};
     virtual DevCardType getType() const;
-    void playCard(Player* player, Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2);
 };
 
 

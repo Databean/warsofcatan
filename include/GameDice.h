@@ -2,9 +2,6 @@
 #define GAMEDICE_H
 
 
-
-
-
 class GameVisitor;
 
 class GameDice {

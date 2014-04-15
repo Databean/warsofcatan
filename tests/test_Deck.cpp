@@ -6,14 +6,12 @@
  */
 
 #include "Deck.h"
-#include "GameBoard.h"
 #include "Util.h"
 #include "UnitTest++.h"
 
 TEST(deck_draw)
 {
-	GameBoard board({});
-    Deck* testDeck= new Deck(board);
+    Deck* testDeck= new Deck();
     DevelopmentCard* temp = testDeck->drawCard();
     CHECK(temp!=NULL);
     testDeck->discard(temp);
@@ -23,8 +21,7 @@ TEST(deck_draw)
 
 TEST(reshuffle_discard_pile)
 {
-	GameBoard board({});
-    Deck* testDeck= new Deck(board);
+    Deck* testDeck= new Deck();
     DevelopmentCard* drawn = NULL;
     for (int i = 0; i<300; i++)
     {
