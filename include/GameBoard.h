@@ -48,7 +48,6 @@ private:
 	bool isValidBoard() const;
 
 
-	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const;
 	bool outOfBounds(const Coordinate& coord) const;
 	bool roadExists(Coordinate start, Coordinate end) const;
 	bool isRoadConnectionPoint(Coordinate point, Player& Owner) const;
@@ -85,28 +84,31 @@ public:
 
 	int getMaxVictoryPoints();
 	void setMaxVictoryPoints(int maxVicPts);
-
 	const std::shared_ptr<Road> getRoad(Coordinate start, Coordinate end) const;
 	const std::vector<std::shared_ptr<Road>>& getRoads(Coordinate loc) const;
 
 	int FindLongestRoad(const Player & owner) const;
+	void updateLongestRoadPlayer();
+	void updateLargestArmyPlayer();
 
 	std::vector<Settlement*> GetNeighboringSettlements(Coordinate location) const;
 	std::vector<CornerPiece*> GetNeighboringCorners(Coordinate location) const;
 
-
+	int CountCornerPoints(Player& owner);
 
 	void PlaceSettlement(Coordinate location, Player& Owner);
 	void UpgradeSettlement(Coordinate location);
 	void UpgradeToWonder(Coordinate location);
 
 
+	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const;
 	bool buyRoad(Coordinate start, Coordinate end, Player& Owner);
 
 	//void PlaceSettlement(Coordinate location, Player& Owner);
 	void PlaceCity(Coordinate location, Player& Owner);
 	void PlaceWonder(Coordinate location, Player& Owner);
 	bool PlaceRoad(Coordinate start, Coordinate end, Player& Owner);
+	bool canPlayBuildRoadCard(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2, Player& Owner);
 
 	void accept(GameVisitor& visitor);
 
@@ -121,6 +123,7 @@ public:
 
     void moveRobber(Coordinate newRobber);
     Coordinate getRobber() const;
+    bool canRobberRob(Player& opponent, Coordinate location);
 
 };
 

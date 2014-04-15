@@ -48,10 +48,6 @@ GameBoard::GameBoard(const vector<std::string>& playerNames) {
 	const static vector<int> boardRolls = {0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
 	
 	bool valid = false;
-
-	
-
-
 	
 	const static Coordinate center {0, 4};
 	
@@ -167,6 +163,7 @@ GameBoard::GameBoard(istream& in) {
 		resources[coord] = unique_ptr<ResourceTile>(new ResourceTile(*this, coord, type, diceValue));
 	}
 	
+
 	auto playerElements = doc.RootElement()->FirstChildElement("players");
 	if(playerElements) {
 		for(auto playerElement = playerElements->FirstChildElement(); playerElement; playerElement = playerElement->NextSiblingElement()) {
@@ -175,6 +172,7 @@ GameBoard::GameBoard(istream& in) {
 		}
 	}
 	
+
 	auto roadElements = doc.RootElement()->FirstChildElement("roads");
 	if(roadElements) {
 		for(auto roadElement = roadElements->FirstChildElement(); roadElement; roadElement = roadElement->NextSiblingElement()) {
@@ -329,15 +327,6 @@ void GameBoard::endTurn()
 }
 
 /**
- * @return reference to the current Player
- */
-Player& GameBoard::getCurrentPlayer() const
-{
-	return *players[currentTurn];
-}
-
-
-/**
  * @return The no of Victory points needed to win the game
  */
 int GameBoard::getMaxVictoryPoints()
@@ -485,6 +474,9 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
 	if (!isRoadConnectionPoint(start, Owner) && !isRoadConnectionPoint(end, Owner)) //need to XOR
 		return false;
 
+	if(!Road::isValidRoad(start, end))
+		return false;
+
 	return true;
 }
 
@@ -494,10 +486,26 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
  */
 void GameBoard::moveRobber(Coordinate newRobber) {
 
-	robber = newRobber;
-
-	//force trade	
+	//Bounds check
+	if(resources.count(newRobber) > 0)
+		robber = newRobber;
 }
+
+/**
+ * DOES NOT WORK BECAUSE getNeighboringCorners() does not work
+ */
+bool GameBoard::canRobberRob(Player& opponent, Coordinate location){
+	std::cout << GetNeighboringCorners(location).size() << "\n";
+
+	for(auto corner : GetNeighboringCorners(location)){
+		std::cout << corner->getOwner().getName() << "derp\n";
+		if(corner->getOwner() == opponent){
+			return true;
+		}
+	}
+	return false;
+}
+
 
 /**
  * The robber's location on the board.
@@ -531,7 +539,28 @@ bool GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 	roads[end].push_back(newRoad);
 	
 //    startTurn();
-    
+	return true;
+}
+
+
+bool GameBoard::canPlayBuildRoadCard(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2, Player& Owner){
+	if(outOfBounds(start1) || outOfBounds(end1) || outOfBounds(start2) || outOfBounds(end2))
+		return false;
+
+	if(roadExists(start1, end1) || roadExists(start2, end2))
+		return false;
+
+	if(start1 == start2 || start1 == end2 || start2 == end1 || end1 == end2){
+		if(!isRoadConnectionPoint(start1, Owner) && !isRoadConnectionPoint(end1, Owner) && !isRoadConnectionPoint(start2, Owner) && !isRoadConnectionPoint(end2, Owner)){
+			return false;
+		}
+	} else if((!isRoadConnectionPoint(start1, Owner) && !isRoadConnectionPoint(end1, Owner)) || (!isRoadConnectionPoint(start2, Owner) && !isRoadConnectionPoint(end2, Owner))){
+		return false;
+	}
+
+	if(!Road::isValidRoad(start1, end1) || !Road::isValidRoad(start2, end2))
+		return false;
+
 	return true;
 }
 
@@ -641,6 +670,56 @@ int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, const Player & owner, 
 	return longest_path;
 }
 
+
+int GameBoard::CountCornerPoints(Player& owner){
+	int point_sum = 0;
+
+	for (std::map<Coordinate, std::unique_ptr<CornerPiece>>::iterator cp= corners.begin(); cp!=corners.end(); ++cp){
+		if(cp->second->getOwner() == owner){
+			point_sum += cp->second->getVictoryPoints();
+		}
+	}
+	return point_sum;
+}
+
+void GameBoard::updateLongestRoadPlayer(){
+	int longestRoad = -1;
+	int longestPlayer = 0;
+
+	for(int i = 0; i < getNoOfPlayers(); i++){
+		getPlayer(i).setLongestRoadSize(FindLongestRoad(getPlayer(i)));
+		getPlayer(i).setLongestRoad(false);
+		if(getPlayer(i).getLongestRoadSize() > longestRoad){
+			longestRoad = getPlayer(i).getLongestRoadSize();
+			longestPlayer = i;
+		}
+	}
+
+	if(longestRoad >= 5){
+		getPlayer(longestPlayer).setLongestRoad(true);
+	}
+
+}
+
+void GameBoard::updateLargestArmyPlayer(){
+	int largestArmy = -1;
+	int largestPlayer = 0;
+
+	for(int i = 0; i < getNoOfPlayers(); i++){
+		getPlayer(i).setLargestArmy(false);
+		if(getPlayer(i).getArmySize() > largestArmy){
+			largestArmy = getPlayer(i).getArmySize();
+			largestPlayer = i;
+		}
+	}
+
+	if(largestArmy >= 3){
+		getPlayer(largestPlayer).setLargestArmy(true);
+	}
+
+}
+
+
 /**
  * Place a settlement on the board.
  * @param location Where to place it on the board.
@@ -663,7 +742,7 @@ void GameBoard::PlaceCity(Coordinate location, Player& Owner){
 }
 
 /**
- * Place a city on the board.
+ * Place a Wonder on the board.
  * @param location Where to place it on the board.
  * @param Owner The player placing the city.
  */
@@ -682,7 +761,7 @@ void GameBoard::UpgradeSettlement(Coordinate location){
 }
 
 /**
- * Upgrade a settlement to a city.
+ * Upgrade a settlement to a wonder.
  * @param location Where the settlement being upgraded is.
  */
 void GameBoard::UpgradeToWonder(Coordinate location){
@@ -827,6 +906,15 @@ const std::vector<std::unique_ptr<Player>>& GameBoard::getPlayers() const {
 	return players;
 }
 
+/**
+ * WARNING THIS FUNCTION GIVES THE PLAYERS CHEATS SO I COULD DEBUG
+ * @return reference to the current Player
+ */
+Player& GameBoard::getCurrentPlayer() const
+{
+	(*players[currentTurn]).giveDevCardBoon();
+	return *players[currentTurn];
+}
 
 /**
  * @return no of players
@@ -848,7 +936,6 @@ Player& GameBoard::getPlayer(int index)
 
 	return *players[index];
 }
-
 
 
 /**

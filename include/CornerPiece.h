@@ -16,7 +16,7 @@ public:
 	CornerPiece(CornerPiece&) = delete;
 	~CornerPiece();
 	CornerPiece& operator=(CornerPiece&) = delete;
-	
+
 	Player& getOwner();
 	const Player& getOwner() const;
 

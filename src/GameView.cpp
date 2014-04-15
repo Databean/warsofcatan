@@ -80,6 +80,7 @@ bool ViewElement::handleClick(ScreenCoordinate coord) {
 	return false;
 }
 
+
 /**
  * Constrct a GameView.
  * @param model The GameBoard the view is displaying.
@@ -107,6 +108,9 @@ void GameView::render() {
 	for(auto it = viewElements.rbegin(); it != viewElements.rend(); it++) {
 		it->second->render();
 	}
+	for(auto& it : pointsOfInterest) {
+		highlightPoint(it);
+	}
 	
 	glColor3d(1, 1, 1);
 	renderText("resources/TypeWritersSubstitute-Black.ttf", 50, {.2, .9}, {.8, 1}, "Settlers of Catan");
@@ -124,7 +128,7 @@ bool GameView::acceptInput(SDL_Event& event) {
 		ScreenCoordinate screen = {(float) event.button.x / 900.f, 1.f - (float) event.button.y / 800.f};
 		for(auto& it : viewElements) {
 			if(it.second->handleClick(screen)) {
-				break;
+				//break;
 			}
 		}
 	}
@@ -310,6 +314,27 @@ void ViewButtonText::render() {
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+void GameView::addPointOfInterest(ScreenCoordinate coord){
+	pointsOfInterest.push_back(coord);
+}
+
+void GameView::clearPointsOfInterest(){
+	pointsOfInterest.clear();
+}
+
+void GameView::highlightPoint(ScreenCoordinate & coord){
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3f(0., 0., 1.);
+	glBegin(GL_QUADS);
+	glVertex2f(coord.first - .01, coord.second - .01);
+	glVertex2f(coord.first + .01 , coord.second - .01);
+	glVertex2f(coord.first + .01, coord.second + .01);
+	glVertex2f(coord.first - .01, coord.second + .01);
+	glEnd();
+
+}
+
 
 /**
  * Construct a DrawingGameVisitor with the view that it is drawing to.

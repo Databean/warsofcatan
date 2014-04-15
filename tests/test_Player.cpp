@@ -35,7 +35,7 @@ bool validateTradeModifiers(int wood, int brick, int ore, int wheat, int wool, P
 TEST(Player_constructor){
 	GameBoard board({"test board"});
 	Player& tp = board.getPlayer(0);
-	CHECK_EQUAL(0, tp.getLongestRoad());
+	CHECK_EQUAL(0, tp.getLongestRoadSize());
 	CHECK_EQUAL(0, tp.getArmySize());
 	CHECK_EQUAL(0, tp.getDevCardsInHand());
 

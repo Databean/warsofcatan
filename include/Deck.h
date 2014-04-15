@@ -27,7 +27,7 @@ private:
     void reshuffleDeck();
 
 public:
-	Deck(GameBoard& board);
+	Deck();
 	virtual ~Deck();
 
 	int getSize();

@@ -37,7 +37,7 @@ void initOpenGL() {
  * @param width The new width of the viewport.
  * @param height The new height of the viewport.
  */
-void updateViewport(int width, int height) {
+int updateViewport(int width, int height) {
 	glViewport(0, 0, width, height); 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity ();
@@ -75,7 +75,6 @@ int main(int argc, char *argv[]) {
 	initOpenGL();
 
 	updateViewport(windowWidth, windowHeight);
-	
 	
 	GameBoard model({"testPlayer", "testPlayer2"});
 	GameView view(model);
