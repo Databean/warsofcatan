@@ -52,6 +52,7 @@ private:
 	std::vector<ScreenCoordinate> pointsOfInterest;
 
 	void highlightPoint(ScreenCoordinate & coord);
+	void drawCardCount(std::string font, int fontSize);
 	
 	GameView(const GameView& o) = delete;
 	GameView& operator=(const GameView& o) = delete;
@@ -144,91 +145,7 @@ public:
 	virtual void render();
 };
 
-template<class Fn>
-class ConfirmationDialogue : public ViewElement {
-private:
-	Fn confirm_action;
-	Fn cancel_action;
 
-	bool clickedConfirm(ScreenCoordinate coord);
-	bool clickedCancel(ScreenCoordinate coord);
-	ScreenCoordinate topLeft;
-	ScreenCoordinate bottomRight;
-	ScreenCoordinate confirmTopLeft;
-	ScreenCoordinate confirmBottomRight;
-	ScreenCoordinate cancelTopLeft;
-	ScreenCoordinate cancelBottomRight;
-
-
-protected:
-	virtual bool clicked_confirm(ScreenCoordinate coord){
-		return confirmTopLeft.first < coord.first &&
-				confirmTopLeft.second < coord.second &&
-				coord.first < confirmBottomRight.first &&
-				coord.second < confirmBottomRight.second;
-	}
-	virtual bool clicked_cancel(ScreenCoordinate coord){
-			return cancelTopLeft.first < coord.first &&
-					cancelTopLeft.second < coord.second &&
-					coord.first < cancelBottomRight.first &&
-					coord.second < cancelBottomRight.second;
-	}
-
-	virtual bool clicked(ScreenCoordinate coord){
-		if(clicked_confirm(coord)){
-			confirm_action(coord);
-		} else if(clicked_cancel(coord)){
-			cancel_action(coord);
-		}
-		return false;
-	}
-
-public:
-	ConfirmationDialogue(Fn confirm_action, Fn cancel_action, std::pair<ScreenCoordinate, ScreenCoordinate> rect): ViewElement(rect), confirm_action(confirm_action), cancel_action(cancel_action){
-		topLeft = ViewElement::getRect().first;
-		bottomRight = ViewElement::getRect().second;
-
-		float width = bottomRight.first - topLeft.first;
-		float height = bottomRight.second - topLeft.second;
-		confirmTopLeft = ScreenCoordinate(topLeft.first +(width*.1), topLeft.second+(height*.1));
-		confirmBottomRight = ScreenCoordinate(bottomRight.first - (width * .6), bottomRight.second - (height * .6));
-		cancelTopLeft = ScreenCoordinate(topLeft.first + (width*.6), topLeft.second + (height *.1));
-		cancelBottomRight = ScreenCoordinate(bottomRight.first - (width * .1), bottomRight.second - (height * .6));
-
-	}
-	virtual void render(){
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		glColor3f(1., 1., 1.);
-		glBegin(GL_QUADS);
-		glVertex2f(topLeft.first, topLeft.second);
-		glVertex2f(bottomRight.first, topLeft.second);
-		glVertex2f(bottomRight.first, bottomRight.second);
-		glVertex2f(topLeft.first, bottomRight.second);
-		glEnd();
-
-		glColor3f(0., 1., 0.);
-		glBegin(GL_QUADS);
-		glVertex2f(confirmTopLeft.first, confirmTopLeft.second);
-		glVertex2f(confirmBottomRight.first, confirmTopLeft.second);
-		glVertex2f(confirmBottomRight.first, confirmBottomRight.second);
-		glVertex2f(confirmTopLeft.first, confirmBottomRight.second);
-		glEnd();
-
-		glColor3f(1.,0.,0.);
-		glBegin(GL_QUADS);
-		glVertex2f(cancelTopLeft.first, cancelTopLeft.second);
-		glVertex2f(cancelBottomRight.first, cancelTopLeft.second);
-		glVertex2f(cancelBottomRight.first, cancelBottomRight.second);
-		glVertex2f(cancelTopLeft.first, cancelBottomRight.second);
-		glEnd();
-	}
-};
-
-template<class Fn>
-std::unique_ptr<ViewElement> makeConfirmationDialogue(Fn confirm_fn, Fn cancel_fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect) {
-	return std::unique_ptr<ViewElement>(new ConfirmationDialogue<Fn>(confirm_fn, cancel_fn, rect));
-}
 
 
 
@@ -297,5 +214,31 @@ public:
 	
 	void render();
 };
+
+
+class ConfirmationDialogue : public ViewElement {
+private:
+	ScreenCoordinate topLeft;
+	ScreenCoordinate bottomRight;
+
+	std::string message;
+
+	std::unique_ptr<ViewElement> confirmButton;
+	std::unique_ptr<ViewElement> cancelButton;
+
+protected:
+	virtual bool clicked(ScreenCoordinate coord);
+
+public:
+	ConfirmationDialogue(std::function<bool(ScreenCoordinate)> confirm_action, std::function<bool(ScreenCoordinate)> cancel_action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::string message);
+	void render();
+};
+
+template<class Fn>
+std::unique_ptr<ViewElement> makeConfirmationDialogue(Fn confirm_fn, Fn cancel_fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::string message) {
+	return std::unique_ptr<ViewElement>(new ConfirmationDialogue(confirm_fn, cancel_fn, rect, message));
+}
+
+
 
 #endif

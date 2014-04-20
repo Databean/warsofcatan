@@ -7,6 +7,7 @@
 typedef std::pair<int, int> Coordinate;
 typedef std::pair<float, float> ScreenCoordinate;
 
+
 /**
  * Converts any instance that has istream& operator>>(istream&, T&) defined from a string to its type.
  * @param s The string to read the value from

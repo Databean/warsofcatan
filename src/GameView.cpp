@@ -96,6 +96,29 @@ GameView::~GameView() {
 	
 }
 
+
+/**
+ * Draws the amount of development cards the current player has.
+ * @param font the style of font to use, fontSize the resolution of the font used
+ * @return void
+ */
+void GameView::drawCardCount(std::string font, int fontSize){
+
+	renderText(font, fontSize, {.85, .23}, {1, .30}, "Development Cards");
+
+	renderText(font, fontSize, {0.97, 0.0}, {1.0, 0.05},
+			toString(model.getCurrentPlayer().getRoadBuildingCards()));	//Road Building
+	renderText(font, fontSize, {0.97, 0.05}, {1.0, 0.1},
+			toString(model.getCurrentPlayer().getKnightCards()));		//Knight
+	renderText(font, fontSize, {0.97, 0.1}, {1.0, 0.15},
+			toString(model.getCurrentPlayer().getYearOfPlentyCards()));	//Year of Plenty
+	renderText(font, fontSize, {0.97, 0.15}, {1.0, 0.2},
+			toString(model.getCurrentPlayer().getMonopolyCards()));		//Monopoly
+	renderText(font, fontSize, {0.97, 0.2}, {1.0, 0.25},
+			toString(model.getCurrentPlayer().getVictoryCards()));		//Victory Point
+}
+
+
 /**
  * Display the GameBoard to the screen as well as additional ViewElements.
  */
@@ -112,9 +135,14 @@ void GameView::render() {
 		highlightPoint(it);
 	}
 	
+	auto font = "resources/TypeWritersSubstitute-Black.ttf";
+	auto fontSize = 50;
+
 	glColor3d(1, 1, 1);
-	renderText("resources/TypeWritersSubstitute-Black.ttf", 50, {.2, .9}, {.8, 1}, "Settlers of Catan");
+	renderText(font, fontSize, {.2, .9}, {.8, 1}, "Settlers of Catan");
 	
+	drawCardCount(font, fontSize);
+
 	glFlush();
 }
 
@@ -681,3 +709,63 @@ void TradingView::render() {
 	cancel.render();
 	trade.render();
 }
+
+
+
+ConfirmationDialogue::ConfirmationDialogue(std::function<bool(ScreenCoordinate)> confirm_action, std::function<bool(ScreenCoordinate)> cancel_action,
+		std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::string message): ViewElement(rect), message(message){
+	topLeft = ViewElement::getRect().first;
+	bottomRight = ViewElement::getRect().second;
+
+	float width = bottomRight.first - topLeft.first;
+	float height = bottomRight.second - topLeft.second;
+	ScreenCoordinate confirmTopLeft = ScreenCoordinate(topLeft.first +(width*.1), topLeft.second+(height*.1));
+	ScreenCoordinate confirmBottomRight = ScreenCoordinate(bottomRight.first - (width * .6), bottomRight.second - (height * .6));
+	ScreenCoordinate cancelTopLeft = ScreenCoordinate(topLeft.first + (width*.6), topLeft.second + (height *.1));
+	ScreenCoordinate cancelBottomRight = ScreenCoordinate(bottomRight.first - (width * .1), bottomRight.second - (height * .6));
+
+	auto font = "resources/TypeWritersSubstitute-Black.ttf";
+	auto fontSize = 50;
+
+	confirmButton = std::unique_ptr<ViewElement>(new ViewButtonText(confirm_action, {confirmTopLeft, confirmBottomRight}, font, fontSize, "Yes"));
+	cancelButton = std::unique_ptr<ViewElement>(new ViewButtonText(cancel_action, {cancelTopLeft, cancelBottomRight}, font, fontSize, "No"));
+}
+
+bool ConfirmationDialogue::clicked(ScreenCoordinate coord){
+	if(confirmButton->handleClick(coord)){
+		return true;
+	} else if(cancelButton->handleClick(coord)){
+		return true;
+	}
+	return false;
+}
+
+void ConfirmationDialogue::render(){
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glColor3f(1., 1., 1.);
+	glBegin(GL_QUADS);
+	glVertex2f(topLeft.first, topLeft.second);
+	glVertex2f(bottomRight.first, topLeft.second);
+	glVertex2f(bottomRight.first, bottomRight.second);
+	glVertex2f(topLeft.first, bottomRight.second);
+	glEnd();
+
+	auto font = "resources/TypeWritersSubstitute-Black.ttf";
+	auto fontSize = 50;
+	float width = bottomRight.first - topLeft.first;
+	float height = bottomRight.second - topLeft.second;
+
+	renderText(font, fontSize, {topLeft.first + .05*width, topLeft.second + .4*height}, {bottomRight.first - .05*width, bottomRight.second - .15*height}, message);
+
+	glColor3f(0., 1., 0.);
+	confirmButton->render();
+
+	glColor3f(1.,0.,0.);
+	cancelButton->render();
+}
+
+
+
+
+
