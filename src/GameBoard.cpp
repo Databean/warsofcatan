@@ -907,12 +907,10 @@ const std::vector<std::unique_ptr<Player>>& GameBoard::getPlayers() const {
 }
 
 /**
- * WARNING THIS FUNCTION GIVES THE PLAYERS CHEATS SO I COULD DEBUG
  * @return reference to the current Player
  */
 Player& GameBoard::getCurrentPlayer() const
 {
-	(*players[currentTurn]).giveDevCardBoon();
 	return *players[currentTurn];
 }
 

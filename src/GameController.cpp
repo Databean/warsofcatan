@@ -17,12 +17,11 @@
 GameController::GameController(GameBoard& model, GameView& view) : model(model), view(view) {
 	using namespace std::placeholders;
 
+	view.addElement(makeViewButton(std::bind(&GameController::handleBoardEvent, this, _1), {{0, 0}, {1, 1}}));
 
 	view.addElement(makeViewButtonColor(std::bind(&GameController::nextTurn, this, _1), {{0, 0.2}, {0.1, 0.3}}, std::make_tuple(0.f, 0.f, 1.f)));
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.1}}, std::make_tuple(1.f, 0.f, 0.f)));
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0, 0.1}, {0.1, 0.2}}, std::make_tuple(0.f, 1.0f, 0.f)));
-
-	view.addElement(makeViewButton(std::bind(&GameController::handleBoardEvent, this, _1), {{0, 0}, {1, 1}}));
 
 	auto font = "resources/TypeWritersSubstitute-Black.ttf";
 	auto fontSize = 50;
@@ -41,11 +40,12 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleCancelButtonEvent, this, _1), {{.95, .95}, {1.0, 1.0}}, std::make_tuple(1.f, 0.0f, 0.f)));
 
-	view.addElement(makeViewButtonColor(std::bind(&GameController::handleRoadCardButtonEvent, this, _1), {{.2, 0}, {.3, .05}}, std::make_tuple(1.f, 0.0f, 0.f)));
-	view.addElement(makeViewButtonColor(std::bind(&GameController::handleKnightCardButtonEvent, this, _1), {{0.3, 0}, {.4, .05}}, std::make_tuple(0.f, 0.0f, 0.f)));
-	view.addElement(makeViewButtonColor(std::bind(&GameController::handleYearOfPlentyCardButtonEvent, this, _1), {{0.4, 0}, {.5, .05}}, std::make_tuple(1.f, 1.0f, 0.f)));
-	view.addElement(makeViewButtonColor(std::bind(&GameController::handleMonopolyCardButtonEvent, this, _1), {{0.5, 0}, {.6, .05}}, std::make_tuple(1.f, 0.0f, 1.f)));
-	view.addElement(makeViewButtonColor(std::bind(&GameController::handleVictoryPointCardButtonEvent, this, _1), {{0.6, 0}, {.7, .05}}, std::make_tuple(0.f, 1.0f, 1.f)));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadCardButtonEvent, this, _1), {{0.85, 0.0}, {0.97, 0.05}}, font, fontSize, "Road Building "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleKnightCardButtonEvent, this, _1), {{0.85, 0.05}, {0.97, 0.10}},  font, fontSize, "Knight "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleYearOfPlentyCardButtonEvent, this, _1), {{0.85, 0.10}, {0.97, 0.15}},  font, fontSize, "Year of Plenty "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleMonopolyCardButtonEvent, this, _1), {{0.85, 0.15}, {0.97, 0.20}},  font, fontSize, "Monopoly "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleVictoryPointCardButtonEvent, this, _1), {{0.85, 0.20}, {0.97, 0.25}},  font, fontSize, "Victory Point "));
+
 
 
 	stateStack.push_back(BASESTATE);
@@ -157,7 +157,6 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 
 	switch (getState()){
 	case BUILDROAD:
-		std::cout << "BUILDROAD\n";
 		if(!hasClickHistory()) {
 			storeClick(coord);
 		} else {
@@ -178,7 +177,8 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 			using namespace std::placeholders;
 			view.addElement(28, makeConfirmationDialogue(
 				std::bind(&GameController::handleConfirmRoadCard, this, _1),
-				std::bind(&GameController::handleCancelDialogueEvent, this, _1), {{.2, .3}, {.8, .6}}));
+				std::bind(&GameController::handleCancelDialogueEvent, this, _1), {{.2, .3}, {.8, .6}},
+				"Use road building card on these points?"));
 			pushState(MODALSTATE);
 		}
 		break;
@@ -209,6 +209,10 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 	return true;
 }
 
+/**
+ * Handles the event when the cancel button in the top right corner of the screen is pressed. This will
+ * reset the control state back to the base state.
+ */
 bool GameController::handleCancelButtonEvent(ScreenCoordinate){
 	while(getState() != BASESTATE){
 		popState();
@@ -235,7 +239,7 @@ bool GameController::handleRoadButtonEvent(ScreenCoordinate coord) {
 /**
  * Handles a click on the "create settlement" button. Changes the internal state to indicate the user is going to be making roads on the board.
  * @param coord The place the user clicked on screen.
- * @return Whether thi sevent was handled by this element. Always true.
+ * @return Whether this event was handled by this element. Always true.
  */
 bool GameController::handleSettlementButtonEvent(ScreenCoordinate coord) {
 	if(getState() != BASESTATE){
@@ -245,6 +249,12 @@ bool GameController::handleSettlementButtonEvent(ScreenCoordinate coord) {
 	return true;
 }
 
+
+/**
+ * Handles a click on the road Building Card button. This changes the control state to indicate the user is going to be building roads on the board.
+ * @param coord The place the user clicked on the screen
+ * @return whether this event was handles by this element. Always true.
+ */
 bool GameController::handleRoadCardButtonEvent(ScreenCoordinate coord){
 	if(getState() != BASESTATE){
 		return true;
@@ -254,19 +264,34 @@ bool GameController::handleRoadCardButtonEvent(ScreenCoordinate coord){
 	return true;
 }
 
+/**
+ * Handles a click on the confirm button in the confirmation dialogues for the Road Building Card. This will attempt to place the roads the
+ * user chose and clear the control state.
+ * @param coord The place the user clicked on the screen
+ * @return true
+ */
 bool GameController::handleConfirmRoadCard(ScreenCoordinate coord){
 	model.getCurrentPlayer().playRoadBuilding(getPastClick(3), getPastClick(2), getPastClick(1), getPastClick(0));
 	view.removeElement(28);
 	return handleCancelButtonEvent(coord);
 }
 
+/**
+ * Handles a click on the cancel button in the confrimation dialogue for the Road Building Card. This will clear the control state back to default.
+ * @param coord The place the user clicked on the screen
+ * @return true
+ */
 bool GameController::handleCancelDialogueEvent(ScreenCoordinate coord){
 	view.removeElement(28);
 	return handleCancelButtonEvent(coord);
 }
 
-
-bool GameController::handleKnightCardButtonEvent(ScreenCoordinate){
+/**
+ * Handles a click on the Knight Card button.
+ * @param coord The place the user clicked
+ * @return true
+ */
+bool GameController::handleKnightCardButtonEvent(ScreenCoordinate coord){
 	if(getState() != BASESTATE){
 		return true;
 	}
@@ -274,14 +299,25 @@ bool GameController::handleKnightCardButtonEvent(ScreenCoordinate){
 	return true;
 }
 
-bool GameController::handleYearOfPlentyCardButtonEvent(ScreenCoordinate){
+/**
+ * Handles a click on the Year of Plenty Card button
+ * @param coord The place the user clicked
+ * @return true
+ */
+bool GameController::handleYearOfPlentyCardButtonEvent(ScreenCoordinate coord){
 	if(getState() != BASESTATE){
 		return true;
 	}
 	pushState(YEAROFPLENTY_DEVCARD);
 	return true;
 }
-bool GameController::handleMonopolyCardButtonEvent(ScreenCoordinate){
+
+/**
+ * Handles a click on the Monopoly Card Button
+ * @param coord The place the user clicked
+ * @return true;
+ */
+bool GameController::handleMonopolyCardButtonEvent(ScreenCoordinate coord){
 	if(getState() != BASESTATE){
 		return true;
 	}
@@ -289,7 +325,12 @@ bool GameController::handleMonopolyCardButtonEvent(ScreenCoordinate){
 	return true;
 }
 
-bool GameController::handleVictoryPointCardButtonEvent(ScreenCoordinate){
+/**
+ * Handles a click on the VictoryPoint card button. Will push the victory point card state to the control stack
+ * @param coord The place the user clicked
+ * @return true
+ */
+bool GameController::handleVictoryPointCardButtonEvent(ScreenCoordinate coord){
 	if(getState() != BASESTATE){
 		return true;
 	}
