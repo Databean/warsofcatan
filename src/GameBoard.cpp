@@ -940,21 +940,15 @@ Player& GameBoard::getPlayer(int index)
  *  When a player begins their turn, this rolls the dice and takes the required action (paying resources or enabling robber movement)
  *  @return A pair of the values of the dice.
  */
-std::pair<int, int> GameBoard::startTurn()
-{
-    int die1 = std::rand() % 6 + 1;
-    int die2 = std::rand() % 6 + 1;
-    int roll = die1+die2;
-
-    dice.setFirst(die1);
-    dice.setSecond(die2);
-    if (roll==7)
-        enableRobber();
-    
-    else
-        payoutResources(roll);
-    
-    return std::make_pair(die1, die2);
+std::pair<int, int> GameBoard::startTurn() {
+	int roll = dice.roll();
+	if (roll==7) {
+		enableRobber();
+	} else {
+		payoutResources(roll);
+	}
+	
+	return std::make_pair(dice.getFirst(), dice.getSecond());
 }
 
 /**

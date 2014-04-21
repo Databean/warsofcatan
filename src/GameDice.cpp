@@ -1,22 +1,41 @@
 #include "GameDice.h"
 #include "GameVisitor.h"
 
-int GameDice::getFirst(){
+#include <cstdlib>
+
+using std::rand;
+
+/**
+ * Re-roll the dice.
+ * @return The sum of the two dice.
+ */
+int GameDice::roll() {
+	first = rand() % 6 + 1;
+	second = rand() % 6 + 1;
+	
+	return first + second;
+}
+
+/**
+ * The value of the first die.
+ * @return The first die's value.
+ */
+int GameDice::getFirst() const {
 	return first;
 }
 
-int GameDice::getSecond(){
+/**
+ * The value of the second die.
+ * @return The second die's value.
+ */
+int GameDice::getSecond() const {
 	return second;
 }
 
-void GameDice::setFirst(int newFirst){
-	first = newFirst;
-}
-
-void GameDice::setSecond(int newSecond){
-	second = newSecond;
-}
-
+/**
+ * Double-dispatch method for GameVisitor.
+ * @param visitor The visitor.
+ */
 void GameDice::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
 }
