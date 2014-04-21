@@ -22,6 +22,9 @@ private:
 	
 	bool checkRoad();
 public:
+
+	static bool isValidRoad(Coordinate start, Coordinate end);
+
 	Road(Coordinate start, Coordinate end, Player& Owner);
 	Road(Road&) = delete;
 	virtual ~Road();

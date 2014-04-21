@@ -17,6 +17,19 @@ using std::runtime_error;
 using std::string;
 using std::unique_ptr;
 
+float DiceXCoords[3] = {9.f, 134.f, 259.f};
+float DiceYCoords[2] = {3.f, 142.f};
+std::pair<float, float> lDieScreenLoc= make_pair(0.6f, 0.82f);
+std::pair<float, float> rDieScreenLoc= make_pair(0.68f, 0.82f);
+
+#define DIE_SIDE_LENGTH 0.06f
+#define DIE_SCREEN_SIDE_LENGTH 105.f
+
+#define EMPLACE_SQUARE_VERTEX(imXOff, imYOff, scXOff, scYOff) \
+texCoordPair({texTopLeft.first + imXOff, texTopLeft.second + imYOff}); \
+glVertex2d(screenTopLeft.first + scXOff, screenTopLeft.second + scYOff);
+
+
 /**
  * Construct a ViewElement covering a particular rectangle on screen.
  * @param rect The rectangle on screen that the view element occupies.
@@ -67,6 +80,7 @@ bool ViewElement::handleClick(ScreenCoordinate coord) {
 	return false;
 }
 
+
 /**
  * Constrct a GameView.
  * @param model The GameBoard the view is displaying.
@@ -82,6 +96,29 @@ GameView::~GameView() {
 	
 }
 
+
+/**
+ * Draws the amount of development cards the current player has.
+ * @param font the style of font to use, fontSize the resolution of the font used
+ * @return void
+ */
+void GameView::drawCardCount(std::string font, int fontSize){
+
+	renderText(font, fontSize, {.85, .23}, {1, .30}, "Development Cards");
+
+	renderText(font, fontSize, {0.97, 0.0}, {1.0, 0.05},
+			toString(model.getCurrentPlayer().getRoadBuildingCards()));	//Road Building
+	renderText(font, fontSize, {0.97, 0.05}, {1.0, 0.1},
+			toString(model.getCurrentPlayer().getKnightCards()));		//Knight
+	renderText(font, fontSize, {0.97, 0.1}, {1.0, 0.15},
+			toString(model.getCurrentPlayer().getYearOfPlentyCards()));	//Year of Plenty
+	renderText(font, fontSize, {0.97, 0.15}, {1.0, 0.2},
+			toString(model.getCurrentPlayer().getMonopolyCards()));		//Monopoly
+	renderText(font, fontSize, {0.97, 0.2}, {1.0, 0.25},
+			toString(model.getCurrentPlayer().getVictoryCards()));		//Victory Point
+}
+
+
 /**
  * Display the GameBoard to the screen as well as additional ViewElements.
  */
@@ -94,10 +131,18 @@ void GameView::render() {
 	for(auto it = viewElements.rbegin(); it != viewElements.rend(); it++) {
 		it->second->render();
 	}
+	for(auto& it : pointsOfInterest) {
+		highlightPoint(it);
+	}
 	
+	auto font = "resources/ComicNeue-Bold.ttf";
+	auto fontSize = 50;
+
 	glColor3d(1, 1, 1);
-	renderText("resources/TypeWritersSubstitute-Black.ttf", 50, {.2, .9}, {.8, 1}, "Settlers of Catan");
+	renderText(font, fontSize, {.2, .9}, {.8, 1}, "Settlers of Catan");
 	
+	drawCardCount(font, fontSize);
+
 	glFlush();
 }
 
@@ -111,7 +156,7 @@ bool GameView::acceptInput(SDL_Event& event) {
 		ScreenCoordinate screen = {(float) event.button.x / 900.f, 1.f - (float) event.button.y / 800.f};
 		for(auto& it : viewElements) {
 			if(it.second->handleClick(screen)) {
-				break;
+				//break;
 			}
 		}
 	}
@@ -298,6 +343,27 @@ void ViewButtonText::render() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void GameView::addPointOfInterest(ScreenCoordinate coord){
+	pointsOfInterest.push_back(coord);
+}
+
+void GameView::clearPointsOfInterest(){
+	pointsOfInterest.clear();
+}
+
+void GameView::highlightPoint(ScreenCoordinate & coord){
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3f(0., 0., 1.);
+	glBegin(GL_QUADS);
+	glVertex2f(coord.first - .01, coord.second - .01);
+	glVertex2f(coord.first + .01 , coord.second - .01);
+	glVertex2f(coord.first + .01, coord.second + .01);
+	glVertex2f(coord.first - .01, coord.second + .01);
+	glEnd();
+
+}
+
+
 /**
  * Construct a DrawingGameVisitor with the view that it is drawing to.
  * @param view The view to draw to.
@@ -446,97 +512,55 @@ void drawTexturedCircle(std::pair<float, float> texCenter, float texRadius, std:
 	glEnd();
 }
 
+/**
+ * Draw a textured square oriented parallel to the ground
+ * @param texTopLeft image coordinates of the top left side of our square texture
+ * @param sideLength image domain side length (in pixels)
+ * @param screenTopLeft GL coordinates for the top left of our square to render
+ * @param screenSideLength GL image domain square side length
+ */
 void drawTexturedRectangle(std::pair<float, float> texTopLeft, float sideLength, std::pair<float, float> screenTopLeft, float screenSideLength) {
 	
-	
-
 	glBegin(GL_QUADS);
 
-
-	
-
-	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + 0.0f});
-	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + 0.0f);
-
-	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + 0.0f});
-	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + 0.0f);
-
-
-	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + sideLength});
-	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + screenSideLength);
-
-	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + sideLength});
-	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + screenSideLength);
-
-	/*
-	//redraw the image for reasons
-	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + sideLength});
-	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + screenSideLength);
-
-	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + sideLength});
-	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + screenSideLength);
-
-	texCoordPair({texTopLeft.first + sideLength, texTopLeft.second + 0.0f});
-	glVertex2d(screenTopLeft.first + screenSideLength, screenTopLeft.second + 0.0f);
-
-	texCoordPair({texTopLeft.first + 0.0f, texTopLeft.second + 0.0f});
-	glVertex2d(screenTopLeft.first + 0.0f, screenTopLeft.second + 0.0f);
-
-	*/
-	
-	
+	EMPLACE_SQUARE_VERTEX(0.0f,			0.0f, 		0.0f,				0.0f)
+	EMPLACE_SQUARE_VERTEX(sideLength,	0.0f, 		screenSideLength,	0.0f)
+	EMPLACE_SQUARE_VERTEX(sideLength,	sideLength,	screenSideLength,	screenSideLength)
+	EMPLACE_SQUARE_VERTEX(0.0f,			sideLength,	0.0f,				screenSideLength)
 
 	glEnd();
 
-
-	
-
-
-
 }
 
+/**
+ * Draw both dice.
+ * @param dice the dice data structure for the board
+ */
 void DrawingGameVisitor::visit(GameDice& dice) {
 
 	static const GLuint diceTextures = loadImageAsTexture("resources/catan_dice_new.bmp");
 	glBindTexture(GL_TEXTURE_2D, diceTextures);
 
 	glColor3d(1.0, 1.0, 1.0);	
-	static const std::map<int, std::pair<float, float>> topLeftOffset = {
-		make_pair(1, make_pair(9.f, 3.f)),
-		make_pair(2, make_pair(134.f, 3.f)),
-		make_pair(3, make_pair(259.f, 3.f)),
-		make_pair(4, make_pair(9.f, 142.f)),
-		make_pair(5, make_pair(134.f, 142.f)),
-		make_pair(6, make_pair(259.f, 142.f))
-	};
+	static std::map<int, std::pair<float, float>> topLeftOffset;
+	//construct offset map
+	for (int i = 1; i < 7; i++) {
+		
+		//topLeftOffset.emplace(i, make_pair(DiceXCoords[(i-1)%3], DiceYCoords[i/4]));
+		topLeftOffset.insert(make_pair(i, make_pair(DiceXCoords[(i-1)%3], DiceYCoords[i/4])));
+	}
+	
 
-	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, 95.f, 
-		make_pair(.7f, .8f), 0.06);
+	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, DIE_SCREEN_SIDE_LENGTH, 
+		lDieScreenLoc, DIE_SIDE_LENGTH);
 		
 
-	drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, 95.f, 
-		make_pair(.78f, .8f), 0.06);
+	drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, DIE_SCREEN_SIDE_LENGTH, 
+		rDieScreenLoc, DIE_SIDE_LENGTH);
 
-	
-
-	//render all dice
-	//drawTexturedRectangle(make_pair(9.f, 3.f), 95.f, make_pair(.6f, .9f), 0.06);
-	//drawTexturedRectangle(make_pair(8.f, 4.f), 96.f, make_pair(.67f, .95f), 0.06);
-	//drawTexturedRectangle(make_pair(16.f, 8.f), 96.f, make_pair(.74f, .95f), 0.06);
-	//drawTexturedRectangle(make_pair(2.f, 8.f), 96.f, make_pair(.6f, .95f), 0.06);
-	//drawTexturedRectangle(make_pair(2.f, 8.f), 96.f, make_pair(.6f, .95f), 0.06);
-	//drawTexturedRectangle(make_pair(2.f, 8.f), 96.f, make_pair(.6f, .95f), 0.06);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-	//hardcoded 2 die for testing
-	//drawTexturedRectangle(make_pair(4.f, 8.f), 96.f, make_pair(.7f, .9f), 0.03);
-
-
 	
-
-
-	//std::cout << dice.getFirst() << "\n";
-
 }
 
 /**
@@ -626,8 +650,8 @@ void DrawingGameVisitor::visit(DevelopmentCard& card) {
  */
 TradingView::TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> initialOffer) : 
 	ViewElement({{0.1, 0.1},{0.9, 0.9}}), initiating(initiating), receiving(receiving),
-	trade(std::bind(trade, std::ref(offer), std::placeholders::_1), {{0.7, 0.1}, {0.9, 0.2}}, "resources/TypeWritersSubstitute-Black.ttf", 50, "Trade"),
-	cancel(cancel, {{0.1, 0.1}, {0.3, 0.2}}, "resources/TypeWritersSubstitute-Black.ttf", 50, "Cancel"),
+	trade(std::bind(trade, std::ref(offer), std::placeholders::_1), {{0.7, 0.1}, {0.9, 0.2}}, "resources/ComicNeue-Bold.ttf", 50, "Trade"),
+	cancel(cancel, {{0.1, 0.1}, {0.3, 0.2}}, "resources/ComicNeue-Bold.ttf", 50, "Cancel"),
 	offer(initialOffer) {
 	
 }
@@ -672,7 +696,7 @@ void TradingView::render() {
 	glVertex2f(topLeft.first, bottomRight.second);
 	glEnd();
 	
-	auto font = "resources/TypeWritersSubstitute-Black.ttf";
+	auto font = "resources/ComicNeue-Bold.ttf";
 	auto fontSize = 50;
 	
 	std::string resources[] = {"Wood", "Brick", "Ore", "Wheat", "Wool"};
@@ -685,3 +709,63 @@ void TradingView::render() {
 	cancel.render();
 	trade.render();
 }
+
+
+
+ConfirmationDialogue::ConfirmationDialogue(std::function<bool(ScreenCoordinate)> confirm_action, std::function<bool(ScreenCoordinate)> cancel_action,
+		std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::string message): ViewElement(rect), message(message){
+	topLeft = ViewElement::getRect().first;
+	bottomRight = ViewElement::getRect().second;
+
+	float width = bottomRight.first - topLeft.first;
+	float height = bottomRight.second - topLeft.second;
+	ScreenCoordinate confirmTopLeft = ScreenCoordinate(topLeft.first +(width*.1), topLeft.second+(height*.1));
+	ScreenCoordinate confirmBottomRight = ScreenCoordinate(bottomRight.first - (width * .6), bottomRight.second - (height * .6));
+	ScreenCoordinate cancelTopLeft = ScreenCoordinate(topLeft.first + (width*.6), topLeft.second + (height *.1));
+	ScreenCoordinate cancelBottomRight = ScreenCoordinate(bottomRight.first - (width * .1), bottomRight.second - (height * .6));
+
+	auto font = "resources/ComicNeue-Bold.ttf";
+	auto fontSize = 50;
+
+	confirmButton = std::unique_ptr<ViewElement>(new ViewButtonText(confirm_action, {confirmTopLeft, confirmBottomRight}, font, fontSize, "Yes"));
+	cancelButton = std::unique_ptr<ViewElement>(new ViewButtonText(cancel_action, {cancelTopLeft, cancelBottomRight}, font, fontSize, "No"));
+}
+
+bool ConfirmationDialogue::clicked(ScreenCoordinate coord){
+	if(confirmButton->handleClick(coord)){
+		return true;
+	} else if(cancelButton->handleClick(coord)){
+		return true;
+	}
+	return false;
+}
+
+void ConfirmationDialogue::render(){
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glColor3f(1., 1., 1.);
+	glBegin(GL_QUADS);
+	glVertex2f(topLeft.first, topLeft.second);
+	glVertex2f(bottomRight.first, topLeft.second);
+	glVertex2f(bottomRight.first, bottomRight.second);
+	glVertex2f(topLeft.first, bottomRight.second);
+	glEnd();
+
+	auto font = "resources/ComicNeue-Bold.ttf";
+	auto fontSize = 50;
+	float width = bottomRight.first - topLeft.first;
+	float height = bottomRight.second - topLeft.second;
+
+	renderText(font, fontSize, {topLeft.first + .05*width, topLeft.second + .4*height}, {bottomRight.first - .05*width, bottomRight.second - .15*height}, message);
+
+	glColor3f(0., 1., 0.);
+	confirmButton->render();
+
+	glColor3f(1.,0.,0.);
+	cancelButton->render();
+}
+
+
+
+
+

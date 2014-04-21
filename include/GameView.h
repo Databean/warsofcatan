@@ -18,6 +18,7 @@ class GameController;
 class ViewElement;
 class GameView;
 
+
 /**
  * An element that is drawn on screen and can receive inputs from the user. These all occupy a rectangular area on screen
  * and can choose to handle clicks from the user that are inside their area.
@@ -48,6 +49,10 @@ private:
 	GameBoard& model;
 	
 	std::map<int, std::unique_ptr<ViewElement>> viewElements;
+	std::vector<ScreenCoordinate> pointsOfInterest;
+
+	void highlightPoint(ScreenCoordinate & coord);
+	void drawCardCount(std::string font, int fontSize);
 	
 	GameView(const GameView& o) = delete;
 	GameView& operator=(const GameView& o) = delete;
@@ -58,7 +63,10 @@ public:
 	void render();
 	bool acceptInput(SDL_Event& event);
 	
-	void addElement(std::unique_ptr<ViewElement>);
+
+	void addPointOfInterest(ScreenCoordinate);
+	void clearPointsOfInterest();
+	void addElement(std::unique_ptr<ViewElement> element);
 	void addElement(int priority, std::unique_ptr<ViewElement>);
 	
 	std::unique_ptr<ViewElement> removeElement(int priority);
@@ -89,6 +97,7 @@ public:
 	virtual void visit(GameDice&);
 	virtual void visit(Wonder&);
 };
+
 
 /**
  * A view element that is invisible and calls a callback function when it is clicked.
@@ -135,6 +144,10 @@ public:
 	
 	virtual void render();
 };
+
+
+
+
 
 /**
  * Constructs a ViewButtonColor using the same parameters as the ViewButtonColor. Exists because template inference exists only
@@ -201,5 +214,31 @@ public:
 	
 	void render();
 };
+
+
+class ConfirmationDialogue : public ViewElement {
+private:
+	ScreenCoordinate topLeft;
+	ScreenCoordinate bottomRight;
+
+	std::string message;
+
+	std::unique_ptr<ViewElement> confirmButton;
+	std::unique_ptr<ViewElement> cancelButton;
+
+protected:
+	virtual bool clicked(ScreenCoordinate coord);
+
+public:
+	ConfirmationDialogue(std::function<bool(ScreenCoordinate)> confirm_action, std::function<bool(ScreenCoordinate)> cancel_action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::string message);
+	void render();
+};
+
+template<class Fn>
+std::unique_ptr<ViewElement> makeConfirmationDialogue(Fn confirm_fn, Fn cancel_fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::string message) {
+	return std::unique_ptr<ViewElement>(new ConfirmationDialogue(confirm_fn, cancel_fn, rect, message));
+}
+
+
 
 #endif

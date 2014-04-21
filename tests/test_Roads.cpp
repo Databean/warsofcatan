@@ -12,7 +12,7 @@
 TEST(road_constructor_good){
 	Coordinate start = Coordinate(0,0);
 	Coordinate end = Coordinate(0,1);
-	
+
 	GameBoard board({"tester"});
 	Player& test_player = board.getPlayer(0);
 	Road test_road(start, end, test_player);
@@ -24,7 +24,7 @@ TEST(road_constructor_good){
 TEST(road_constuctor_bad){
 	Coordinate start = Coordinate(0,0);
 	Coordinate end = Coordinate(3,4);
-	
+
 	GameBoard board({"tester"});
 	Player& test_player = board.getPlayer(0);
 	//test start == end
@@ -47,7 +47,7 @@ TEST(road_constuctor_bad){
 TEST(road_equals_Road){
 	Coordinate start_1 = Coordinate(0,0);
 	Coordinate end_1 = Coordinate(0,1);
-	
+
 	GameBoard board({"tester", "tester_2", "tester_3"});
 	Player& test_player_1 = board.getPlayer(0);
 	Road test_road_1(start_1, end_1, test_player_1);
@@ -70,7 +70,7 @@ TEST(road_equals_Road){
 TEST(road_equals_Coordinate){
 	Coordinate start_1 = Coordinate(0,0);
 	Coordinate end_1 = Coordinate(0,1);
-	
+
 	GameBoard board({"tester"});
 	Player& test_player_1 = board.getPlayer(0);
 	Road test_road_1(start_1, end_1, test_player_1);
@@ -85,25 +85,4 @@ TEST(road_equals_Coordinate){
 	CHECK(test_road_1.equals(start_2, end_2));
 	CHECK(!test_road_1.equals(start_3, end_3));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
