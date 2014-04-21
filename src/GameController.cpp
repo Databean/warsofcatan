@@ -169,6 +169,11 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		break;
 	case ROBBER:
 		//model.moveRobber(coord);
+		if(!hasClickHistory())
+			storeClick(coord);
+		
+		model.moveRobber(coord);
+
 		popState();
 		break;
 	case BUILDROAD_DEVCARD:
