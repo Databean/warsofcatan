@@ -163,7 +163,7 @@ Coordinate screenToCoord(const pair<float, float>& screen) {
 	Coordinate ret;
 	float y_approx = (screen.second - 0.1f) / std::sin(angle) / scale;
 	ret.second = std::round(y_approx);
-	ret.first = std::round((screen.first - 0.2f) / scale - (screen.second - 0.1f) / scale / std::sin(angle) * std::cos(angle)) - 1;
+	ret.first = std::round((screen.first - 0.2f) / scale - y_approx * std::cos(angle) - 0.5);
 	return ret;
 }
 
