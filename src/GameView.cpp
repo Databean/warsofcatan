@@ -135,7 +135,7 @@ void GameView::render() {
 		highlightPoint(it);
 	}
 	
-	auto font = "resources/TypeWritersSubstitute-Black.ttf";
+	auto font = "resources/ComicNeue-Bold.ttf";
 	auto fontSize = 50;
 
 	glColor3d(1, 1, 1);
@@ -650,8 +650,8 @@ void DrawingGameVisitor::visit(DevelopmentCard& card) {
  */
 TradingView::TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> initialOffer) : 
 	ViewElement({{0.1, 0.1},{0.9, 0.9}}), initiating(initiating), receiving(receiving),
-	trade(std::bind(trade, std::ref(offer), std::placeholders::_1), {{0.7, 0.1}, {0.9, 0.2}}, "resources/TypeWritersSubstitute-Black.ttf", 50, "Trade"),
-	cancel(cancel, {{0.1, 0.1}, {0.3, 0.2}}, "resources/TypeWritersSubstitute-Black.ttf", 50, "Cancel"),
+	trade(std::bind(trade, std::ref(offer), std::placeholders::_1), {{0.7, 0.1}, {0.9, 0.2}}, "resources/ComicNeue-Bold.ttf", 50, "Trade"),
+	cancel(cancel, {{0.1, 0.1}, {0.3, 0.2}}, "resources/ComicNeue-Bold.ttf", 50, "Cancel"),
 	offer(initialOffer) {
 	
 }
@@ -696,7 +696,7 @@ void TradingView::render() {
 	glVertex2f(topLeft.first, bottomRight.second);
 	glEnd();
 	
-	auto font = "resources/TypeWritersSubstitute-Black.ttf";
+	auto font = "resources/ComicNeue-Bold.ttf";
 	auto fontSize = 50;
 	
 	std::string resources[] = {"Wood", "Brick", "Ore", "Wheat", "Wool"};
@@ -724,7 +724,7 @@ ConfirmationDialogue::ConfirmationDialogue(std::function<bool(ScreenCoordinate)>
 	ScreenCoordinate cancelTopLeft = ScreenCoordinate(topLeft.first + (width*.6), topLeft.second + (height *.1));
 	ScreenCoordinate cancelBottomRight = ScreenCoordinate(bottomRight.first - (width * .1), bottomRight.second - (height * .6));
 
-	auto font = "resources/TypeWritersSubstitute-Black.ttf";
+	auto font = "resources/ComicNeue-Bold.ttf";
 	auto fontSize = 50;
 
 	confirmButton = std::unique_ptr<ViewElement>(new ViewButtonText(confirm_action, {confirmTopLeft, confirmBottomRight}, font, fontSize, "Yes"));
@@ -751,7 +751,7 @@ void ConfirmationDialogue::render(){
 	glVertex2f(topLeft.first, bottomRight.second);
 	glEnd();
 
-	auto font = "resources/TypeWritersSubstitute-Black.ttf";
+	auto font = "resources/ComicNeue-Bold.ttf";
 	auto fontSize = 50;
 	float width = bottomRight.first - topLeft.first;
 	float height = bottomRight.second - topLeft.second;
