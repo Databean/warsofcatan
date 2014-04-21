@@ -23,7 +23,7 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.1}}, std::make_tuple(1.f, 0.f, 0.f)));
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0, 0.1}, {0.1, 0.2}}, std::make_tuple(0.f, 1.0f, 0.f)));
 
-	auto font = "resources/TypeWritersSubstitute-Black.ttf";
+	auto font = "resources/ComicNeue-Bold.ttf";
 	auto fontSize = 50;
 	
 
