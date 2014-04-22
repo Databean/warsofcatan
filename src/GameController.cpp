@@ -29,9 +29,9 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 
 	auto playerTopY = 0.9;
 	for(auto i = 0; i < model.getNoOfPlayers(); i++) {
-		auto width = 0.2;
+		auto width = 0.15;
 		Player& player = model.getPlayer(i);
-		view.addElement(makeViewButtonText(std::bind(&GameController::handlePlayerClick, this, _1, std::ref(player)), {{1.0 - width, playerTopY - 0.1}, {1.0, playerTopY}}, font, fontSize, player.getName()));
+		view.addElement(makeViewButtonText(std::bind(&GameController::handlePlayerClick, this, _1, std::ref(player)), {{1.0 - width, playerTopY - 0.05}, {1.0, playerTopY}}, font, fontSize, player.getName()));
 		playerTopY -= 0.05;
 	}
 	
