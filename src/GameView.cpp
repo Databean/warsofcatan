@@ -154,7 +154,7 @@ bool GameView::acceptInput(SDL_Event& event) {
 	if(event.type == SDL_QUIT) {
 		return false;
 	} else if(event.type == SDL_MOUSEBUTTONUP) {
-		ScreenCoordinate screen = {(float) event.button.x / 900.f, 1.f - (float) event.button.y / 800.f};
+		ScreenCoordinate screen = {(float) event.button.x / getGraphicsConfig()["screen.width"], 1.f - (float) event.button.y / getGraphicsConfig()["screen.height"]};
 		for(auto& it : viewElements) {
 			if(it.second->handleClick(screen)) {
 				//break;
