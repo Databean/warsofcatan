@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 
+#include "Config.h"
 #include "GameBoard.h"
 #include "GameView.h"
 #include "Renderer.h"
@@ -22,11 +23,10 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	view.addElement(makeViewButtonColor(std::bind(&GameController::nextTurn, this, _1), {{0, 0.2}, {0.1, 0.3}}, std::make_tuple(0.f, 0.f, 1.f)));
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.1}}, std::make_tuple(1.f, 0.f, 0.f)));
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0, 0.1}, {0.1, 0.2}}, std::make_tuple(0.f, 1.0f, 0.f)));
-
-	auto font = "resources/ComicNeue-Bold.ttf";
-	auto fontSize = 50;
 	
-
+	auto font = getGraphicsConfig()["font.path"];
+	auto fontSize = getGraphicsConfig()["font.size"];
+	
 	auto playerTopY = 0.9;
 	for(auto i = 0; i < model.getNoOfPlayers(); i++) {
 		auto width = 0.15;
