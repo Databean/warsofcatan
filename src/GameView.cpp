@@ -415,8 +415,8 @@ void DrawingGameVisitor::visit(Road& road) {
 	auto cosPerp = std::cos(roadPerpAngle);
 	auto sinPerp = std::sin(roadPerpAngle);
 	
-	float* color = road.getOwner().getColor();
-	glColor3d(color[0], color[1], color[2]);
+	auto color = road.getOwner().getColor();
+	glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBegin(GL_QUADS);
@@ -437,8 +437,8 @@ void DrawingGameVisitor::visit(Settlement& settlement) {
 	auto centerScreenPos = coordToScreen(settlement.getLocation());
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
-	float* color = settlement.getOwner().getColor();
-	glColor3d(color[0], color[1], color[2]);
+	auto color = settlement.getOwner().getColor();
+	glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
 
 	glBegin(GL_QUADS);
 	glVertex2d(centerScreenPos.first, centerScreenPos.second + settlementRadius);
@@ -459,8 +459,8 @@ void DrawingGameVisitor::visit(City& city) {
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	float* color = city.getOwner().getColor();
-	glColor3d(color[0], color[1], color[2]);
+	auto color = city.getOwner().getColor();
+	glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
 
 	glBegin(GL_QUADS);
 	glVertex2d(centerScreenPos.first + cityRadius, centerScreenPos.second + cityRadius);
@@ -481,8 +481,8 @@ void DrawingGameVisitor::visit(Wonder& wonder) {
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	float* color = wonder.getOwner().getColor();
-	glColor3d(color[0], color[1], color[2]);
+	auto color = wonder.getOwner().getColor();
+	glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
 
 	glBegin(GL_QUADS);
 	glVertex2d(centerScreenPos.first + wonderRadius, centerScreenPos.second + wonderRadius);

@@ -48,7 +48,7 @@ private:
     int resources[5];
     int tradeModifiers[5];
 
-    float color[3];
+    std::tuple<float, float, float> color;
 
 
     void tradeWithBank(std::array<int, 5> offer, std::array<int, 5> demand);
@@ -71,7 +71,7 @@ public:
     void setLongestRoad(bool);
     void setLongestRoadSize(int);
 
-    float* getColor();
+    std::tuple<float, float, float> getColor();
 
     int getVictoryPointsWithoutCards();
     int getVictoryPointCards();

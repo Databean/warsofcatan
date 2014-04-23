@@ -49,11 +49,14 @@ Player::Player(GameBoard& board, std::string playerName) : name(playerName), boa
 		c = 0;
 	}
 
-	color[0] = .01 * (float)(std::rand()%101);
-	color[1] = .01 * (float)(std::rand()%101);
-	color[2] = .01 * (float)(std::rand()%101);
-
-	color[std::rand()%3] = 0;
+	std::get<0>(color) = .01 * (float)(std::rand()%101);
+	std::get<1>(color) = .01 * (float)(std::rand()%101);
+	std::get<2>(color) = .01 * (float)(std::rand()%101);
+	
+	int zeroChannel = std::rand()%3;
+	if(zeroChannel == 0) { std::get<0>(color) = 0; }
+	if(zeroChannel == 1) { std::get<1>(color) = 0; }
+	if(zeroChannel == 2) { std::get<2>(color) = 0; }
 
 }
 
@@ -91,11 +94,14 @@ Player::Player(GameBoard& board, XMLElement* elem) : board(board)
 	victoryPoints = 0;
 	baseVictoryPoints = 0;
 
-	color[0] = .01 * (float)(std::rand()%101);
-	color[1] = .01 * (float)(std::rand()%101);
-	color[2] = .01 * (float)(std::rand()%101);
-
-	color[std::rand()%3] = 0;
+	std::get<0>(color) = .01 * (float)(std::rand()%101);
+	std::get<1>(color) = .01 * (float)(std::rand()%101);
+	std::get<2>(color) = .01 * (float)(std::rand()%101);
+	
+	int zeroChannel = std::rand()%3;
+	if(zeroChannel == 0) { std::get<0>(color) = 0; }
+	if(zeroChannel == 1) { std::get<1>(color) = 0; }
+	if(zeroChannel == 2) { std::get<2>(color) = 0; }
 }
 
 /**
@@ -105,7 +111,7 @@ Player::~Player() {
 
 }
 
-float* Player::getColor(){
+std::tuple<float, float, float> Player::getColor(){
 	return color;
 }
 
