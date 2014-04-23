@@ -1,6 +1,8 @@
 #include "UnitTest++.h"
 #include "Config.h"
 
+#include <stdexcept>
+
 using std::string;
 using std::stringstream;
 
