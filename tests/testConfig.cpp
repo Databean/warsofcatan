@@ -19,14 +19,6 @@ TEST(readTwoStrings) {
 	CHECK((string)config["var_b"] == "val_b");
 }
 
-TEST(readIntAndString) {
-	stringstream file("string=hello\nint=5\n");
-	Config config(file);
-	
-	CHECK((string)config["string"] == "hello");
-	CHECK((int)config["int"] == 5);
-}
-
 TEST(readFloat) {
 	stringstream file("float=5.0\n");
 	Config config(file);

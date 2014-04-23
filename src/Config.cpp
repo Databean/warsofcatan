@@ -15,10 +15,6 @@ ConfigValue::ConfigValue(const string& value) : value(value) {
 	
 }
 
-ConfigValue::operator int() const {
-	return fromString<int>(value);
-}
-
 ConfigValue::operator float() const {
 	return fromString<float>(value);
 }

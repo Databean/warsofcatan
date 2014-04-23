@@ -19,7 +19,6 @@ public:
 	ConfigValue& operator=(const ConfigValue&) = default;
 	ConfigValue& operator=(ConfigValue&&) = default;
 	
-	operator int() const;
 	operator float() const;
 	operator std::string() const;
 	operator Coordinate() const;

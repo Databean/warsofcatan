@@ -660,11 +660,19 @@ void DrawingGameVisitor::visit(DevelopmentCard& card) {
  * @param initialOffer The initial offer to display.
  */
 TradingView::TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> initialOffer) : 
-	ViewElement({{0.1, 0.1},{0.9, 0.9}}), initiating(initiating), receiving(receiving),
-	trade(std::bind(trade, std::ref(offer), std::placeholders::_1), {{0.7, 0.1}, {0.9, 0.2}}, getGraphicsConfig()["font.path"], getGraphicsConfig()["font.size"], "Trade"),
-	cancel(cancel, {{0.1, 0.1}, {0.3, 0.2}}, getGraphicsConfig()["font.path"], getGraphicsConfig()["font.size"], "Cancel"),
+	ViewElement({getGraphicsConfig()["screen.tradingView.bottomLeft"], getGraphicsConfig()["screen.tradingView.topRight"]}),
+	initiating(initiating), 
+	receiving(receiving),
+	trade(
+		std::bind(trade, std::ref(offer), std::placeholders::_1), 
+		{getGraphicsConfig()["screen.tradingView.tradeButton.bottomLeft"], getGraphicsConfig()["screen.tradingView.tradeButton.topRight"]},
+		getGraphicsConfig()["font.path"], getGraphicsConfig()["font.size"], "Trade"
+	),
+	cancel(cancel, 
+		{getGraphicsConfig()["screen.tradingView.cancelButton.bottomLeft"], getGraphicsConfig()["screen.tradingView.cancelButton.topRight"]},
+		getGraphicsConfig()["font.path"], getGraphicsConfig()["font.size"], "Cancel"
+	),
 	offer(initialOffer) {
-	
 }
 
 /**
@@ -685,7 +693,7 @@ bool TradingView::clicked(ScreenCoordinate coord) {
 		return true;
 	}
 	int modifier = coord.first <= 0.5 ? -1 : 1;
-	int resource = (coord.second - 0.2) / 0.13;
+	int resource = (coord.second - getGraphicsConfig()["screen.tradingView.resources.bottomY"]) / getGraphicsConfig()["screen.tradingView.resources.height"];
 	if(resource >= 0 && resource <= 5) {
 		offer[resource] += modifier;
 	}
@@ -712,10 +720,15 @@ void TradingView::render() {
 	
 	std::string resources[] = {"Wood", "Brick", "Ore", "Wheat", "Wool"};
 	for(int i = 0; i < 5; i++) {
-		auto height = 0.13;
-		renderText(font, fontSize, {0.3, 0.2 + (i * height)}, {0.6, 0.2 + height + (i * height)}, toString(offer[i]) + " " + resources[i]);
+		auto leftX = getGraphicsConfig()["screen.tradingView.resources.leftX"];
+		auto rightX = getGraphicsConfig()["screen.tradingView.resources.rightX"];
+		auto height = getGraphicsConfig()["screen.tradingView.resources.height"];
+		auto bottomY = getGraphicsConfig()["screen.tradingView.resources.bottomY"];
+		renderText(font, fontSize, {leftX, bottomY + (i * height)}, {rightX, bottomY + height + (i * height)}, toString(offer[i]) + " " + resources[i]);
 	}
-	renderText(font, fontSize, {0.1, 0.8}, {0.9, 0.9}, initiating.getName() + " -> " + receiving.getName());
+	auto playersBottomLeft = getGraphicsConfig()["screen.tradingView.players.bottomLeft"];
+	auto playersTopRight = getGraphicsConfig()["screen.tradingView.players.topRight"];
+	renderText(font, fontSize, playersBottomLeft, playersTopRight, initiating.getName() + " -> " + receiving.getName());
 	
 	cancel.render();
 	trade.render();
@@ -734,10 +747,10 @@ ConfirmationDialogue::ConfirmationDialogue(std::function<bool(ScreenCoordinate)>
 	ScreenCoordinate confirmBottomRight = ScreenCoordinate(bottomRight.first - (width * .6), bottomRight.second - (height * .6));
 	ScreenCoordinate cancelTopLeft = ScreenCoordinate(topLeft.first + (width*.6), topLeft.second + (height *.1));
 	ScreenCoordinate cancelBottomRight = ScreenCoordinate(bottomRight.first - (width * .1), bottomRight.second - (height * .6));
-
-	auto font = "resources/ComicNeue-Bold.ttf";
-	auto fontSize = 50;
-
+	
+	auto font = getGraphicsConfig()["font.path"];
+	auto fontSize = getGraphicsConfig()["font.size"];
+	
 	confirmButton = std::unique_ptr<ViewElement>(new ViewButtonText(confirm_action, {confirmTopLeft, confirmBottomRight}, font, fontSize, "Yes"));
 	cancelButton = std::unique_ptr<ViewElement>(new ViewButtonText(cancel_action, {cancelTopLeft, cancelBottomRight}, font, fontSize, "No"));
 }
