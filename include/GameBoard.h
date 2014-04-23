@@ -73,6 +73,8 @@ public:
 	~GameBoard();
 	GameBoard& operator=(GameBoard&) = delete;
 
+	void initializeGame();
+
 	void save(std::ostream& out);
 
 	ResourceTile& getResourceTile(Coordinate location) const;

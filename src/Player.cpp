@@ -49,6 +49,12 @@ Player::Player(GameBoard& board, std::string playerName) : name(playerName), boa
 		c = 0;
 	}
 
+	color[0] = .01 * (float)(std::rand()%101);
+	color[1] = .01 * (float)(std::rand()%101);
+	color[2] = .01 * (float)(std::rand()%101);
+
+	color[std::rand()%3] = 0;
+
 }
 
 /**
@@ -84,6 +90,12 @@ Player::Player(GameBoard& board, XMLElement* elem) : board(board)
 	longestRoad = 0;
 	victoryPoints = 0;
 	baseVictoryPoints = 0;
+
+	color[0] = .01 * (float)(std::rand()%101);
+	color[1] = .01 * (float)(std::rand()%101);
+	color[2] = .01 * (float)(std::rand()%101);
+
+	color[std::rand()%3] = 0;
 }
 
 /**
@@ -92,6 +104,11 @@ Player::Player(GameBoard& board, XMLElement* elem) : board(board)
 Player::~Player() {
 
 }
+
+float* Player::getColor(){
+	return color;
+}
+
 
 /**
  * The number of development cards the player is holding.
@@ -507,10 +524,8 @@ bool Player::playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate sta
 /**
  * A cheat class that gives the player 5 of every development card, meant for debugging
  */
-void Player::giveDevCardBoon(){
-	for(int i = 0; i < 5; i++){
-		developmentCards[i]+=5;
-	}
+void Player::setStartingValues(){
+	developmentCards[ROADBUILDING] = 1;
 }
 
 

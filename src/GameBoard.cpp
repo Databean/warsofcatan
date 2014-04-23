@@ -326,6 +326,30 @@ void GameBoard::endTurn()
 	startTurn();
 }
 
+void GameBoard::initializeGame(){
+	PlaceSettlement(Coordinate(-1,2), getPlayer(0));
+	PlaceSettlement(Coordinate(1,1), getPlayer(0));
+	getPlayer(0).setStartingValues();
+
+	PlaceSettlement(Coordinate(-2,4), getPlayer(1));
+	PlaceSettlement(Coordinate(-2,6), getPlayer(1));
+	getPlayer(1).setStartingValues();
+
+	PlaceSettlement(Coordinate(-1,7), getPlayer(2));
+	PlaceSettlement(Coordinate(1,6), getPlayer(2));
+	getPlayer(2).setStartingValues();
+
+	PlaceSettlement(Coordinate(2,4), getPlayer(3));
+	PlaceSettlement(Coordinate(2,2), getPlayer(3));
+	getPlayer(3).setStartingValues();
+
+	for(int i = 1; i < 13; i++){
+		payoutResources(i);
+	}
+
+}
+
+
 /**
  * @return The no of Victory points needed to win the game
  */
