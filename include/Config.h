@@ -8,6 +8,10 @@
 
 #include "Util.h"
 
+/**
+ * A configuration value stored in a configuration file.
+ * These can auto-convert to several common types that are used.
+ */
 class ConfigValue {
 private:
 	std::string value;
@@ -25,6 +29,14 @@ public:
 	operator ScreenCoordinate() const;
 };
 
+/**
+ * Configuration storage. Reads in configuration files in the format:
+ * 
+ * #Comment
+ * name=value
+ * 
+ * Particular configuration values can be accessed by name and automatically to convert to common types.
+ */
 class Config {
 private:
 	std::map<std::string, ConfigValue> values;

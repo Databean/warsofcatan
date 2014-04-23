@@ -11,18 +11,35 @@ using std::runtime_error;
 using std::istream;
 using std::fstream;
 
+/**
+ * Initialize a ConfigValue with the raw string it represents.
+ * @param value The raw value.
+ */
 ConfigValue::ConfigValue(const string& value) : value(value) {
 	
 }
 
+/**
+ * Convert the ConfigValue into a float.
+ * @return The text of the ConfigValue, interpreted as a float.
+ */
 ConfigValue::operator float() const {
 	return fromString<float>(value);
 }
 
+/**
+ * Convert the ConfigValue into a string.
+ * @return The text of the ConfigValue.
+ */
 ConfigValue::operator string() const {
 	return value;
 }
 
+/**
+ * Convert the ConfigValue into a game Coordinate.
+ * @throws runtime_error If the value cannot be converted.
+ * @return The text of the ConfigValue, interpreted as a game Coordinate.
+ */
 ConfigValue::operator Coordinate() const {
 	stringstream stream(value);
 	Coordinate ret;
@@ -39,6 +56,11 @@ ConfigValue::operator Coordinate() const {
 	return ret;
 }
 
+/**
+ * Convert the ConfigValue into a ScreenCoordinate.
+ * @throws runtime_error If the value cannot be converted.
+ * @return The text of the ConfigValue, interpreted as a ScreenCoordinate.
+ */
 ConfigValue::operator ScreenCoordinate() const {
 	stringstream stream(value);
 	ScreenCoordinate ret;
@@ -55,19 +77,35 @@ ConfigValue::operator ScreenCoordinate() const {
 	return ret;
 }
 
+/**
+ * Initialize a Config file, reading from an input stream.
+ * @param source The stream to read config values from.
+ */
 Config::Config(istream& source) {
 	init(source);
 }
 
+/**
+ * Initialize a Config file, reading from a file stream.
+ * @param source The file stream to read config values from.
+ */
 Config::Config(fstream&& source) {
 	init(source);
 }
 
+/**
+ * Initialize a Config file, reading from a given file.
+ * @param filename The path to the file to read.
+ */
 Config::Config(const string& filename) {
 	fstream source(filename, fstream::in);
 	init(source);
 }
 
+/**
+ * Read in configuration values from a stream.
+ * @param source The place to read configuration values from.
+ */
 void Config::init(istream& source) {
 	string line;
 	while(source) {
@@ -81,6 +119,12 @@ void Config::init(istream& source) {
 	}
 }
 
+/**
+ * Retrieve a configuration value.
+ * @throws runtime_error If no configuration value with that name exists.
+ * @param name The name to retrieve from the configuration file.
+ * @return The configuration value stored at the given name.
+ */
 const ConfigValue& Config::operator[](const string& name) const {
 	auto it = values.find(name);
 	if(it == values.end()) {
@@ -90,6 +134,13 @@ const ConfigValue& Config::operator[](const string& name) const {
 	}
 }
 
+/**
+ * Load a configuration file at a given path.
+ * These configuration files are cached, and only will be loaded once.
+ * @throws runtime_error If the file cannot be loaded.
+ * @param filename The path to the file to read in.
+ * @return The configuration stored at the file.
+ */
 const Config& getConfigFile(const std::string& filename) {
 	static std::map<std::string, Config> configs;
 	
@@ -105,6 +156,11 @@ const Config& getConfigFile(const std::string& filename) {
 	}
 }
 
+/**
+ * Load the graphics configuration file.
+ * @throws runtime_error If the graphics configuration file is missing.
+ * @return The graphics configuration.
+ */
 const Config& getGraphicsConfig() {
 	return getConfigFile("resources/graphics.conf");
 }
