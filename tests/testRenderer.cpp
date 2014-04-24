@@ -3,8 +3,6 @@
 #include "UnitTest++.h"
 #include "Renderer.h"
 
-using std::cout;
-using std::endl;
 using std::make_pair;
 
 TEST(coordToScreen) {

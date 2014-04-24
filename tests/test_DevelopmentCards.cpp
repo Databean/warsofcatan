@@ -53,11 +53,6 @@ void testRoadBuildingCard(Player& test_player, bool correct_result, GameBoard& t
 
 
 	int prevCards = test_player.getRoadBuildingCards();
-	std::cout
-				<< "S1:" << start1.first<< "," << start1.second
-				<< " E1:" << end1.first<< "," << end1.second
-				<< " S2:" << start2.first<< "," << start2.second
-				<< " E2:" << end2.first<< "," << end2.second << "\n";
 
 	CHECK(test_player.playRoadBuilding(start1, end1, start2, end2) ==  correct_result);
 
@@ -244,8 +239,6 @@ void testKnightCard(Player& test_player, bool correct_result, GameBoard& test_bo
 	int prevCards = test_player.getKnightCards();
 	int player_prevResourceSum = getResourceSum(test_player);
 	int opponent_prevResourceSum = getResourceSum(opponent);
-
-	std::cout << test_player.getName() << "| NL:(" << newLocation.first << ", " << newLocation.second << ") O:" << opponent.getName() << "\n";
 
 	CHECK(test_player.playKnight(newLocation, opponent) == correct_result);
 	if(correct_result){
