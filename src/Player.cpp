@@ -16,7 +16,10 @@
 #include <functional>
 #include <iostream>
 
+
 #include "DevelopmentCard.h"
+#include "GameBoard.h"
+
 
 using tinyxml2::XMLElement;
 using std::map;
@@ -31,14 +34,30 @@ using std::runtime_error;
 Player::Player(GameBoard& board, std::string playerName) : name(playerName), board(board)
 {
 	armySize = 0;
-	longestRoad = 0;
+	largestArmy =false;
+	longestRoadSize = 0;
+	longestRoad = false;
 	victoryPoints = 0;
+	baseVictoryPoints = 0;
 	for(auto& r : resources) {
 		r = 0;
 	}
 	for(auto& t : tradeModifiers) {
 		t = 4;
 	}
+	for(auto& c : developmentCards) {
+		c = 0;
+	}
+
+	std::get<0>(color) = .01 * (float)(std::rand()%101);
+	std::get<1>(color) = .01 * (float)(std::rand()%101);
+	std::get<2>(color) = .01 * (float)(std::rand()%101);
+	
+	int zeroChannel = std::rand()%3;
+	if(zeroChannel == 0) { std::get<0>(color) = 0; }
+	if(zeroChannel == 1) { std::get<1>(color) = 0; }
+	if(zeroChannel == 2) { std::get<2>(color) = 0; }
+
 }
 
 /**
@@ -51,30 +70,38 @@ Player::Player(GameBoard& board, XMLElement* elem) : board(board)
 	for(auto& r : resources) {
 		r = 0;
 	}
+	for(auto& t : tradeModifiers) {
+			t = 4;
+		}
+	for(auto& c : developmentCards) {
+		c = 0;
+	}
 	name = elem->FirstChildElement("name")->FirstChild()->Value();
 	addWood(fromString<int>(elem->FirstChildElement("wood")->FirstChild()->Value()));
 	addBrick(fromString<int>(elem->FirstChildElement("brick")->FirstChild()->Value()));
 	addOre(fromString<int>(elem->FirstChildElement("ore")->FirstChild()->Value()));
 	addWheat(fromString<int>(elem->FirstChildElement("wheat")->FirstChild()->Value()));
 	addWool(fromString<int>(elem->FirstChildElement("wool")->FirstChild()->Value()));
-	XMLElement* cardsElement = elem->FirstChildElement("cards");
-	for(auto cardElem = cardsElement->FirstChildElement("card"); cardElem; cardElem = cardElem->NextSiblingElement("card")) {
-		static const map<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>> typeToCard = {
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("knight", [&board]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new KnightCard(board)); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("victorypoint", [&board]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new VictoryPointCard(board)); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("yearofplenty", [&board]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard(board)); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("monopoly", [&board]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new MonopolyCard(board)); }),
-			std::pair<std::string, std::function<std::unique_ptr<DevelopmentCard>(void)>>("roadbuilding", [&board]() -> std::unique_ptr<DevelopmentCard> { return std::unique_ptr<DevelopmentCard>(new RoadBuildingCard(board)); }),
-		};
-		auto typeIt = typeToCard.find(std::string(cardElem->FirstChildElement("type")->FirstChild()->Value()));
-		if(typeIt == typeToCard.end()) {
-			throw runtime_error("Invalid card type");
-		}
-		developmentCards.emplace_back(typeIt->second());
-	}
+
+	developmentCards[VICTORYPOINT] = (fromString<int>(elem->FirstChildElement("victory_point")->FirstChild()->Value()));
+	developmentCards[KNIGHT]+= (fromString<int>(elem->FirstChildElement("knight")->FirstChild()->Value()));
+	developmentCards[YEAROFPLENTY]+= (fromString<int>(elem->FirstChildElement("year_of_plenty")->FirstChild()->Value()));
+	developmentCards[MONOPOLY]+= (fromString<int>(elem->FirstChildElement("monopoly")->FirstChild()->Value()));
+	developmentCards[ROADBUILDING]+= (fromString<int>(elem->FirstChildElement("road_building")->FirstChild()->Value()));
+
 	armySize = 0;
 	longestRoad = 0;
 	victoryPoints = 0;
+	baseVictoryPoints = 0;
+
+	std::get<0>(color) = .01 * (float)(std::rand()%101);
+	std::get<1>(color) = .01 * (float)(std::rand()%101);
+	std::get<2>(color) = .01 * (float)(std::rand()%101);
+	
+	int zeroChannel = std::rand()%3;
+	if(zeroChannel == 0) { std::get<0>(color) = 0; }
+	if(zeroChannel == 1) { std::get<1>(color) = 0; }
+	if(zeroChannel == 2) { std::get<2>(color) = 0; }
 }
 
 /**
@@ -84,13 +111,22 @@ Player::~Player() {
 
 }
 
+std::tuple<float, float, float> Player::getColor(){
+	return color;
+}
+
+
 /**
  * The number of development cards the player is holding.
  * @return The number of cards.
  */
 int Player::getDevCardsInHand()
 {
-	return developmentCards.size();
+	int sum = 0;
+	for(int i = 0; i < 5; i++){
+		sum += developmentCards[i];
+	}
+	return sum;
 }
 
 
@@ -99,20 +135,126 @@ int Player::getDevCardsInHand()
  * @return True if the player has enough resources to buy a road, false otherwise
  */
 bool Player::canBuyRoad(){
-	return getWood() > 0 && getBrick() > 0;
+	return getWood() >= 1 && getBrick() >= 1;
 }
 
 /**
  * Subtracts the cost of a road from a player's resources if they have enough
- * returns true if the resources were subtracted, false otherwise
+ * @return true if the resources were subtracted, false otherwise
  */
 bool Player::buyRoad(){
 	if(canBuyRoad()){
-		addWood(-1);
-		addBrick(-1);
+		addMultiple(-1,-1,0,0,0);
 		return true;
 	}
 	//insufficient funds
+	return false;
+}
+
+/**
+ * Determine if the player has enough resources to buy a settlement.
+ * @return True if the player has enough resources to buy a settlement, false otherwise
+ */
+bool Player::canBuySettlement(){
+	return getWood() >= 1 && getBrick() >= 1 && getWheat() >= 1 && getWool() >= 1;
+}
+
+int Player::getArmySize() const{
+	return armySize;
+}
+bool Player::hasLargestArmy() const{
+	return largestArmy;
+}
+void Player::setLargestArmy(bool newVal){
+	largestArmy = newVal;
+}
+
+int Player::getLongestRoadSize() const{
+	return longestRoadSize;
+}
+bool Player::hasLongestRoad() const{
+	return longestRoad;
+}
+void Player::setLongestRoad(bool newVal){
+	longestRoad = newVal;
+}
+
+void Player::setLongestRoadSize(int newVal){
+	longestRoadSize = newVal;
+}
+
+
+
+
+
+/**
+ * Subtracts the cost of a road from a player's resources if they have enough
+ * @return true if the resources were subtracted, false otherwise
+ */
+bool Player::buySettlement(){
+	if(canBuySettlement()){
+		addMultiple(-1,-1,0,-1,-1);
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Determine if the player has enough resources to buy a city.
+ * @return True if the player has enough resources to buy a city, false otherwise
+ */
+bool Player::canBuyCity(){
+	return getWheat() >= 2 && getOre() >= 3;
+}
+
+/**
+ * Subtracts the cost of a city from a player's resources if they have enough
+ * @return true if the resources were subtracted, false otherwise
+ */
+bool Player::buyCity(){
+	if(canBuyCity()){
+		addMultiple(0,0,-3,-2,0);
+	}
+	return false;
+}
+
+/**
+ * Determine if the player has enough resources to buy a wonder.
+ * @return True if the player has enough resources to buy a wonder, false otherwise
+ */
+bool Player::canBuyWonder(){
+	return getWood() >= 5 && getBrick() >= 5 && getWheat() >= 5 && getWool() >= 5 && getOre() >= 5;
+}
+
+/**
+ * Subtracts the cost of a wonder from a player's resources if they have enough
+ * @return true if the resources were subtracted, false otherwise
+ */
+bool Player::buyWonder(){
+	if(canBuyWonder()){
+		addMultiple(-5,-5,-5,-5,-5);
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Determine if the player has enough resources to buy a card.
+ * @return True if the player has enough resources to buy a card, false otherwise
+ */
+bool Player::canBuyCard(){
+	return getWheat() >= 1 && getWool() >= 1 && getOre() >= 1;
+}
+
+/**
+ * Subtracts the cost of a card from a player's resources if they have enough
+ * @return true if the resources were subtracted, false otherwise
+ */
+bool Player::buyCard(){
+	if(canBuyCard()){
+		addMultiple(0,0,-1,-1,-1);
+		return true;
+	}
 	return false;
 }
 
@@ -123,7 +265,20 @@ bool Player::buyRoad(){
  */
 void Player::updateVictoryPoints()
 {
-    //TODO: Calculate and Update victory points
+	int sum_points = baseVictoryPoints;
+	sum_points += developmentCards[VICTORYPOINT];
+	sum_points += board.CountCornerPoints(*this);
+
+	board.updateLongestRoadPlayer();
+	board.updateLargestArmyPlayer();
+
+	if(longestRoad){
+		sum_points+=2;
+	}
+	if(largestArmy){
+		sum_points+=2;
+	}
+
 
 }
 
@@ -134,26 +289,8 @@ void Player::updateVictoryPoints()
 int Player::getVictoryPointsWithoutCards()
 {
     updateVictoryPoints();
-    return victoryPoints - getVictoryPointCards();
+    return victoryPoints - developmentCards[VICTORYPOINT];
 }
-
-
-/**
- * The number of victory points the player has from victory point cards.
- * @return Victory points from cards.
- */
-int Player::getVictoryPointCards()
-{
-	//TODO:write function
-	int retVal = 0;
-	for(int i =0; i<getDevCardsInHand(); i++)
-	{
-		if(developmentCards[i]->getType() == VICTORYPOINT)
-			retVal++;
-	}
-	return retVal;
-}
-
 
 /**
  * The number of victory points a player has.
@@ -164,41 +301,44 @@ int Player::getVictoryPoints()
     return victoryPoints;
 }
 
+
+/**
+ * The number of victory points the player has from victory point cards.
+ * @return Victory points from cards.
+ */
+int Player::getVictoryPointCards()
+{
+	return developmentCards[VICTORYPOINT];
+}
+
+
 /**
  * Acquire a development card.
  * @param card An owning pointer to the card the player acquired.
  */
-void Player::buyCard(std::unique_ptr<DevelopmentCard> card)
+bool Player::buyCard(std::unique_ptr<DevelopmentCard>& card)
 {
-    developmentCards.push_back(std::move(card));
+	if(getWheat() > 0 && getOre() > 0 && getWool() > 0){
+		developmentCards[card->getType()]++;
+		addWheat(-1);
+		addOre(-1);
+		addWool(-1);
+		return true;
+	}
+	return false;
 }
 
-
-//play method refactored for dev cards
-
-//void Player::playCard(int index)
-//{
-//	if(index >=developmentCards.size())
-//		return;
-//
-//	playCard(developmentCards[index]);
-//}
-
-
-//void Player::playCard(DevelopmentCard *card)
-//{
-//    auto cardTester = [card](std::unique_ptr<DevelopmentCard>& test) -> bool { return card == test.get(); };
-//    if(!std::any_of(developmentCards.begin(), developmentCards.end(), cardTester)) {
-//        return;
-//    }
-//    card->playCard(board);
-//    if (card->getType() == KNIGHT) {
-//        armySize++;
-//	}
-//
-//    std::remove_if(developmentCards.begin(), developmentCards.end(), cardTester);
-//}
-
+/**
+ * Sets the trade modifier for all resources to 3:1
+ */
+void Player::setGeneralModifier()
+{
+	for(int i =0; i<5; i++)
+	{
+		if(tradeModifiers[i] == 4)
+			tradeModifiers[i] = 3;
+	}
+}
 
 /**
  * Sets the trade modifier for Wood to 2:1
@@ -224,6 +364,7 @@ void Player::setOreModifier()
 	tradeModifiers[ORE_INDEX] = 2;
 }
 
+
 /**
  * Sets the trade modifier for Wheat to 2:1
  */
@@ -241,6 +382,47 @@ void Player::setWoolModifier()
 }
 
 /**
+ * Gets the current modifier for trading wood
+ * @return int, the trading value for wood
+ */
+int Player::getWoodModifier(){
+	return tradeModifiers[WOOD_INDEX];
+}
+
+/**
+ * Gets the current modifier for trading brick
+ * @return int, the trading value for brick
+ */
+int Player::getWheatModifier(){
+	return tradeModifiers[WHEAT_INDEX];
+}
+
+/**
+ * Gets the current modifier for trading brick
+ * @return int, the trading value for brick
+ */
+int Player::getWoolModifier(){
+	return tradeModifiers[WOOL_INDEX];
+}
+
+/**
+ * Gets the current modifier for trading wood
+ * @return int, the trading value for wood
+ */
+int Player::getBrickModifier(){
+	return tradeModifiers[BRICK_INDEX];
+}
+
+/**
+ * Gets the current modifier for trading brick
+ * @return int, the trading value for brick
+ */
+int Player::getOreModifier(){
+	return tradeModifiers[ORE_INDEX];
+}
+
+
+/**
  * Sets the trade modifier for all resources to 3:1
  */
 void Player::setGenralModifier()
@@ -252,90 +434,138 @@ void Player::setGenralModifier()
 	}
 }
 
-
 /**
- *Performs a trade with bank according to the trade modifiers for each resource
- *@param offer An array representing your offer to the bank
- *@param demand An array representing your demand
+ * Plays a victory point card if it exists. This means, the Player will 'consume' the card to gain a baseVictoryPoint
+ * @ return true if the card was played, false otherwise
  */
-void Player::tradeWithBank(int offer[], int demand[])
-{
-	for(int i=0; i<5; i++)
-	{
-		resources[i] -= offer[i]*tradeModifiers[i];
-		resources[i] += demand[i];
-	}
-}
-
-/**
- * Offer the bank a trade
- * @param offer An array representing your offer to the bank
- * @param demand An array representing your demand
- * @return true if bank accepted and trade was successful.
- */
-bool Player::offerBankTrade(int offer[], int demand[])
-{
-	if(!checkResources(offer))
-		return false;
-
-	int offerToBank[5];
-
-	for(int i=0; i<5; i++)
-	{
-		if(offer[i]%tradeModifiers[i] != 0)
-			return false;
-		offerToBank[i] = offer[i]/tradeModifiers[i];
-	}
-
-	this->tradeWithBank(offerToBank, demand);
-	return true;
-}
-
-
-/**
- * Offer a trade to another player with an offer and a demand.
- * @param p The other player that is receiving the trade.
- * @param offer The resources this player is offering to the other player.
- * @param demand The resources that this player wants in return from the other player.
- * @return If the trade succeeded.
- */
-bool Player::offerTrade(Player* p, int offer[], int demand[])
-{
-	if(sizeof offer/sizeof(int) != 5 || sizeof demand/sizeof(int) != 5)
-		return false; //Invalid Trade
-
-	if(!this->checkResources(offer))
-		return false; //YOu dont have enough to offer this
-
-	return p->recieveOffer(this, offer, demand);
-}
-
-
-/**
- * Receive a trade offer from another player.
- * @param p The player offering the trade.
- * @param offer The resources the other player is giving.
- * @param demand The resources the other player wants in return.
- * @return If the trade succeeded.
- */
-bool Player::recieveOffer(Player* p, int offer[], int demand[])
-{
-	if( !this->checkResources(demand) )
-		return false;
-
-	bool input = true;
-
-	//TODO:Display Offer to User and wait for input
-
-	if(input)
-	{
-		this->acceptOffer(p, offer, demand);
+bool Player::playVictoryCard(){
+	if(developmentCards[VICTORYPOINT] > 0){
+		developmentCards[VICTORYPOINT]--;
+		baseVictoryPoints++;
 		return true;
 	}
-	else
+	return false;
+}
+
+/**
+ * Plays a knight card if it exists. This means the player will move the Knight and gain 1 random resource from a player around the robber's new position
+ * @ param Coordinate of the robber's new position and Player& of the opponent to rob
+ * @return true if the card was used, false otherwise
+ */
+bool Player::playKnight(Coordinate location, Player& opponent){
+	if(developmentCards[KNIGHT] > 0 && board.canRobberRob(opponent, location)){
+				board.moveRobber(location);
+		int resourceToSteal = opponent.getRandomResource();
+		if(resourceToSteal >= 0){
+			addResource(resourceToSteal, 1);
+			opponent.addResource(resourceToSteal, -1);
+		}
+
+		armySize++;
+		developmentCards[KNIGHT]--;
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Plays a year of plenty card if it exists. This means the player will gain 2 of 1 resource of their choice
+ * @ param the resource the player will recieve
+ * @ returns true if the card was played, false otherwise
+ */
+bool Player::playYearOfPlenty(int resourceType){
+	if(resourceType >= 5)
 		return false;
 
+	if(developmentCards[YEAROFPLENTY] > 0){
+		developmentCards[YEAROFPLENTY]--;
+		addResource(resourceType, 2);
+		return true;
+	}
+	return false;
 }
+
+/**
+ * Plays a monopoly card if it exists. This means the player will steal all of 1 resource type from all the other players
+ * @ param the resource type the player wants to steal
+ * @ return true if the card was played, false otherwise
+ */
+bool Player::playMonopoly(int resourceType){
+	if (resourceType >= 5)
+		return false;
+
+	if(developmentCards[MONOPOLY] > 0){
+		developmentCards[MONOPOLY]--;
+		for(auto& player : board.getPlayers()) {
+			addResource(resourceType, player->giveAllResources(resourceType));
+		}
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Plays a road building card if it exists. This means the player will place two roads of their choosing for free
+ * @ param the start and end Coordinates of the two roads the Player wants to place
+ * @ return true if the card was played
+ */
+bool Player::playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2){
+	if(developmentCards[ROADBUILDING] > 0){
+		if(board.canPlayBuildRoadCard(start1, end1, start2, end2, *this)){
+			//one road may depend on the other, so it's important to check the possible ordering
+			if(!board.PlaceRoad(start1, end1, *this))
+			{
+				board.PlaceRoad(start2, end2, *this);
+				board.PlaceRoad(start1, end1, *this);
+			}else{
+				board.PlaceRoad(start2, end2, *this);
+			}
+			developmentCards[ROADBUILDING]--;
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * A cheat class that gives the player 5 of every development card, meant for debugging
+ */
+void Player::setStartingValues(){
+	developmentCards[ROADBUILDING] = 1;
+}
+
+
+int Player::getDevelopmentCards(int card_type) const{
+	return developmentCards[card_type];
+}
+
+int Player::getVictoryCards() const{
+	return developmentCards[VICTORYPOINT];
+}
+int Player::getKnightCards() const{
+	return developmentCards[KNIGHT];
+}
+int Player::getYearOfPlentyCards() const{
+	return developmentCards[YEAROFPLENTY];
+}
+int Player::getMonopolyCards() const{
+	return developmentCards[MONOPOLY];
+}
+int Player::getRoadBuildingCards() const{
+	return developmentCards[ROADBUILDING];
+}
+
+/**
+ * The player gives all their resources of a specific resource type. Meant to compliment the Monopoly card
+ * @ param the resource type to give
+ * @ return the number of resources given
+ */
+int Player::giveAllResources(int resourceType){
+	int resource_count = resources[resourceType];
+	resources[resourceType] = 0;
+	return resource_count;
+}
+
 
 
 /**
@@ -345,13 +575,17 @@ bool Player::recieveOffer(Player* p, int offer[], int demand[])
  * @param demand The resources the other player wants in return.
  */
 
-bool Player::acceptOffer(Player* p, int offer[], int demand[])
+
+bool Player::acceptOffer(Player& p, std::array<int, 5> offer, std::array<int, 5> demand)
 {
-	p->addWood(demand[WOOD_INDEX] - offer[WOOD_INDEX]);
-	p->addBrick(demand[BRICK_INDEX] - offer[BRICK_INDEX]);
-	p->addOre(demand[ORE_INDEX] - offer[ORE_INDEX]);
-	p->addWheat(demand[WHEAT_INDEX] - offer[WHEAT_INDEX]);
-	p->addWool(demand[WOOL_INDEX] - offer[WOOL_INDEX]);
+	if(!checkResources(offer.data()) || !p.checkResources(demand.data())) {
+		return false;
+	}
+	p.addWood(demand[WOOD_INDEX] - offer[WOOD_INDEX]);
+	p.addBrick(demand[BRICK_INDEX] - offer[BRICK_INDEX]);
+	p.addOre(demand[ORE_INDEX] - offer[ORE_INDEX]);
+	p.addWheat(demand[WHEAT_INDEX] - offer[WHEAT_INDEX]);
+	p.addWool(demand[WOOL_INDEX] - offer[WOOL_INDEX]);
 
 	this->addWood(offer[WOOD_INDEX] - demand[WOOD_INDEX]);
 	this->addBrick(offer[BRICK_INDEX] - demand[BRICK_INDEX]);
@@ -478,6 +712,7 @@ int Player::getWool() const
 
 
 
+
 void Player::addWood(int resource)
 {
 	if(resources[WOOD_INDEX] < (0-resource))
@@ -486,6 +721,11 @@ void Player::addWood(int resource)
 		resources[WOOD_INDEX] += resource;
 }
 
+
+/**
+ * Adds (or subtracts) the amount of brick a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addBrick(int resource)
 {
 	if(resources[BRICK_INDEX] < (0-resource))
@@ -494,6 +734,11 @@ void Player::addBrick(int resource)
 		resources[BRICK_INDEX] += resource;
 }
 
+
+/**
+ * Adds (or subtracts) the amount of ore a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addOre(int resource)
 {
 	if(resources[ORE_INDEX] < (0-resource))
@@ -502,6 +747,11 @@ void Player::addOre(int resource)
 		resources[ORE_INDEX] += resource;
 }
 
+
+/**
+ * Adds (or subtracts) the amount of wheat a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addWheat(int resource)
 {
 	if(resources[WHEAT_INDEX] < (0-resource))
@@ -510,12 +760,31 @@ void Player::addWheat(int resource)
 		resources[WHEAT_INDEX] += resource;
 }
 
+
+/**
+ * Adds (or subtracts) the amount of wool a player has
+ * @param resource, the number to add (negative to subtract)
+ */
 void Player::addWool(int resource)
 {
 	if(resources[WOOL_INDEX] < (0-resource))
 		resources[WOOL_INDEX] = 0;
 	else
 		resources[WOOL_INDEX] += resource;
+}
+
+/**
+ * Adds (or subtracts) the amount of resources a player has
+ * Param order: wood, brick, ore, wheat, wool
+ * @param [resource], the number to add (negative to subtract)
+ *
+ */
+void Player::addMultiple(int wood, int brick, int ore, int wheat, int wool){
+	addWood(wood);
+	addBrick(brick);
+	addOre(ore);
+	addWheat(wheat);
+	addWool(wool);
 }
 
 /**
@@ -534,8 +803,31 @@ std::string Player::getName() const
  * @param delta The change in the resource.
  */
 void Player::addResource(int resourceType, int delta) {
-	resources[resourceType] += delta;
+	if(resources[resourceType] < (0-delta))
+		resources[resourceType] = 0;
+	else
+		resources[resourceType] += delta;
 	
+}
+
+/**
+ * Check to see if a player's resources are equal to the input
+ * @param [resource]x5 the amount of (wood, brick, ore, wheat, wool) you are checking
+ * @return bool if the values match
+ */
+bool Player::validateResourceAmount(int wood, int brick, int ore, int wheat, int wool){
+	return wood==getWood() && brick==getBrick() && ore==getOre() && wheat==getWheat() && wool==getWool();
+}
+
+/**
+ * Check to see if a player's trade modifiers are equal to the input
+ * @param [resource]x5 the modifiers (wood, brick, ore, wheat, wool) you are checking
+ * @return bool if the values match
+ */
+bool Player::validateTradeModifiers(int wood, int brick, int ore, int wheat, int wool){
+	return wood==getWoodModifier() && brick==getBrickModifier() && ore==getOreModifier()
+			&& wheat==getWheatModifier() && wool==getWoolModifier();
+
 }
 
 /**
@@ -544,9 +836,6 @@ void Player::addResource(int resourceType, int delta) {
  */
 void Player::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
-	for(auto& card : developmentCards) {
-		card->accept(visitor);
-	}
 }
 
 /**
@@ -555,19 +844,16 @@ void Player::accept(GameVisitor& visitor) {
  * @return If the other player is equivalent to this player.
  */
 bool Player::operator==(const Player& player) const {
-	if(developmentCards.size() != player.developmentCards.size()) {
-		return false;
-	}
-	for(std::size_t i = 0; i < developmentCards.size(); i++) {
-		if((*developmentCards[i]) == (*player.developmentCards[i])) {}
-		else {
-			return false;
-		}
-	}
 	return getName() == player.getName() &&
 		getWood() == player.getWood() &&
 		getBrick() == player.getBrick() &&
 		getOre() == player.getOre() &&
 		getWheat() == player.getWheat() &&
-		getWool() == player.getWool();
+		getWool() == player.getWool() &&
+		getVictoryCards() == player.getVictoryCards() &&
+		getKnightCards() == player.getKnightCards() &&
+		getYearOfPlentyCards() == player.getYearOfPlentyCards() &&
+		getMonopolyCards() == player.getMonopolyCards() &&
+		getRoadBuildingCards() == player.getRoadBuildingCards();
+
 }

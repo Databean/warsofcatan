@@ -48,3 +48,16 @@ int CornerPiece::getVictoryPoints() {
 int CornerPiece::getResourceModifier() {
 	return 0;
 }
+
+/**
+ * Determines if a piece is the same
+ * @return boolean
+ */
+bool CornerPiece::operator==(const GamePiece& other) const {
+	auto cp = dynamic_cast<const CornerPiece*>(&other);
+	if(cp) {
+		return getOwner().getName() == cp->getOwner().getName() && getLocation() == cp->getLocation();
+	} else {
+		return false;
+	}
+}

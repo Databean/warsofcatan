@@ -3,18 +3,21 @@
 
 #include <vector>
 #include <memory>
+#include <array>
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_opengl.h"
 #include "GL/gl.h"
 
 #include "GameVisitor.h"
+#include "Renderer.h"
 #include "Util.h"
 
 class GameBoard;
 class GameController;
 class ViewElement;
 class GameView;
+
 
 /**
  * An element that is drawn on screen and can receive inputs from the user. These all occupy a rectangular area on screen
@@ -45,10 +48,14 @@ class GameView {
 private:
 	GameBoard& model;
 	
-	std::vector<std::unique_ptr<ViewElement>> viewElements;
+	std::map<int, std::unique_ptr<ViewElement>> viewElements;
+	std::vector<ScreenCoordinate> pointsOfInterest;
+
+	void highlightPoint(ScreenCoordinate & coord);
+	void drawCardCount(std::string font, int fontSize);
 	
-	GameView(const GameView& o) : model(o.model) {} //deleted
-	GameView& operator=(const GameView& o) { return *this; } //deleted
+	GameView(const GameView& o) = delete;
+	GameView& operator=(const GameView& o) = delete;
 public:
 	GameView(GameBoard&);
 	~GameView();
@@ -56,7 +63,15 @@ public:
 	void render();
 	bool acceptInput(SDL_Event& event);
 	
-	void addElement(std::unique_ptr<ViewElement>);
+
+	void addPointOfInterest(ScreenCoordinate);
+	void clearPointsOfInterest();
+	void addElement(std::unique_ptr<ViewElement> element);
+	void addElement(int priority, std::unique_ptr<ViewElement>);
+	
+	std::unique_ptr<ViewElement> removeElement(int priority);
+	std::unique_ptr<ViewElement> removeElement(const ViewElement*);
+	std::unique_ptr<ViewElement> removeElement(const ViewElement&);
 };
 
 /**
@@ -66,8 +81,8 @@ class DrawingGameVisitor : public GameVisitor {
 private:
 	GameView& view;
 	
-	DrawingGameVisitor(const DrawingGameVisitor& o) : view(o.view) {} //deleted
-	DrawingGameVisitor& operator=(const DrawingGameVisitor& o) { return *this; } //deleted
+	DrawingGameVisitor(const DrawingGameVisitor& o) = delete;
+	DrawingGameVisitor& operator=(const DrawingGameVisitor& o) = delete;
 public:
 	DrawingGameVisitor(GameView& view);
 	~DrawingGameVisitor();
@@ -79,27 +94,27 @@ public:
 	virtual void visit(Player&);
 	virtual void visit(ResourceTile&);
 	virtual void visit(DevelopmentCard&);
+	virtual void visit(GameDice&);
+	virtual void visit(Wonder&);
 };
+
 
 /**
  * A view element that is invisible and calls a callback function when it is clicked.
  */
-template<class Fn>
 class ViewButton : public ViewElement {
 private:
-	Fn action;
+	std::function<bool(ScreenCoordinate)> action;
 	
-	ViewButton(const ViewButton& vb) : ViewElement(vb) {} //deleted
-	ViewButton& operator=(const ViewButton&) { return *this; } //deleted
+	ViewButton(const ViewButton& vb) = delete;
+	ViewButton& operator=(const ViewButton&) = delete;
 protected:
-	virtual bool clicked(ScreenCoordinate coord) {
-		return action(coord);
-	}
+	virtual bool clicked(ScreenCoordinate coord);
 public:
-	ViewButton(Fn action, std::pair<ScreenCoordinate, ScreenCoordinate> rect) : ViewElement(rect), action(action) {}
-	virtual ~ViewButton() {}
+	ViewButton(std::function<bool(ScreenCoordinate)> action, std::pair<ScreenCoordinate, ScreenCoordinate> rect);
+	virtual ~ViewButton();
 	
-	virtual void render() {}
+	virtual void render();
 };
 
 /**
@@ -111,36 +126,28 @@ public:
  */
 template<class Fn>
 std::unique_ptr<ViewElement> makeViewButton(Fn fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect) {
-	return std::unique_ptr<ViewElement>(new ViewButton<Fn>(fn, rect));
+	return std::unique_ptr<ViewElement>(new ViewButton(fn, rect));
 }
 
 /**
  * A view element drawn as a solid color that has a callback function that is called when it is clicked.
  */
-template<class Fn>
-class ViewButtonColor : public ViewButton<Fn> {
+class ViewButtonColor : public ViewButton {
 private:
 	std::tuple<float, float, float> color;
 	
-	ViewButtonColor(const ViewButtonColor& vb) : ViewElement(vb) {} //deleted
-	ViewButtonColor& operator=(const ViewButtonColor& vb) { return *this; }
+	ViewButtonColor(const ViewButtonColor& vb) = delete;
+	ViewButtonColor& operator=(const ViewButtonColor& vb) = delete;
 public:
-	ViewButtonColor(Fn action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::tuple<float, float, float> color) : ViewButton<Fn>(action, rect), color(color) {}
-	virtual ~ViewButtonColor() {}
+ 	ViewButtonColor(std::function<bool(ScreenCoordinate)> action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::tuple<float, float, float> color);
+	virtual ~ViewButtonColor();
 	
-	virtual void render() {
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
-		auto topLeft = ViewElement::getRect().first;
-		auto bottomRight = ViewElement::getRect().second;
-		glBegin(GL_QUADS);
-		glVertex2f(topLeft.first, topLeft.second);
-		glVertex2f(bottomRight.first, topLeft.second);
-		glVertex2f(bottomRight.first, bottomRight.second);
-		glVertex2f(topLeft.first, bottomRight.second);
-		glEnd();
-	}
+	virtual void render();
 };
+
+
+
+
 
 /**
  * Constructs a ViewButtonColor using the same parameters as the ViewButtonColor. Exists because template inference exists only
@@ -152,7 +159,86 @@ public:
  */
 template<class Fn>
 std::unique_ptr<ViewElement> makeViewButtonColor(Fn fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::tuple<float, float, float> color) {
-	return std::unique_ptr<ViewElement>(new ViewButtonColor<Fn>(fn, rect, color));
+	return std::unique_ptr<ViewElement>(new ViewButtonColor(fn, rect, color));
 }
+
+/**
+ * A view element drawn as some text on the screen that has a callback function when it is clicked.
+ */
+class ViewButtonText : public ViewButton {
+private:
+	GLuint texture;
+	
+	ViewButtonText(const ViewButtonText& vb) = delete;
+	ViewButtonText& operator=(const ViewButtonText& vb) = delete;
+public:
+	ViewButtonText(std::function<bool(ScreenCoordinate)> action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, const std::string& font, int fontSize, const std::string& text);
+	virtual ~ViewButtonText();
+	
+	void setText(const std::string& font, int fontSize, const std::string& text);
+	
+	virtual void render();
+};
+
+/**
+ * Constructs a ViewButtonText using the same parameters as the ViewButtonText. Exists because template inference exists only
+ * for functions, not classes.
+ * @param fn The callback function to be called with the ScreenCoordinate clicked and returning a boolean on if it was handled.
+ * @param rect The location on screen to draw to and receive clicks from.
+ * @param font The path to the font to use to draw the text.
+ * @param fontSize The font size of the text.
+ * @param text The text to render.
+ */
+template<class Fn>
+std::unique_ptr<ViewElement> makeViewButtonText(Fn fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect, const std::string& font, int fontSize, const std::string& text) {
+	return std::unique_ptr<ViewElement>(new ViewButtonText(fn, rect, font, fontSize, text));
+}
+
+class TradingView : public ViewElement {
+private:
+	Player& initiating;
+	Player& receiving;
+	
+	ViewButtonText trade;
+	ViewButtonText cancel;
+	
+	std::array<int, 5> offer;
+	
+	TradingView(TradingView& o) = delete;
+	TradingView& operator=(TradingView& o) = delete;
+protected:
+	virtual bool clicked(ScreenCoordinate coord);
+public:
+	TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> offer);
+	virtual ~TradingView();
+	
+	void render();
+};
+
+
+class ConfirmationDialogue : public ViewElement {
+private:
+	ScreenCoordinate topLeft;
+	ScreenCoordinate bottomRight;
+
+	std::string message;
+
+	std::unique_ptr<ViewElement> confirmButton;
+	std::unique_ptr<ViewElement> cancelButton;
+
+protected:
+	virtual bool clicked(ScreenCoordinate coord);
+
+public:
+	ConfirmationDialogue(std::function<bool(ScreenCoordinate)> confirm_action, std::function<bool(ScreenCoordinate)> cancel_action, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::string message);
+	void render();
+};
+
+template<class Fn>
+std::unique_ptr<ViewElement> makeConfirmationDialogue(Fn confirm_fn, Fn cancel_fn, std::pair<ScreenCoordinate, ScreenCoordinate> rect, std::string message) {
+	return std::unique_ptr<ViewElement>(new ConfirmationDialogue(confirm_fn, cancel_fn, rect, message));
+}
+
+
 
 #endif

@@ -8,13 +8,11 @@
 #include "gtest/gtest.h"
 
 #include "Deck.h"
-#include "GameBoard.h"
 #include "Util.h"
 
 TEST(DeckTest, deck_draw)
 {
-	GameBoard board({});
-    Deck* testDeck= new Deck(board);
+    Deck* testDeck= new Deck();
     DevelopmentCard* temp = testDeck->drawCard();
     ASSERT_NE(temp, nullptr);
     testDeck->discard(temp);
@@ -24,8 +22,7 @@ TEST(DeckTest, deck_draw)
 
 TEST(DeckTest, reshuffle_discard_pile)
 {
-	GameBoard board({});
-    Deck* testDeck= new Deck(board);
+    Deck* testDeck= new Deck();
     DevelopmentCard* drawn = NULL;
     for (int i = 0; i<300; i++)
     {

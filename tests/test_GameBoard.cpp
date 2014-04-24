@@ -70,6 +70,7 @@ TEST(GameBoardTest, place_road_badroad){
 	GameBoard test_board(std::vector<std::string>{"tester"});
 	Player& test_player = test_board.getPlayer(0);
 
+
 	Coordinate start(0,0);
 	Coordinate end(0,2);
 
@@ -84,6 +85,7 @@ TEST(GameBoardTest, place_road_outofbounds){
 	GameBoard test_board(std::vector<std::string>{"tester"});
 	Player& test_player = test_board.getPlayer(0);
 
+
 	Coordinate start(0,0);
 	Coordinate end(-1,0);
 
@@ -97,6 +99,7 @@ TEST(GameBoardTest, place_road_outofbounds){
 TEST(GameBoardTest, place_road_roadexists){
 	GameBoard test_board(std::vector<std::string>{"tester"});
 	Player& test_player = test_board.getPlayer(0);
+
 
 	Coordinate start(0,0);
 	Coordinate end(1,0);
@@ -122,6 +125,7 @@ TEST(GameBoardTest, place_road_noConnectionPoint){
 	Coordinate start(0,0);
 	Coordinate end(1,0);
 
+
 	GameBoard test_board(std::vector<std::string>{"tester"});
 	Player& test_player = test_board.getPlayer(0);
 
@@ -133,6 +137,8 @@ TEST(GameBoardTest, place_road_noConnectionPoint){
 TEST(GameBoardTest, longest_road_simple){
 	GameBoard test_board(std::vector<std::string>{"tester"});
 	Player& test_player = test_board.getPlayer(0);
+
+
 
 	int longest_path = 0;
 	longest_path = test_board.FindLongestRoad(test_player);
@@ -157,6 +163,7 @@ TEST(GameBoardTest, payout_simple) {
 	GameBoard test_board(std::vector<std::string>{"tester"});
 	Player& test_player = test_board.getPlayer(0);
 
+
 	test_board.PlaceSettlement(Coordinate(0,2), test_player);
 	
 
@@ -172,6 +179,8 @@ TEST(GameBoardTest, upgrade_simple){
 	GameBoard test_board(std::vector<std::string>{"tester"});
 	Player& test_player = test_board.getPlayer(0);
 
+
+
 	test_board.PlaceSettlement(Coordinate(0,2), test_player);
 
 	test_board.PlaceSettlement(Coordinate(1,0), test_player);
@@ -184,6 +193,7 @@ TEST(GameBoardTest, upgrade_simple){
 TEST(GameBoardTest, longest_road_complex){
 	GameBoard test_board(std::vector<std::string>{"tester"});
 	Player& test_player = test_board.getPlayer(0);
+
 
 	//(0,0), (-1,1), (-1, 2), (0, 2) (0, 3) (1, 3) (2, 2) (2, 1) (1, 1) (1, 0) (0, 0)
 	//						  (-2,3) (-2,4) (-1,5) (0, 5)        (0, 2)
@@ -215,13 +225,16 @@ TEST(GameBoardTest, buy_road_good){
 	Coordinate start(0,0);
 	Coordinate end(1,0);
 
-	GameBoard test_board(std::vector<std::string>{"tester"});
+	GameBoard test_board({"tester"});
 	Player& test_player = test_board.getPlayer(0);
-	test_player.addWood(1);
-	test_player.addBrick(1);
+
 
 	test_board.PlaceSettlement(start, test_player);
+
+	test_player.addBrick(1);
+	test_player.addWood(1);
 	test_board.buyRoad(start, end, test_player);
+
 	std::shared_ptr<Road> test_road = test_board.getRoad(start, end);
 	if (test_road == nullptr)
 		ASSERT_TRUE(false);
@@ -232,8 +245,102 @@ TEST(GameBoardTest, buy_road_good){
 	}
 }
 
+TEST(GameBoardTest, canPlayRoadBuildCard){
+	Coordinate start1(0,0);
+	Coordinate end1(1,0);
+
+	Coordinate start2(1,0);
+	Coordinate end2(1,1);
+
+	GameBoard test_board({"tester"});
+	Player& test_player = test_board.getPlayer(0);
+
+	test_board.PlaceSettlement(start1, test_player);
+
+	ASSERT_TRUE(test_board.canPlayBuildRoadCard(start1, end1, start2, end2, test_player));
+	ASSERT_TRUE(test_board.canPlayBuildRoadCard(end1, start1, start2, end2, test_player));
+	ASSERT_TRUE(test_board.canPlayBuildRoadCard(start1, end1, end2, start2, test_player));
+	ASSERT_TRUE(test_board.canPlayBuildRoadCard(end1, start1, end2, start2, test_player));
+	ASSERT_TRUE(test_board.canPlayBuildRoadCard(start2, end2, start1, end1, test_player));
+
+	ASSERT_FALSE(test_board.canPlayBuildRoadCard(start1, end2, start2, end1, test_player));
+	ASSERT_FALSE(test_board.canPlayBuildRoadCard(start1, start1, start2, start2, test_player));
+}
 
 
+TEST(GameBoardTest, countCornerPoint){
+	Coordinate pt1(0,0);
+	Coordinate pt2(1,0);
+	Coordinate pt3(0,2);
+	Coordinate pt4(0,3);
+
+	GameBoard test_board({"tester1", "tester2"});
+	Player& test_player1 = test_board.getPlayer(0);
+	Player& test_player2 = test_board.getPlayer(1);
+
+	ASSERT_EQ(test_board.CountCornerPoints(test_player1), 0);
+	ASSERT_EQ(test_board.CountCornerPoints(test_player2), 0);
+
+	test_board.PlaceSettlement(pt1, test_player1);
+	test_board.PlaceSettlement(pt2, test_player1);
+	test_board.PlaceSettlement(pt3, test_player1);
+	test_board.PlaceSettlement(pt4, test_player2);
+	test_board.UpgradeSettlement(pt4);
+
+	ASSERT_EQ(test_board.CountCornerPoints(test_player1), 3);
+	ASSERT_EQ(test_board.CountCornerPoints(test_player2), 2);
+}
+
+
+TEST(GameBoardTest, updateLongestRoadPlayer){
+
+	GameBoard test_board({"tester1", "tester2"});
+	Player& test_player1 = test_board.getPlayer(0);
+	Player& test_player2 = test_board.getPlayer(1);
+
+	ASSERT_FALSE(test_player1.hasLongestRoad());
+	ASSERT_FALSE(test_player2.hasLongestRoad());
+
+	Coordinate start1(0,0);
+	Coordinate start2(0,6);
+
+	test_board.PlaceSettlement(start1, test_player1);
+	test_board.PlaceSettlement(start2, test_player2);
+
+	test_board.PlaceRoad(start1, Coordinate(-1,1), test_player1);
+	test_board.PlaceRoad(Coordinate(-1,1), Coordinate(-1,2), test_player1);
+	test_board.PlaceRoad(Coordinate(-1,2), Coordinate(0,2), test_player1);
+	test_board.PlaceRoad(Coordinate(0,2), Coordinate(0,3), test_player1);
+	test_board.PlaceRoad(Coordinate(0,3), Coordinate(1,3), test_player1);
+
+	test_board.updateLongestRoadPlayer();
+	ASSERT_TRUE(test_player1.hasLongestRoad());
+	ASSERT_FALSE(test_player2.hasLongestRoad());
+
+	test_board.PlaceRoad(start2, Coordinate(1,6), test_player2);
+	test_board.PlaceRoad(Coordinate(1,6), Coordinate(2,5), test_player2);
+	test_board.PlaceRoad(Coordinate(2,5), Coordinate(2,4), test_player2);
+	test_board.PlaceRoad(Coordinate(2,4), Coordinate(1,4), test_player2);
+	test_board.PlaceRoad(Coordinate(1,4), Coordinate(0,5), test_player2);
+
+	test_board.updateLongestRoadPlayer();
+	ASSERT_TRUE(test_player1.hasLongestRoad());
+	ASSERT_FALSE(test_player2.hasLongestRoad());
+}
+
+/**
+TEST(canRobberRob){
+	GameBoard test_board({"tester1", "tester2"});
+	Player& test_player1 = test_board.getPlayer(0);
+	Player& test_player2 = test_board.getPlayer(1);
+
+
+	ASSERT_FALSE(test_board.canRobberRob(test_player1, Coordinate(0,1)));
+
+	test_board.PlaceSettlement(Coordinate(0,0), test_player1);
+	ASSERT_TRUE(test_board.canRobberRob(test_player1, Coordinate(0,1)));
+}
+**/
 
 
 

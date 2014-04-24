@@ -13,8 +13,11 @@
 #include "tinyxml2.h"
 
 #include "CornerPiece.h"
+#include "GameDice.h"
 
+#include "Settlement.h"
 #include "City.h"
+#include "Wonder.h"
 
 using std::shared_ptr;
 using std::random_shuffle;
@@ -37,6 +40,8 @@ GameBoard::GameBoard(const vector<std::string>& playerNames) {
 		players.push_back(std::unique_ptr<Player>(new Player(*this, name)));
 	}
 	
+	currentTurn = 0;
+
 	std::srand(std::time(0));
 	
 	const static vector<resourceType> boardResources {BRICK, BRICK, BRICK, STONE, STONE, STONE, WHEAT, WHEAT, WHEAT, WHEAT, WOOD, WOOD, WOOD, WOOD, SHEEP, SHEEP, SHEEP, SHEEP};
@@ -119,6 +124,7 @@ GameBoard::GameBoard(const std::vector<std::string>& playerNames, const std::map
 	if(!isValidBoard()) {
 		throw std::runtime_error("Board is invalid.");
 	}
+	currentTurn = 0;
 }
 
 /**
@@ -157,6 +163,7 @@ GameBoard::GameBoard(istream& in) {
 		resources[coord] = unique_ptr<ResourceTile>(new ResourceTile(*this, coord, type, diceValue));
 	}
 	
+
 	auto playerElements = doc.RootElement()->FirstChildElement("players");
 	if(playerElements) {
 		for(auto playerElement = playerElements->FirstChildElement(); playerElement; playerElement = playerElement->NextSiblingElement()) {
@@ -165,6 +172,7 @@ GameBoard::GameBoard(istream& in) {
 		}
 	}
 	
+
 	auto roadElements = doc.RootElement()->FirstChildElement("roads");
 	if(roadElements) {
 		for(auto roadElement = roadElements->FirstChildElement(); roadElement; roadElement = roadElement->NextSiblingElement()) {
@@ -199,7 +207,7 @@ GameBoard::GameBoard(istream& in) {
 				}
 			}
 			if(owner == nullptr) {
-				throw std::runtime_error("Road is owned by a nonexistant player.");
+				throw std::runtime_error("Settlement is owned by a nonexistant player.");
 			}
 			PlaceSettlement(location, *owner);
 		}
@@ -218,7 +226,26 @@ GameBoard::GameBoard(istream& in) {
 				}
 			}
 			if(owner == nullptr) {
-				throw std::runtime_error("Road is owned by a nonexistant player.");
+				throw std::runtime_error("City is owned by a nonexistant player.");
+			}
+			PlaceCity(location, *owner);
+		}
+	}
+
+	auto wonderElements = doc.RootElement()->FirstChildElement("wonders");
+	if(wonderElements) {
+		for(auto wonderElement = wonderElements->FirstChildElement(); wonderElement; wonderElement = wonderElement->NextSiblingElement()) {
+			Coordinate location = xmlElementToCoord(*(wonderElement->FirstChildElement("coordinate")));
+
+			std::string ownerName = wonderElement->FirstChildElement("owner")->FirstChild()->Value();
+			Player* owner = nullptr;
+			for(auto& playerUnique : players) {
+				if(playerUnique->getName() == ownerName) {
+					owner = playerUnique.get();
+				}
+			}
+			if(owner == nullptr) {
+				throw std::runtime_error("Wonder is owned by a nonexistant player.");
 			}
 			PlaceCity(location, *owner);
 		}
@@ -227,6 +254,8 @@ GameBoard::GameBoard(istream& in) {
 	if(!isValidBoard()) {
 		throw std::runtime_error("Board is invalid.");
 	}
+
+	currentTurn = 0; //have to update <<--
 }
 
 /**
@@ -280,6 +309,65 @@ ResourceTile& GameBoard::getResourceTile(Coordinate location) const
 
 	return *(resources.find(location)->second);
 }
+
+
+/**
+ * Ends current players turn and moves the current turn marker
+ */
+void GameBoard::endTurn()
+{
+	if(getCurrentPlayer().getVictoryPoints() >= getMaxVictoryPoints())
+		std::cout<<"GG Bitches";
+
+	currentTurn++;
+	if(currentTurn >= getNoOfPlayers())
+		currentTurn = 0;
+
+	startTurn();
+}
+
+void GameBoard::initializeGame(){
+	PlaceSettlement(Coordinate(-1,2), getPlayer(0));
+	PlaceSettlement(Coordinate(1,1), getPlayer(0));
+	getPlayer(0).setStartingValues();
+
+	PlaceSettlement(Coordinate(-2,4), getPlayer(1));
+	PlaceSettlement(Coordinate(-2,6), getPlayer(1));
+	getPlayer(1).setStartingValues();
+
+	PlaceSettlement(Coordinate(-1,7), getPlayer(2));
+	PlaceSettlement(Coordinate(1,6), getPlayer(2));
+	getPlayer(2).setStartingValues();
+
+	PlaceSettlement(Coordinate(2,4), getPlayer(3));
+	PlaceSettlement(Coordinate(2,2), getPlayer(3));
+	getPlayer(3).setStartingValues();
+
+	for(int i = 1; i < 13; i++){
+		payoutResources(i);
+	}
+
+}
+
+
+/**
+ * @return The no of Victory points needed to win the game
+ */
+int GameBoard::getMaxVictoryPoints()
+{
+	return maxVictoryPoints;
+}
+
+
+/**
+ * Sets the no of victory points needed to win the game
+ * @param maxVicPts victory points needed to win the game
+ */
+void GameBoard::setMaxVictoryPoints(int maxVicPts)
+{
+	maxVictoryPoints = maxVicPts;
+}
+
 
 /**
  * Finds settlements neighboring a particular coordinate.
@@ -410,6 +498,9 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
 	if (!isRoadConnectionPoint(start, Owner) && !isRoadConnectionPoint(end, Owner)) //need to XOR
 		return false;
 
+	if(!Road::isValidRoad(start, end))
+		return false;
+
 	return true;
 }
 
@@ -419,10 +510,26 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
  */
 void GameBoard::moveRobber(Coordinate newRobber) {
 
-	robber = newRobber;
-
-	//force trade	
+	//Bounds check
+	if(resources.count(newRobber) > 0)
+		robber = newRobber;
 }
+
+/**
+ * DOES NOT WORK BECAUSE getNeighboringCorners() does not work
+ */
+bool GameBoard::canRobberRob(Player& opponent, Coordinate location){
+	std::cout << GetNeighboringCorners(location).size() << "\n";
+
+	for(auto corner : GetNeighboringCorners(location)){
+		std::cout << corner->getOwner().getName() << "derp\n";
+		if(corner->getOwner() == opponent){
+			return true;
+		}
+	}
+	return false;
+}
+
 
 /**
  * The robber's location on the board.
@@ -455,8 +562,29 @@ bool GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
 	roads[start].push_back(newRoad);
 	roads[end].push_back(newRoad);
 	
-    startTurn();
-    
+//    startTurn();
+	return true;
+}
+
+
+bool GameBoard::canPlayBuildRoadCard(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2, Player& Owner){
+	if(outOfBounds(start1) || outOfBounds(end1) || outOfBounds(start2) || outOfBounds(end2))
+		return false;
+
+	if(roadExists(start1, end1) || roadExists(start2, end2))
+		return false;
+
+	if(start1 == start2 || start1 == end2 || start2 == end1 || end1 == end2){
+		if(!isRoadConnectionPoint(start1, Owner) && !isRoadConnectionPoint(end1, Owner) && !isRoadConnectionPoint(start2, Owner) && !isRoadConnectionPoint(end2, Owner)){
+			return false;
+		}
+	} else if((!isRoadConnectionPoint(start1, Owner) && !isRoadConnectionPoint(end1, Owner)) || (!isRoadConnectionPoint(start2, Owner) && !isRoadConnectionPoint(end2, Owner))){
+		return false;
+	}
+
+	if(!Road::isValidRoad(start1, end1) || !Road::isValidRoad(start2, end2))
+		return false;
+
 	return true;
 }
 
@@ -566,6 +694,56 @@ int GameBoard::FindLongestRoad_FromPoint(Coordinate curr, const Player & owner, 
 	return longest_path;
 }
 
+
+int GameBoard::CountCornerPoints(Player& owner){
+	int point_sum = 0;
+
+	for (std::map<Coordinate, std::unique_ptr<CornerPiece>>::iterator cp= corners.begin(); cp!=corners.end(); ++cp){
+		if(cp->second->getOwner() == owner){
+			point_sum += cp->second->getVictoryPoints();
+		}
+	}
+	return point_sum;
+}
+
+void GameBoard::updateLongestRoadPlayer(){
+	int longestRoad = -1;
+	int longestPlayer = 0;
+
+	for(int i = 0; i < getNoOfPlayers(); i++){
+		getPlayer(i).setLongestRoadSize(FindLongestRoad(getPlayer(i)));
+		getPlayer(i).setLongestRoad(false);
+		if(getPlayer(i).getLongestRoadSize() > longestRoad){
+			longestRoad = getPlayer(i).getLongestRoadSize();
+			longestPlayer = i;
+		}
+	}
+
+	if(longestRoad >= 5){
+		getPlayer(longestPlayer).setLongestRoad(true);
+	}
+
+}
+
+void GameBoard::updateLargestArmyPlayer(){
+	int largestArmy = -1;
+	int largestPlayer = 0;
+
+	for(int i = 0; i < getNoOfPlayers(); i++){
+		getPlayer(i).setLargestArmy(false);
+		if(getPlayer(i).getArmySize() > largestArmy){
+			largestArmy = getPlayer(i).getArmySize();
+			largestPlayer = i;
+		}
+	}
+
+	if(largestArmy >= 3){
+		getPlayer(largestPlayer).setLargestArmy(true);
+	}
+
+}
+
+
 /**
  * Place a settlement on the board.
  * @param location Where to place it on the board.
@@ -588,12 +766,31 @@ void GameBoard::PlaceCity(Coordinate location, Player& Owner){
 }
 
 /**
+ * Place a Wonder on the board.
+ * @param location Where to place it on the board.
+ * @param Owner The player placing the city.
+ */
+void GameBoard::PlaceWonder(Coordinate location, Player& Owner){
+	corners[location] = std::unique_ptr<CornerPiece>(new Wonder(*this, location, Owner));
+
+}
+
+/**
  * Upgrade a settlement to a city.
  * @param location Where the settlement being upgraded is.
  */
 void GameBoard::UpgradeSettlement(Coordinate location){
 	if(corners.find(location) != corners.end())
-	corners[location] = std::unique_ptr<CornerPiece>(new City(*corners[location])); //TODO test for memory leak
+		corners[location] = std::unique_ptr<CornerPiece>(new City(*corners[location])); //TODO test for memory leak
+}
+
+/**
+ * Upgrade a settlement to a wonder.
+ * @param location Where the settlement being upgraded is.
+ */
+void GameBoard::UpgradeToWonder(Coordinate location){
+	if(corners.find(location) != corners.end())
+		corners[location] = std::unique_ptr<CornerPiece>(new Wonder(*corners[location])); //TODO test for memory leak
 }
 
 /**
@@ -625,6 +822,7 @@ void GameBoard::accept(GameVisitor& visitor) {
 			it->accept(visitor);
 		}
 	}
+	dice.accept(visitor);
 }
 
 /**
@@ -732,6 +930,13 @@ const std::vector<std::unique_ptr<Player>>& GameBoard::getPlayers() const {
 	return players;
 }
 
+/**
+ * @return reference to the current Player
+ */
+Player& GameBoard::getCurrentPlayer() const
+{
+	return *players[currentTurn];
+}
 
 /**
  * @return no of players
@@ -755,25 +960,19 @@ Player& GameBoard::getPlayer(int index)
 }
 
 
-
 /**
  *  When a player begins their turn, this rolls the dice and takes the required action (paying resources or enabling robber movement)
  *  @return A pair of the values of the dice.
  */
-std::pair<int, int> GameBoard::startTurn()
-{
-    int die1 = std::rand() % 6 + 1;
-    int die2 = std::rand() % 6 + 1;
-    int roll = die1+die2;
-    std::cout << "\nDie 1: " << die1 << "\nDie 2: " << die2 << "\nRoll: " << roll <<"\n";
-    
-    if (roll==7)
-        enableRobber();
-    
-    else
-        payoutResources(roll);
-    
-    return std::make_pair(die1, die2);
+std::pair<int, int> GameBoard::startTurn() {
+	int roll = dice.roll();
+	if (roll==7) {
+		enableRobber();
+	} else {
+		payoutResources(roll);
+	}
+	
+	return std::make_pair(dice.getFirst(), dice.getSecond());
 }
 
 /**

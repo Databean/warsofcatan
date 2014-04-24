@@ -1,3 +1,4 @@
+
 #include "Renderer.h"
 
 #define _USE_MATH_DEFINES
@@ -24,7 +25,7 @@ using std::string;
 
 /**
  * Create an OpenGL texture based on some text and a font.
- * 
+ *
  * @param fontPath The path to the font ttf
  * @param text The text to render.
  */
@@ -33,29 +34,29 @@ GLuint loadTextAsTexture(const std::string& fontPath, int fontSize, const std::s
 	if(!font) {
 		throw runtime_error("TTF_OpenFont: " + string(TTF_GetError()));
 	}
-	
+
 	//Use glColor... if you don't want black text.
 	SDL_Color color {0, 0, 0};
-	
+
 	SDL_Surface* textSurface = TTF_RenderText_Blended(font, text.c_str(), color);
 	TTF_CloseFont(font);
-	
+
 	if(!textSurface) {
 		throw runtime_error("TTF_RenderText_Solid: " + string(TTF_GetError()));
 	}
-	
+
 	SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888);
 	SDL_Surface* imageSurface = SDL_ConvertSurface(textSurface, format, 0);
 	SDL_FreeSurface(textSurface);
 	SDL_FreeFormat(format);
-	
+
 	// TTF_RenderText produces ARGB images. OpenGL doesn't take ARGB images, only RGBA images
 	// so we have to move the color values around so that OpenGL renders it properly.
-	
+
 	int bpp = imageSurface->format->BytesPerPixel;
 	SDL_LockSurface(imageSurface);
 	for(int x = 0; x < imageSurface->w; x++) {
-		for(int y = 0; y < imageSurface->h; y++) { 
+		for(int y = 0; y < imageSurface->h; y++) {
 			Uint8 *p = (Uint8 *)imageSurface->pixels + y * imageSurface->pitch + x * bpp;
 			// Starts out as ARGB.
 			std::swap(p[0], p[1]); //RAGB
@@ -63,25 +64,25 @@ GLuint loadTextAsTexture(const std::string& fontPath, int fontSize, const std::s
 			std::swap(p[2], p[3]); //RGBA
 		}
 	}
-	
+
 	SDL_UnlockSurface(imageSurface);
-	
+
 	GLuint texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	
+
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageSurface->w, imageSurface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageSurface->pixels);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	
+
 	SDL_FreeSurface(imageSurface);
-	
+
 	return texture;
 }
 
 /**
  * Render some text on screen.
- * 
+ *
  * @param fontPath The path to the font ttf
  * @param fontSize The size to draw the letters in.
  * @param bottomLeft The bottom left screen coordinate of the bounding box to draw to.
@@ -89,11 +90,11 @@ GLuint loadTextAsTexture(const std::string& fontPath, int fontSize, const std::s
  * @param text The text to render.
  */
 void renderText(const std::string& fontPath, int fontSize, const std::pair<float, float> bottomLeft, const std::pair<float, float> topRight, const std::string& text) {
-	
+
 	GLuint texture = loadTextAsTexture(fontPath, fontSize, text);
-	
+
 	glBindTexture(GL_TEXTURE_2D, texture);
-	
+
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 1);
 	glVertex2f(bottomLeft.first, bottomLeft.second);
@@ -104,7 +105,7 @@ void renderText(const std::string& fontPath, int fontSize, const std::pair<float
 	glTexCoord2f(1, 1);
 	glVertex2f(topRight.first, bottomLeft.second);
 	glEnd();
-	
+
 	glDeleteTextures(1, &texture);
 }
 
@@ -124,14 +125,14 @@ GLuint loadImageAsTexture(const string& name) {
 	GLuint texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	
+
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageSurface->w, imageSurface->h, 0, GL_BGR, GL_UNSIGNED_BYTE, imageSurface->pixels);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	
+
 	SDL_FreeSurface(imageSurface);
-	
+
 	return texture;
 }
 
@@ -162,7 +163,7 @@ Coordinate screenToCoord(const pair<float, float>& screen) {
 	Coordinate ret;
 	float y_approx = (screen.second - 0.1f) / std::sin(angle) / scale;
 	ret.second = std::round(y_approx);
-	ret.first = std::round((screen.first - 0.2f) / scale - (screen.second - 0.1f) / scale / std::sin(angle) * std::cos(angle)) - 1;
+	ret.first = std::round((screen.first - 0.2f) / scale - y_approx * std::cos(angle) - 0.5);
 	return ret;
 }
 

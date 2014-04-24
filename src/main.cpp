@@ -76,20 +76,21 @@ int main(int argc, char *argv[]) {
 
 	updateViewport(windowWidth, windowHeight);
 	
-	
-	GameBoard model({"testPlayer"});
+	GameBoard model({"Player1", "Player2", "Player3", "Player4"});
 	GameView view(model);
 	GameController controller(model, view);
 	
-	Player& firstPlayer = model.getPlayer(0);
+	model.initializeGame();
 	
-	model.PlaceSettlement(Coordinate{0, 0}, firstPlayer);
-	model.PlaceRoad(Coordinate{0, 0}, Coordinate{1, 0}, firstPlayer);
-	model.PlaceRoad(Coordinate{1, 0}, Coordinate{1, 1}, firstPlayer);
-	model.PlaceRoad(Coordinate{1, 1}, Coordinate{0, 2}, firstPlayer);
-	model.PlaceSettlement(Coordinate{0, 2}, firstPlayer);
-	model.UpgradeSettlement(Coordinate{0, 2});
-	
+//	Player& firstPlayer = model.getPlayer(0);
+//
+//	model.PlaceSettlement(Coordinate{0, 0}, firstPlayer);
+//	model.PlaceRoad(Coordinate{0, 0}, Coordinate{1, 0}, firstPlayer);
+//	model.PlaceRoad(Coordinate{1, 0}, Coordinate{1, 1}, firstPlayer);
+//	model.PlaceRoad(Coordinate{1, 1}, Coordinate{0, 2}, firstPlayer);
+//	model.PlaceSettlement(Coordinate{0, 2}, firstPlayer);
+//	model.UpgradeSettlement(Coordinate{0, 2});
+//
 	bool running = true;
 	while(running) {
 		SDL_Event event;

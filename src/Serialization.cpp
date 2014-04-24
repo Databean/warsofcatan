@@ -10,6 +10,7 @@
 #include "Settlement.h"
 #include "Road.h"
 #include "DevelopmentCard.h"
+#include "Wonder.h"
 
 using std::map;
 using std::runtime_error;
@@ -21,7 +22,7 @@ using tinyxml2::XMLText;
 /**
  * Construct the serialization visitor.
  */
-XMLVisitor::XMLVisitor() : lastPlayer(nullptr) {
+XMLVisitor::XMLVisitor(){
 	xmldoc.InsertEndChild(xmldoc.NewElement("catangame"));
 	//xmldoc.RootElement()->SetName("catangame");
 }
@@ -112,6 +113,26 @@ void XMLVisitor::visit(City& city) {
 }
 
 /**
+ * Serialize a wonder.
+ * @param wonder The city to serialize.
+ */
+void XMLVisitor::visit(Wonder& wonder) {
+	if(!xmldoc.RootElement()->FirstChildElement("wonders")) {
+		xmldoc.RootElement()->InsertEndChild(xmldoc.NewElement("wonders"));
+	}
+	XMLElement* wondersElement = xmldoc.RootElement()->FirstChildElement("wonders");
+	XMLElement* newWonderElement = xmldoc.NewElement("wonder");
+
+	XMLElement* ownerElement = xmldoc.NewElement("owner");
+	ownerElement->InsertEndChild(xmldoc.NewText(wonder.getOwner().getName().c_str()));
+	newWonderElement->InsertEndChild(ownerElement);
+
+	newWonderElement->InsertEndChild(coordinateElement(wonder.getLocation()));
+
+	wondersElement->InsertEndChild(newWonderElement);
+}
+
+/**
  * Serialize a player.
  * @param player The player to serialize.
  */
@@ -145,13 +166,30 @@ void XMLVisitor::visit(Player& player) {
 	XMLElement* woolElement = xmldoc.NewElement("wool");
 	woolElement->InsertEndChild(xmldoc.NewText(toString(player.getWool()).c_str()));
 	newPlayerElement->InsertEndChild(woolElement);
+
 	
-	newPlayerElement->InsertEndChild(xmldoc.NewElement("cards"));
-	
+	XMLElement* victoryElement = xmldoc.NewElement("victory_point");
+	victoryElement->InsertEndChild(xmldoc.NewText(toString(player.getVictoryCards()).c_str()));
+	newPlayerElement->InsertEndChild(victoryElement);
+
+	XMLElement* knightElement = xmldoc.NewElement("knight");
+	knightElement->InsertEndChild(xmldoc.NewText(toString(player.getKnightCards()).c_str()));
+	newPlayerElement->InsertEndChild(knightElement);
+
+	XMLElement* yearOfPlentyElement = xmldoc.NewElement("year_of_plenty");
+	yearOfPlentyElement->InsertEndChild(xmldoc.NewText(toString(player.getYearOfPlentyCards()).c_str()));
+	newPlayerElement->InsertEndChild(yearOfPlentyElement);
+
+	XMLElement* monopolyElement = xmldoc.NewElement("monopoly");
+	monopolyElement->InsertEndChild(xmldoc.NewText(toString(player.getMonopolyCards()).c_str()));
+	newPlayerElement->InsertEndChild(monopolyElement);
+
+	XMLElement* roadBuildingElement = xmldoc.NewElement("road_building");
+	roadBuildingElement->InsertEndChild(xmldoc.NewText(toString(player.getRoadBuildingCards()).c_str()));
+	newPlayerElement->InsertEndChild(roadBuildingElement);
+
 	playersElement->InsertEndChild(newPlayerElement);
 	playerElementMap[player.getName()] = newPlayerElement;
-	
-	lastPlayer = &player;
 }
 
 /**
@@ -190,11 +228,17 @@ void XMLVisitor::visit(ResourceTile& tile) {
 	tilesElement->InsertEndChild(newTileElement);
 }
 
+void XMLVisitor::visit(GameDice& dice){
+	
+}
 /**
+ * CODE MAY BE OBSOLETE AFTER DEV CARD REFACTORING
+ *
  * Serialize a development card.
  * @param card The card to serialize.
  */
 void XMLVisitor::visit(DevelopmentCard& card) {
+/**
 	if(lastPlayer == nullptr) {
 		throw runtime_error("Don't know which player to assign this card to.");
 	}
@@ -207,26 +251,7 @@ void XMLVisitor::visit(DevelopmentCard& card) {
 		playerElement->InsertEndChild(xmldoc.NewElement("cards"));
 	}
 	XMLElement* cardsElement = playerElement->FirstChildElement("cards");
-	
-	XMLElement* newCardElement = xmldoc.NewElement("card");
-	
-	static const map<DevCardType, std::string> typeToText = {
-		make_pair(KNIGHT, "knight"),
-		make_pair(VICTORYPOINT, "victorypoint"),
-		make_pair(YEAROFPLENTY, "yearofplenty"),
-		make_pair(MONOPOLY, "monopoly"),
-		make_pair(ROADBUILDING, "roadbuilding")
-	};
-	auto typeIt = typeToText.find(card.getType());
-	if(typeIt == typeToText.end()) {
-		throw runtime_error("Unknown card type");
-	}
-	
-	XMLElement* typeElement = xmldoc.NewElement("type");
-	typeElement->InsertEndChild(xmldoc.NewText(typeIt->second.c_str()));
-	newCardElement->InsertEndChild(typeElement);
-	
-	cardsElement->InsertEndChild(newCardElement);
+	**/
 }
 
 /**
