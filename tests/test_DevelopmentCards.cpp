@@ -54,7 +54,6 @@ void testRoadBuildingCard(Player& test_player, bool correct_result, GameBoard& t
 	int prevCards = test_player.getRoadBuildingCards();
 	
 	ASSERT_EQ(test_player.playRoadBuilding(start1, end1, start2, end2), correct_result);
-	
 	Road * test_road1 = test_board.getRoad(start1, end1).get();
 	Road * test_road2 = test_board.getRoad(start2, end2).get();
 	if(correct_result){
@@ -235,9 +234,7 @@ void testKnightCard(Player& test_player, bool correct_result, GameBoard& test_bo
 	int prevCards = test_player.getKnightCards();
 	int player_prevResourceSum = getResourceSum(test_player);
 	int opponent_prevResourceSum = getResourceSum(opponent);
-
-	std::cout << test_player.getName() << "| NL:(" << newLocation.first << ", " << newLocation.second << ") O:" << opponent.getName() << "\n";
-
+	
 	ASSERT_EQ(test_player.playKnight(newLocation, opponent), correct_result);
 	if(correct_result){
 		ASSERT_EQ(newLocation, test_board.getRobber());
