@@ -1,18 +1,19 @@
 #include <iostream>
 
-#include "UnitTest++.h"
+#include "gtest/gtest.h"
+
 #include "Renderer.h"
 
 using std::make_pair;
 
-TEST(coordToScreen) {
+TEST(RendererTest, coordToScreen) {
 	for(int x = -5; x < 5; x++) {
 		for(auto y = -5; y < 5; y++) {
 			auto original = make_pair(x, y);
 			auto screen = coordToScreen(original);
 			auto back = screenToCoord(screen);
-			CHECK(original.first == back.first);
-			CHECK(original.second == back.second);
+			ASSERT_EQ(original.first, back.first);
+			ASSERT_EQ(original.second, back.second);
 		}
 	}
 }
