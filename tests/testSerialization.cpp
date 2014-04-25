@@ -1,9 +1,4 @@
-#include <iostream>
-#include <sstream>
-#include <memory>
-#include <vector>
-
-#include "gtest/gtest.h"
+#include <UnitTest++.h>
 
 #include "Serialization.h"
 #include "GameBoard.h"
@@ -12,31 +7,37 @@
 
 #include "tinyxml2.h"
 
+#include <iostream>
+#include <sstream>
+#include <memory>
+#include <vector>
+
 using std::vector;
 using std::unique_ptr;
 using std::stringstream;
 
-TEST(SerializationTest, emptyBoardSerialization) {
+TEST(emptyBoardSerialization) {
 	GameBoard testBoard({});
 
 	stringstream stream;
 	testBoard.save(stream);
 
 	GameBoard copyBoard(stream);
-	ASSERT_EQ(testBoard, copyBoard);
+
+	CHECK(testBoard == copyBoard);
 }
 
-TEST(SerializationTest, multiplePlayerSerialization) {
+TEST(multiplePlayerSerialization) {
 	GameBoard testBoard({"test", "test2"});
 	stringstream stream;
 	testBoard.save(stream);
 
 	GameBoard copyBoard(stream);
-	
-	ASSERT_EQ(testBoard, copyBoard);
+
+	CHECK(testBoard == copyBoard);
 }
 
-TEST(SerializationTest, testCardSerialization) {
+TEST(testCardSerialization) {
 	GameBoard testBoard({"test"});
 	Player& testPlayer = testBoard.getPlayer(0);
 
@@ -57,10 +58,11 @@ TEST(SerializationTest, testCardSerialization) {
 	testBoard.save(stream);
 
 	GameBoard copyBoard(stream);
-	ASSERT_EQ(testBoard, copyBoard);
+
+	CHECK(testBoard == copyBoard);
 }
 
-TEST(SerializationTest, roadSerialization) {
+TEST(roadSerialization) {
 	GameBoard testBoard({"test", "test2"});
 	Player& firstPlayer = testBoard.getPlayer(0);
 	Player& secondPlayer = testBoard.getPlayer(1);
@@ -74,10 +76,11 @@ TEST(SerializationTest, roadSerialization) {
 	testBoard.save(stream);
 
 	GameBoard copyBoard(stream);
-	ASSERT_EQ(testBoard, copyBoard);
+
+	CHECK(testBoard == copyBoard);
 }
 
-TEST(SerializationTest, settlementSerialization) {
+TEST(settlementSerialization) {
 	GameBoard testBoard({"test"});
 	Player& player = testBoard.getPlayer(0);
 
@@ -88,5 +91,6 @@ TEST(SerializationTest, settlementSerialization) {
 	testBoard.save(stream);
 
 	GameBoard copyBoard(stream);
-	ASSERT_EQ(testBoard, copyBoard);
+
+	CHECK(testBoard == copyBoard);
 }

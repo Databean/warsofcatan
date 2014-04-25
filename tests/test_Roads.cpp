@@ -4,14 +4,12 @@
  *  Created on: Mar 1, 2014
  *      Author: The Pickle
  */
-
-#include "gtest/gtest.h"
-
+#include "UnitTest++.h"
 #include "Road.h"
 #include "Util.h"
 #include "GameBoard.h"
 
-TEST(RoadTest, road_constructor_good){
+TEST(road_constructor_good){
 	Coordinate start = Coordinate(0,0);
 	Coordinate end = Coordinate(0,1);
 
@@ -19,11 +17,11 @@ TEST(RoadTest, road_constructor_good){
 	Player& test_player = board.getPlayer(0);
 	Road test_road(start, end, test_player);
 
-	ASSERT_TRUE(test_road.getStart() == start);
-	ASSERT_TRUE(test_road.getEnd() == end);
+	CHECK(test_road.getStart() == start);
+	CHECK(test_road.getEnd() == end);
 }
 
-TEST(RoadTest, road_constuctor_bad){
+TEST(road_constuctor_bad){
 	Coordinate start = Coordinate(0,0);
 	Coordinate end = Coordinate(3,4);
 
@@ -32,21 +30,21 @@ TEST(RoadTest, road_constuctor_bad){
 	//test start == end
 	try {
 		Road test_road_1(start, start, test_player);
-		ASSERT_TRUE(false);
+		CHECK(false);
 	} catch (const std::invalid_argument& e) {
-		ASSERT_TRUE(true);
+		CHECK(true);
 	}
 	//test road too long
 	try {
 		Road test_road_2(start, end, test_player);
-		ASSERT_TRUE(false);
+		CHECK(false);
 	} catch (const std::invalid_argument& e) {
-		ASSERT_TRUE(true);
+		CHECK(true);
 	}
 
 }
 
-TEST(RoadTest, road_equals_Road){
+TEST(road_equals_Road){
 	Coordinate start_1 = Coordinate(0,0);
 	Coordinate end_1 = Coordinate(0,1);
 
@@ -65,11 +63,11 @@ TEST(RoadTest, road_equals_Road){
 	Player& test_player_3 = board.getPlayer(2);
 	Road test_road_3(start_3, end_3, test_player_3);
 
-	ASSERT_TRUE(test_road_1.equals(test_road_2));
-	ASSERT_FALSE(test_road_1.equals(test_road_3));
+	CHECK(test_road_1.equals(test_road_2));
+	CHECK(!test_road_1.equals(test_road_3));
 }
 
-TEST(RoadTest, road_equals_Coordinate){
+TEST(road_equals_Coordinate){
 	Coordinate start_1 = Coordinate(0,0);
 	Coordinate end_1 = Coordinate(0,1);
 
@@ -84,7 +82,7 @@ TEST(RoadTest, road_equals_Coordinate){
 	Coordinate start_3 = Coordinate(1,1);
 	Coordinate end_3 = Coordinate(1,2);
 
-	ASSERT_TRUE(test_road_1.equals(start_2, end_2));
-	ASSERT_FALSE(test_road_1.equals(start_3, end_3));
+	CHECK(test_road_1.equals(start_2, end_2));
+	CHECK(!test_road_1.equals(start_3, end_3));
 }
 
