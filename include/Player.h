@@ -71,7 +71,7 @@ public:
     void setLongestRoad(bool);
     void setLongestRoadSize(int);
 
-    std::tuple<float, float, float> getColor();
+    std::tuple<float, float, float> getColor() const;
 
     int getVictoryPointsWithoutCards();
     int getVictoryPointCards();

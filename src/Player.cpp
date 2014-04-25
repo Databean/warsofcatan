@@ -111,7 +111,7 @@ Player::~Player() {
 
 }
 
-std::tuple<float, float, float> Player::getColor(){
+std::tuple<float, float, float> Player::getColor() const {
 	return color;
 }
 

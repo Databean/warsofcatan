@@ -131,15 +131,18 @@ int GameController::getClickHistorySize(){
 	return clickHistory.size();
 }
 
-
-
-
+void printPlayerInfo(const Player& player) {
+	auto color = player.getColor();
+	std::cout << player.getName() << "'s turn. (" << std::get<0>(color) << ", " << std::get<1>(color) << ", " << std::get<2>(color) <<")" << std::endl;
+	std::cout << "Wood: " << player.getWood() << ", Brick: " << player.getBrick() << ", Ore: " << player.getOre() << ", Wheat: " << player.getWheat() << ", Wool: " << player.getWool() << std::endl;
+}
 
 /**
  *  calls a function to advance turn, check for victory and roll dice
  */
 bool GameController::nextTurn(ScreenCoordinate) {
 	model.endTurn();
+	printPlayerInfo(model.getCurrentPlayer());
 	return true;
 }
 
@@ -150,14 +153,15 @@ bool GameController::nextTurn(ScreenCoordinate) {
  * @return Whether this event was handled by this element. Always true.
  */
 bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
+	printPlayerInfo(model.getCurrentPlayer());
 	auto coord = screenToCoord(screenCoord);
-
+	
 	switch (getState()){
 	case BUILDROAD:
 		if(!hasClickHistory()) {
 			storeClick(coord);
 		} else {
-			if (model.PlaceRoad(getLastClick(), coord, *model.getPlayers()[0]));
+			if (model.buyRoad(getLastClick(), coord, model.getCurrentPlayer()));
 			{
 				popState();
 			}
@@ -196,8 +200,8 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		popState();
 		break;
 	case BUILDSETTLEMENT:
-		std::cout << "BUILDSETTLEMENT\n";
-		model.PlaceSettlement(coord, *model.getPlayers()[0]);
+		std::cout << "attempting to buy a settlement" << std::endl;
+		model.buySettlement(coord, model.getCurrentPlayer());
 		popState();
 		break;
 	default:

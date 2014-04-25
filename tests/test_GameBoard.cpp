@@ -175,8 +175,8 @@ TEST(payout_simple) {
 	test_board.getResourceTile(Coordinate(0,1)).Payout();
 
 
-	CHECK(!(test_player.getWheat() || test_player.getWood() || 
-		test_player.getOre() || test_player.getBrick() || test_player.getWool()));
+	CHECK(test_player.getWheat() || test_player.getWood() || 
+		test_player.getOre() || test_player.getBrick() || test_player.getWool());
 }
 
 TEST(upgrade_simple){

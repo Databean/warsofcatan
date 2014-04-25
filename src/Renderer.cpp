@@ -145,7 +145,7 @@ pair<float, float> coordToScreen(const Coordinate& coord) {
 	using std::sin;
 	using std::cos;
 	// TODO not magic numbers
-	static const float xscale = 9.f / 16.f / 7.f;
+	static const float xscale = 9.f / 16.f / 6.f;
 	static const float yscale = 0.1f;
 	static const float angle = M_PI / 3.f;
 	float x = .25f + (xscale * coord.first) + ((yscale * coord.second) * cos(angle));
@@ -159,7 +159,7 @@ pair<float, float> coordToScreen(const Coordinate& coord) {
  * @return The game coordinate.
  */
 Coordinate screenToCoord(const pair<float, float>& screen) {
-	static const float xscale = 9.f / 16.f / 7.f;
+	static const float xscale = 9.f / 16.f / 6.f;
 	static const float yscale = 0.1f;
 	static const float angle = M_PI / 3.f;
 	Coordinate ret;
