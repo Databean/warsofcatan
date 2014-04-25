@@ -23,9 +23,10 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	auto font = getGraphicsConfig()["font.path"];
 	auto fontSize = getGraphicsConfig()["font.size"];
 	
-	view.addElement(makeViewButtonText(std::bind(&GameController::nextTurn, this, _1), {{0, 0.2}, {0.1, 0.3}}, font, fontSize, "Turn"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.1}}, font, fontSize, "Road"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0, 0.1}, {0.1, 0.2}}, font, fontSize, "Stlm"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleCityButtonEvent, this, _1), {{0, 0.2}, {0.1, 0.3}}, font, fontSize, "City"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::nextTurn, this, _1), {{0, 0.3}, {0.1, 0.4}}, font, fontSize, "Turn"));
 	
 	auto playerTopY = 0.9;
 	for(auto i = 0; i < model.getNoOfPlayers(); i++) {
@@ -204,6 +205,11 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		model.buySettlement(coord, model.getCurrentPlayer());
 		popState();
 		break;
+	case BUILDCITY:
+		std::cout << "attempting to build a city" << std::endl;
+		model.buyUpgradeOnSettlement(coord, model.getCurrentPlayer());
+		popState();
+		break;
 	default:
 		break;
 	}
@@ -238,7 +244,7 @@ bool GameController::handleRoadButtonEvent(ScreenCoordinate coord) {
 }
 
 /**
- * Handles a click on the "create settlement" button. Changes the internal state to indicate the user is going to be making roads on the board.
+ * Handles a click on the "create settlement" button. Changes the internal state to indicate the user is going to be making settlements on the board.
  * @param coord The place the user clicked on screen.
  * @return Whether this event was handled by this element. Always true.
  */
@@ -247,6 +253,18 @@ bool GameController::handleSettlementButtonEvent(ScreenCoordinate coord) {
 		return true;
 	}
 	pushState(BUILDSETTLEMENT);
+	return true;
+}
+
+/**
+ * Handles a click on the "create city" button. Changes the internal state to indicate the user is going to be upgrading settlements to cities on the board.
+ * @param coord The place the user clicked on screen.
+ * @return Whether this event was handled by this element. Always true.
+ */
+bool GameController::handleCityButtonEvent(ScreenCoordinate coord) {
+	if(getState() == BASESTATE) {
+		pushState(BUILDCITY);
+	}
 	return true;
 }
 

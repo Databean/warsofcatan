@@ -807,6 +807,7 @@ bool GameBoard::buySettlement(const Coordinate& location, Player& owner) {
 			return false;
 		}
 		PlaceSettlement(location, owner);
+		return true;
 	}
 	return false;
 }
@@ -820,6 +821,43 @@ void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 	if(resources.find(location) == resources.end() && !outOfBounds(location))
 		corners[location] = std::unique_ptr<CornerPiece>(new Settlement(*this, location, Owner));
 
+}
+
+/**
+ * Whether a settlement at a location can be upgraded to a city. 
+ */
+bool GameBoard::canUpgradeSettlement(Coordinate location, const Player& owner) const {
+	auto it = corners.find(location);
+	if(it == corners.end()) {
+		std::cout << "there's nothing there" << std::endl;
+		return false;
+	}
+	if(!it->second) {
+		std::cout << "null ptr there" << std::endl;
+		return false;
+	}
+	if(!(it->second->getOwner() == owner)) {
+		std::cout << "wrong owner" << std::endl;
+		return false;
+	}
+	if(dynamic_cast<const Settlement*>(it->second.get()) == 0) {
+		std::cout << "this isn't a settlement" << std::endl;
+		return false;
+	}
+	return true;
+}
+
+bool GameBoard::buyUpgradeOnSettlement(Coordinate location, Player& owner) {
+	if(canUpgradeSettlement(location, owner) && owner.canBuyCity()) {
+		if(!owner.buyCity()) {
+			std::cout << "wat" << std::endl;
+			return false;
+		}
+		UpgradeSettlement(location);
+		return true;
+	}
+	std::cout << "failed for some reason" << std::endl;
+	return false;
 }
 
 /**

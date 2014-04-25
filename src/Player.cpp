@@ -214,6 +214,7 @@ bool Player::canBuyCity(){
 bool Player::buyCity(){
 	if(canBuyCity()){
 		addMultiple(0,0,-3,-2,0);
+		return true;
 	}
 	return false;
 }

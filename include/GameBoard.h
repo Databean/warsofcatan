@@ -108,6 +108,9 @@ public:
 	bool canPlaceSettlement(const Coordinate& location, const Player& owner);
 	bool buySettlement(const Coordinate& location, Player& owner);
 	
+	bool canUpgradeSettlement(Coordinate location, const Player& owner) const;
+	bool buyUpgradeOnSettlement(Coordinate location, Player& owner);
+	
 	//void PlaceSettlement(Coordinate location, Player& Owner);
 	void PlaceCity(Coordinate location, Player& Owner);
 	void PlaceWonder(Coordinate location, Player& Owner);
