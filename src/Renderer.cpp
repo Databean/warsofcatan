@@ -145,10 +145,11 @@ pair<float, float> coordToScreen(const Coordinate& coord) {
 	using std::sin;
 	using std::cos;
 	// TODO not magic numbers
-	static const float scale = 0.1f;
+	static const float xscale = 9.f / 16.f / 7.f;
+	static const float yscale = 0.1f;
 	static const float angle = M_PI / 3.f;
-	float x = .25f + (scale * coord.first) + ((scale * coord.second) * cos(angle));
-	float y = .1f + (scale * coord.second) * sin(angle);
+	float x = .25f + (xscale * coord.first) + ((yscale * coord.second) * cos(angle));
+	float y = .1f + (yscale * coord.second) * sin(angle);
 	return std::make_pair(x, y);
 }
 
@@ -158,12 +159,13 @@ pair<float, float> coordToScreen(const Coordinate& coord) {
  * @return The game coordinate.
  */
 Coordinate screenToCoord(const pair<float, float>& screen) {
-	static const float scale = 0.1;
+	static const float xscale = 9.f / 16.f / 7.f;
+	static const float yscale = 0.1f;
 	static const float angle = M_PI / 3.f;
 	Coordinate ret;
-	float y_approx = (screen.second - 0.1f) / std::sin(angle) / scale;
+	float y_approx = (screen.second - 0.1f) / std::sin(angle) / yscale;
 	ret.second = std::round(y_approx);
-	ret.first = std::round((screen.first - 0.2f) / scale - y_approx * std::cos(angle) - 0.5);
+	ret.first = std::round((screen.first - 0.25f - y_approx * yscale * std::cos(angle)) / xscale);
 	return ret;
 }
 
