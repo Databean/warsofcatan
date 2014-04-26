@@ -73,6 +73,8 @@ public:
 	~GameBoard();
 	GameBoard& operator=(GameBoard&) = delete;
 
+	void initializeGame();
+
 	void save(std::ostream& out);
 
 	ResourceTile& getResourceTile(Coordinate location) const;
@@ -99,11 +101,16 @@ public:
 	void PlaceSettlement(Coordinate location, Player& Owner);
 	void UpgradeSettlement(Coordinate location);
 	void UpgradeToWonder(Coordinate location);
-
-
+	
 	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const;
 	bool buyRoad(Coordinate start, Coordinate end, Player& Owner);
-
+	
+	bool canPlaceSettlement(const Coordinate& location, const Player& owner);
+	bool buySettlement(const Coordinate& location, Player& owner);
+	
+	bool canUpgradeSettlement(Coordinate location, const Player& owner) const;
+	bool buyUpgradeOnSettlement(Coordinate location, Player& owner);
+	
 	//void PlaceSettlement(Coordinate location, Player& Owner);
 	void PlaceCity(Coordinate location, Player& Owner);
 	void PlaceWonder(Coordinate location, Player& Owner);

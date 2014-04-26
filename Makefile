@@ -1,8 +1,8 @@
 export OBJ_HOME := $(realpath obj)
 export SRC_HOME := $(realpath src)
 export INCL_HOME := $(realpath include)
-export TEST_LINK_FILES := $(realpath UnitTest++)/libUnitTest++.a
-export TEST_INCLUDE := $(realpath UnitTest++/src)
+export TEST_LINK_FILES := -lgtest -lgtest_main
+export TEST_INCLUDE := 
 export EXECUTABLE := warsofcatan
 ALLFILES := $(wildcard $(SRC_HOME)/*) $(wildcard $(INCL_HOME)/*)
 export CXX := g++
@@ -19,7 +19,6 @@ $(EXECUTABLE): $(ALLFILES)
 
 .PHONY: tests
 tests: $(EXECUTABLE)
-	cd UnitTest++ && $(MAKE) libUnitTest++.a
 	cd tests && $(MAKE)
 
 .PHONY: clean

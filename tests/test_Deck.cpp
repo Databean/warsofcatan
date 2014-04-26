@@ -5,28 +5,29 @@
  *      Author: malecki1
  */
 
+#include "gtest/gtest.h"
+
 #include "Deck.h"
 #include "Util.h"
-#include "UnitTest++.h"
 
-TEST(deck_draw)
+TEST(DeckTest, deck_draw)
 {
     Deck* testDeck= new Deck();
     DevelopmentCard* temp = testDeck->drawCard();
-    CHECK(temp!=NULL);
+    ASSERT_NE(temp, nullptr);
     testDeck->discard(temp);
     temp = NULL;
     delete testDeck;
 }
 
-TEST(reshuffle_discard_pile)
+TEST(DeckTest, reshuffle_discard_pile)
 {
     Deck* testDeck= new Deck();
     DevelopmentCard* drawn = NULL;
     for (int i = 0; i<300; i++)
     {
         drawn = testDeck->drawCard();
-        CHECK(drawn!=NULL);
+        ASSERT_NE(drawn, nullptr);
         testDeck->discard(drawn);
         drawn = NULL;
     }
