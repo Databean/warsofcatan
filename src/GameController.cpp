@@ -200,6 +200,16 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		model.PlaceSettlement(coord, *model.getPlayers()[0]);
 		popState();
 		break;
+	case BUILDCITY:
+		std::cout << "BUILDCITY\n";
+		model.PlaceCity(coord, *model.getPlayers()[0]);
+		popState();
+		break;
+	case BUILDWONDER:
+		std::cout << "BUILDWONDER\n";
+		model.PlaceWonder(coord, *model.getPlayers()[0]);
+		popState();
+		break;
 	default:
 		break;
 	}
@@ -234,7 +244,7 @@ bool GameController::handleRoadButtonEvent(ScreenCoordinate coord) {
 }
 
 /**
- * Handles a click on the "create settlement" button. Changes the internal state to indicate the user is going to be making roads on the board.
+ * Handles a click on the "create settlement" button.
  * @param coord The place the user clicked on screen.
  * @return Whether this event was handled by this element. Always true.
  */
@@ -243,6 +253,32 @@ bool GameController::handleSettlementButtonEvent(ScreenCoordinate coord) {
 		return true;
 	}
 	pushState(BUILDSETTLEMENT);
+	return true;
+}
+
+/**
+ * Handles a click on the "create city" button.
+ * @param coord The place the user clicked on screen.
+ * @return Whether this event was handled by this element. Always true.
+ */
+bool GameController::handleCityButtonEvent(ScreenCoordinate coord) {
+	if(getState() != BASESTATE){
+		return true;
+	}
+	pushState(BUILDCITY);
+	return true;
+}
+
+/**
+ * Handles a click on the "create wonder" button.
+ * @param coord The place the user clicked on screen.
+ * @return Whether this event was handled by this element. Always true.
+ */
+bool GameController::handleWonderButtonEvent(ScreenCoordinate coord) {
+	if(getState() != BASESTATE){
+		return true;
+	}
+	pushState(BUILDWONDER);
 	return true;
 }
 
