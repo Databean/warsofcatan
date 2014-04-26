@@ -6,14 +6,13 @@
 
 using std::make_pair;
 
-TEST(RendererTest, coordToScreen) {
-	for(int x = -5; x < 5; x++) {
-		for(auto y = -5; y < 5; y++) {
-			auto original = make_pair(x, y);
-			auto screen = coordToScreen(original);
-			auto back = screenToCoord(screen);
-			ASSERT_EQ(original.first, back.first);
-			ASSERT_EQ(original.second, back.second);
-		}
-	}
+class CoordinateConversionTest : public ::testing::TestWithParam<std::tuple<int, int>> {
+	
+};
+
+TEST_P(CoordinateConversionTest, IsReversable) {
+	auto pair = make_pair(std::get<0>(GetParam()), std::get<1>(GetParam()));
+	ASSERT_EQ(pair, screenToCoord(coordToScreen(pair)));
 }
+
+INSTANTIATE_TEST_CASE_P(LargeSquare, CoordinateConversionTest, ::testing::Combine(::testing::Range(-10, 10), ::testing::Range(-10, 10)));
