@@ -12,7 +12,7 @@ class GameView;
 class Player;
 
 
-enum ControlState {BASESTATE, MODALSTATE, BUILDROAD, BUILDSETTLEMENT, ROBBER,
+enum ControlState {BASESTATE, MODALSTATE, BUILDROAD, BUILDSETTLEMENT, BUILDCITY, ROBBER,
 	VICTORYPOINT_DEVCARD, BUILDROAD_DEVCARD, KNIGHT_DEVCARD, YEAROFPLENTY_DEVCARD, MONOPOLY_DEVCARD};
 
 
@@ -38,6 +38,7 @@ public:
 	bool handleBoardEvent(ScreenCoordinate);
 	bool handleRoadButtonEvent(ScreenCoordinate);
 	bool handleSettlementButtonEvent(ScreenCoordinate);
+	bool handleCityButtonEvent(ScreenCoordinate);
 	bool handleRoadCardButtonEvent(ScreenCoordinate);
 	bool handleKnightCardButtonEvent(ScreenCoordinate);
 	bool handleYearOfPlentyCardButtonEvent(ScreenCoordinate);

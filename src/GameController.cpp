@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 
+#include "Config.h"
 #include "GameBoard.h"
 #include "GameView.h"
 #include "Renderer.h"
@@ -16,30 +17,27 @@
  */
 GameController::GameController(GameBoard& model, GameView& view) : model(model), view(view) {
 	using namespace std::placeholders;
-
-	view.addElement(makeViewButton(std::bind(&GameController::handleBoardEvent, this, _1), {{0, 0}, {1, 1}}));
-
-	view.addElement(makeViewButtonColor(std::bind(&GameController::nextTurn, this, _1), {{0, 0.2}, {0.1, 0.3}}, std::make_tuple(0.f, 0.f, 1.f)));
-	view.addElement(makeViewButtonColor(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.1}}, std::make_tuple(1.f, 0.f, 0.f)));
-	view.addElement(makeViewButtonColor(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0, 0.1}, {0.1, 0.2}}, std::make_tuple(0.f, 1.0f, 0.f)));
-
-	auto font = "resources/ComicNeue-Bold.ttf";
-	auto fontSize = 50;
 	
-
+	view.addElement(makeViewButton(std::bind(&GameController::handleBoardEvent, this, _1), {{0, 0}, {1, 1}}));
+	
+	auto font = getGraphicsConfig()["font.path"];
+	auto fontSize = getGraphicsConfig()["font.size"];
+	
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.1}}, font, fontSize, "Road"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0, 0.1}, {0.1, 0.2}}, font, fontSize, "Stlm"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleCityButtonEvent, this, _1), {{0, 0.2}, {0.1, 0.3}}, font, fontSize, "City"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::nextTurn, this, _1), {{0, 0.3}, {0.1, 0.4}}, font, fontSize, "Turn"));
+	
 	auto playerTopY = 0.9;
 	for(auto i = 0; i < model.getNoOfPlayers(); i++) {
-		auto width = 0.2;
+		auto width = 0.15;
 		Player& player = model.getPlayer(i);
-		view.addElement(makeViewButtonText(std::bind(&GameController::handlePlayerClick, this, _1, std::ref(player)), {{1.0 - width, playerTopY - 0.1}, {1.0, playerTopY}}, font, fontSize, player.getName()));
+		view.addElement(makeViewButtonText(std::bind(&GameController::handlePlayerClick, this, _1, std::ref(player)), {{1.0 - width, playerTopY - 0.05}, {1.0, playerTopY}}, font, fontSize, player.getName()));
 		playerTopY -= 0.05;
 	}
 	
-
-
-
 	view.addElement(makeViewButtonColor(std::bind(&GameController::handleCancelButtonEvent, this, _1), {{.95, .95}, {1.0, 1.0}}, std::make_tuple(1.f, 0.0f, 0.f)));
-
+	
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadCardButtonEvent, this, _1), {{0.85, 0.0}, {0.97, 0.05}}, font, fontSize, "Road Building "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleKnightCardButtonEvent, this, _1), {{0.85, 0.05}, {0.97, 0.10}},  font, fontSize, "Knight "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleYearOfPlentyCardButtonEvent, this, _1), {{0.85, 0.10}, {0.97, 0.15}},  font, fontSize, "Year of Plenty "));
@@ -134,15 +132,18 @@ int GameController::getClickHistorySize(){
 	return clickHistory.size();
 }
 
-
-
-
+void printPlayerInfo(const Player& player) {
+	auto color = player.getColor();
+	std::cout << player.getName() << "'s turn. (" << std::get<0>(color) << ", " << std::get<1>(color) << ", " << std::get<2>(color) <<")" << std::endl;
+	std::cout << "Wood: " << player.getWood() << ", Brick: " << player.getBrick() << ", Ore: " << player.getOre() << ", Wheat: " << player.getWheat() << ", Wool: " << player.getWool() << std::endl;
+}
 
 /**
  *  calls a function to advance turn, check for victory and roll dice
  */
 bool GameController::nextTurn(ScreenCoordinate) {
 	model.endTurn();
+	printPlayerInfo(model.getCurrentPlayer());
 	return true;
 }
 
@@ -153,14 +154,15 @@ bool GameController::nextTurn(ScreenCoordinate) {
  * @return Whether this event was handled by this element. Always true.
  */
 bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
+	printPlayerInfo(model.getCurrentPlayer());
 	auto coord = screenToCoord(screenCoord);
-
+	
 	switch (getState()){
 	case BUILDROAD:
 		if(!hasClickHistory()) {
 			storeClick(coord);
 		} else {
-			if (model.PlaceRoad(getLastClick(), coord, *model.getPlayers()[0]));
+			if (model.buyRoad(getLastClick(), coord, model.getCurrentPlayer()));
 			{
 				popState();
 			}
@@ -199,8 +201,13 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		popState();
 		break;
 	case BUILDSETTLEMENT:
-		std::cout << "BUILDSETTLEMENT\n";
-		model.PlaceSettlement(coord, *model.getPlayers()[0]);
+		std::cout << "attempting to buy a settlement" << std::endl;
+		model.buySettlement(coord, model.getCurrentPlayer());
+		popState();
+		break;
+	case BUILDCITY:
+		std::cout << "attempting to build a city" << std::endl;
+		model.buyUpgradeOnSettlement(coord, model.getCurrentPlayer());
 		popState();
 		break;
 	default:
@@ -237,7 +244,7 @@ bool GameController::handleRoadButtonEvent(ScreenCoordinate coord) {
 }
 
 /**
- * Handles a click on the "create settlement" button. Changes the internal state to indicate the user is going to be making roads on the board.
+ * Handles a click on the "create settlement" button. Changes the internal state to indicate the user is going to be making settlements on the board.
  * @param coord The place the user clicked on screen.
  * @return Whether this event was handled by this element. Always true.
  */
@@ -246,6 +253,18 @@ bool GameController::handleSettlementButtonEvent(ScreenCoordinate coord) {
 		return true;
 	}
 	pushState(BUILDSETTLEMENT);
+	return true;
+}
+
+/**
+ * Handles a click on the "create city" button. Changes the internal state to indicate the user is going to be upgrading settlements to cities on the board.
+ * @param coord The place the user clicked on screen.
+ * @return Whether this event was handled by this element. Always true.
+ */
+bool GameController::handleCityButtonEvent(ScreenCoordinate coord) {
+	if(getState() == BASESTATE) {
+		pushState(BUILDCITY);
+	}
 	return true;
 }
 

@@ -3,45 +3,46 @@
 #include <map>
 #include <stdexcept>
 
+#include "gtest/gtest.h"
+
 #include "GameBoard.h"
 #include "GamePiece.h"
 #include "DevelopmentCard.h"
 #include "Util.h"
-#include "UnitTest++.h"
 
 void testBuyingCard(Player& test_player, std::unique_ptr<DevelopmentCard> card, bool correct_result){
 	int prevOre = test_player.getOre();
 	int prevWheat = test_player.getWheat();
 	int prevWool = test_player.getWool();
 	int prevCards = test_player.getDevelopmentCards(card->getType());
-	CHECK(test_player.buyCard(card) == correct_result);
+	ASSERT_EQ(test_player.buyCard(card), correct_result);
 	if(correct_result){
-		CHECK(prevOre == test_player.getOre()+1);
-		CHECK(prevWheat == test_player.getWheat()+1);
-		CHECK(prevWool == test_player.getWool()+1);
-		CHECK(prevCards == test_player.getDevelopmentCards(card->getType()) -1);
+		ASSERT_EQ(prevOre, test_player.getOre()+1);
+		ASSERT_EQ(prevWheat, test_player.getWheat()+1);
+		ASSERT_EQ(prevWool, test_player.getWool()+1);
+		ASSERT_EQ(prevCards, test_player.getDevelopmentCards(card->getType()) -1);
 	}else{
-		CHECK(prevOre == test_player.getOre());
-		CHECK(prevWheat == test_player.getWheat());
-		CHECK(prevWool == test_player.getWool());
-		CHECK(prevCards == test_player.getDevelopmentCards(card->getType()));
+		ASSERT_EQ(prevOre, test_player.getOre());
+		ASSERT_EQ(prevWheat, test_player.getWheat());
+		ASSERT_EQ(prevWool, test_player.getWool());
+		ASSERT_EQ(prevCards, test_player.getDevelopmentCards(card->getType()));
 	}
 }
 
-TEST(buying_card){
+TEST(DevCardTest, buying_card){
 	GameBoard board({"tester"});
 	Player& testPlayer = board.getPlayer(0);
-
+	
 	testPlayer.addOre(5);
 	testPlayer.addWheat(5);
 	testPlayer.addWool(5);
-
+	
 	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new KnightCard()), true);
 	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new VictoryPointCard()), true);
 	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard()), true);
 	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new MonopolyCard()), true);
 	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new RoadBuildingCard()), true);
-
+	
 	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new KnightCard()), false);
 	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new VictoryPointCard()), false);
 	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard()), false);
@@ -50,37 +51,29 @@ TEST(buying_card){
 }
 
 void testRoadBuildingCard(Player& test_player, bool correct_result, GameBoard& test_board, Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2){
-
-
 	int prevCards = test_player.getRoadBuildingCards();
-	std::cout
-				<< "S1:" << start1.first<< "," << start1.second
-				<< " E1:" << end1.first<< "," << end1.second
-				<< " S2:" << start2.first<< "," << start2.second
-				<< " E2:" << end2.first<< "," << end2.second << "\n";
-
-	CHECK(test_player.playRoadBuilding(start1, end1, start2, end2) ==  correct_result);
-
+	
+	ASSERT_EQ(test_player.playRoadBuilding(start1, end1, start2, end2), correct_result);
 	Road * test_road1 = test_board.getRoad(start1, end1).get();
 	Road * test_road2 = test_board.getRoad(start2, end2).get();
 	if(correct_result){
 		if (test_road1 == NULL || test_road2 == NULL){
-			CHECK(false);
+			ASSERT_TRUE(false);
 		}else{
-			CHECK(test_road1->equals(start1, end1));
-			CHECK(test_road2->equals(start2, end2));
-			CHECK(prevCards == (test_player.getRoadBuildingCards() + 1));
+			ASSERT_TRUE(test_road1->equals(start1, end1));
+			ASSERT_TRUE(test_road2->equals(start2, end2));
+			ASSERT_EQ(prevCards, (test_player.getRoadBuildingCards() + 1));
 		}
 	}else{
 		if(test_road1 == NULL && test_road2 == NULL){
-			CHECK(prevCards == test_player.getRoadBuildingCards());
+			ASSERT_EQ(prevCards, test_player.getRoadBuildingCards());
 		}else{
-			CHECK(false);
+			ASSERT_TRUE(false);
 		}
 	}
 }
 
-TEST(RoadBuildingCard){
+TEST(DevCardTest, RoadBuildingCard){
 
 	GameBoard test_board({"tester1"});
 	Player& test_player = *test_board.getPlayers()[0];
@@ -108,19 +101,19 @@ void testVictoryPointCard(Player & test_player, bool correct_result){
 	int prevPoints = test_player.getVictoryPointsWithoutCards();
 	int prevCards = test_player.getVictoryCards();
 
-	CHECK(test_player.playVictoryCard() == correct_result);
+	ASSERT_EQ(test_player.playVictoryCard(), correct_result);
 	if(correct_result){
-		CHECK(prevPoints == test_player.getVictoryPointsWithoutCards() -1);
-		CHECK(prevCards == test_player.getVictoryCards()+1);
+		ASSERT_EQ(prevPoints, test_player.getVictoryPointsWithoutCards() -1);
+		ASSERT_EQ(prevCards, test_player.getVictoryCards()+1);
 	}else{
-		CHECK(prevPoints == test_player.getVictoryPointsWithoutCards());
-		CHECK(prevCards == test_player.getVictoryCards());
+		ASSERT_EQ(prevPoints, test_player.getVictoryPointsWithoutCards());
+		ASSERT_EQ(prevCards, test_player.getVictoryCards());
 	}
 
 }
 
 
-TEST(VictoryPointCard){
+TEST(DevCardTest, VictoryPointCard){
 	GameBoard test_board({"tester1"});
 	Player& test_player = *test_board.getPlayers()[0];
 
@@ -143,23 +136,22 @@ void testMonopolyCard(Player& test_player, bool correct_result, int resource_typ
 	try{
 		prevReso = test_player.getResource(resource_type);
 	}catch (std::runtime_error & e){
-		CHECK(resource_type >= 5);
+		ASSERT_TRUE(resource_type >= 5);
 		return;
 	}
-
-	CHECK(test_player.playMonopoly(resource_type) == correct_result);
+	
+	ASSERT_EQ(test_player.playMonopoly(resource_type), correct_result);
 	if(correct_result){
-		CHECK(prevCard == test_player.getMonopolyCards()+1);
-		CHECK(prevReso == test_player.getResource(resource_type)-expected_gain);
+		ASSERT_EQ(prevCard, test_player.getMonopolyCards()+1);
+		ASSERT_EQ(prevReso, test_player.getResource(resource_type)-expected_gain);
 	}else{
-		CHECK(prevCard == test_player.getMonopolyCards());
-		CHECK(prevReso == test_player.getResource(resource_type));
+		ASSERT_EQ(prevCard, test_player.getMonopolyCards());
+		ASSERT_EQ(prevReso, test_player.getResource(resource_type));
 	}
-
 }
 
 
-TEST(MonopolyCard){
+TEST(DevCardTest, MonopolyCard){
 	GameBoard test_board({"tester1", "tester2", "tester3"});
 	Player& test_player1 = test_board.getPlayer(0);
 	Player& test_player2 = test_board.getPlayer(1);
@@ -195,23 +187,21 @@ void testYearOfPlenty(Player& test_player, bool correct_result, int resource_typ
 	try{
 		prevReso = test_player.getResource(resource_type);
 	}catch (std::runtime_error & e){
-		CHECK(resource_type >= 5);
+		ASSERT_TRUE(resource_type >= 5);
 		return;
 	}
-
-	CHECK(test_player.playYearOfPlenty(resource_type) == correct_result);
+	
+	ASSERT_EQ(test_player.playYearOfPlenty(resource_type), correct_result);
 	if(correct_result){
-		CHECK(prevCard == test_player.getYearOfPlentyCards()+1);
-		CHECK(prevReso == test_player.getResource(resource_type)-2);
+		ASSERT_EQ(prevCard, test_player.getYearOfPlentyCards()+1);
+		ASSERT_EQ(prevReso, test_player.getResource(resource_type)-2);
 	}else{
-		CHECK(prevCard == test_player.getYearOfPlentyCards());
-		CHECK(prevReso == test_player.getResource(resource_type));
+		ASSERT_EQ(prevCard, test_player.getYearOfPlentyCards());
+		ASSERT_EQ(prevReso, test_player.getResource(resource_type));
 	}
-
-
 }
 
-TEST(YearOfPlentyCard){
+TEST(DevCardTest, YearOfPlentyCard){
 	GameBoard test_board({"tester1"});
 	Player& test_player = test_board.getPlayer(0);
 
@@ -244,28 +234,26 @@ void testKnightCard(Player& test_player, bool correct_result, GameBoard& test_bo
 	int prevCards = test_player.getKnightCards();
 	int player_prevResourceSum = getResourceSum(test_player);
 	int opponent_prevResourceSum = getResourceSum(opponent);
-
-	std::cout << test_player.getName() << "| NL:(" << newLocation.first << ", " << newLocation.second << ") O:" << opponent.getName() << "\n";
-
-	CHECK(test_player.playKnight(newLocation, opponent) == correct_result);
+	
+	ASSERT_EQ(test_player.playKnight(newLocation, opponent), correct_result);
 	if(correct_result){
-		CHECK(newLocation == test_board.getRobber());
-		CHECK(prevArmy+1 == test_player.getArmySize());
-		CHECK(prevCards-1 == test_player.getKnightCards());
-		CHECK(player_prevResourceSum+gain_expected == getResourceSum(test_player));
-		CHECK(opponent_prevResourceSum-gain_expected == getResourceSum(opponent));
+		ASSERT_EQ(newLocation, test_board.getRobber());
+		ASSERT_EQ(prevArmy+1, test_player.getArmySize());
+		ASSERT_EQ(prevCards-1, test_player.getKnightCards());
+		ASSERT_EQ(player_prevResourceSum+gain_expected, getResourceSum(test_player));
+		ASSERT_EQ(opponent_prevResourceSum-gain_expected, getResourceSum(opponent));
 	}else{
-		CHECK(prevRobber == test_board.getRobber());
-		CHECK(prevArmy == test_player.getArmySize());
-		CHECK(prevCards == test_player.getKnightCards());
-		CHECK(player_prevResourceSum == getResourceSum(test_player));
-		CHECK(opponent_prevResourceSum == getResourceSum(opponent));
+		ASSERT_EQ(prevRobber, test_board.getRobber());
+		ASSERT_EQ(prevArmy, test_player.getArmySize());
+		ASSERT_EQ(prevCards, test_player.getKnightCards());
+		ASSERT_EQ(player_prevResourceSum, getResourceSum(test_player));
+		ASSERT_EQ(opponent_prevResourceSum, getResourceSum(opponent));
 	}
 
 
 }
 
-TEST(KnightCard){
+TEST(DevCardTest, KnightCard){
 	GameBoard test_board({"tester1", "tester2", "tester3"});
 	Player& test_player1 = test_board.getPlayer(0);
 	Player& test_player2 = test_board.getPlayer(1);

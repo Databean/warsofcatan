@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <cmath>
 
+#include "Config.h"
 #include "GameBoard.h"
 #include "GameController.h"
 #include "Renderer.h"
@@ -135,9 +136,9 @@ void GameView::render() {
 		highlightPoint(it);
 	}
 	
-	auto font = "resources/ComicNeue-Bold.ttf";
-	auto fontSize = 50;
-
+	auto font = getGraphicsConfig()["font.path"];
+	auto fontSize = getGraphicsConfig()["font.size"];
+	
 	glColor3d(1, 1, 1);
 	renderText(font, fontSize, {.2, .9}, {.8, 1}, "Settlers of Catan");
 	
@@ -153,7 +154,7 @@ bool GameView::acceptInput(SDL_Event& event) {
 	if(event.type == SDL_QUIT) {
 		return false;
 	} else if(event.type == SDL_MOUSEBUTTONUP) {
-		ScreenCoordinate screen = {(float) event.button.x / 900.f, 1.f - (float) event.button.y / 800.f};
+		ScreenCoordinate screen = {(float) event.button.x / getGraphicsConfig()["screen.width"], 1.f - (float) event.button.y / getGraphicsConfig()["screen.height"]};
 		for(auto& it : viewElements) {
 			if(it.second->handleClick(screen)) {
 				//break;
@@ -415,7 +416,9 @@ void DrawingGameVisitor::visit(Road& road) {
 	auto cosPerp = std::cos(roadPerpAngle);
 	auto sinPerp = std::sin(roadPerpAngle);
 	
-	glColor3d(0., 0., 0.);
+	auto color = road.getOwner().getColor();
+	glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBegin(GL_QUADS);
 	glVertex2d(startScreenPos.first - cosPerp * roadWidth, startScreenPos.second - sinPerp * roadWidth);
@@ -435,7 +438,9 @@ void DrawingGameVisitor::visit(Settlement& settlement) {
 	auto centerScreenPos = coordToScreen(settlement.getLocation());
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glColor3d(0., 0., 0.);
+	auto color = settlement.getOwner().getColor();
+	glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
+
 	glBegin(GL_QUADS);
 	glVertex2d(centerScreenPos.first, centerScreenPos.second + settlementRadius);
 	glVertex2d(centerScreenPos.first + settlementRadius, centerScreenPos.second);
@@ -454,7 +459,10 @@ void DrawingGameVisitor::visit(City& city) {
 	auto centerScreenPos = coordToScreen(city.getLocation());
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glColor3d(0., 0., 0.);
+
+	auto color = city.getOwner().getColor();
+	glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
+
 	glBegin(GL_QUADS);
 	glVertex2d(centerScreenPos.first + cityRadius, centerScreenPos.second + cityRadius);
 	glVertex2d(centerScreenPos.first + cityRadius, centerScreenPos.second - cityRadius);
@@ -473,7 +481,10 @@ void DrawingGameVisitor::visit(Wonder& wonder) {
 	auto centerScreenPos = coordToScreen(wonder.getLocation());
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glColor3d(0., 0., 0.);
+
+	auto color = wonder.getOwner().getColor();
+	glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
+
 	glBegin(GL_QUADS);
 	glVertex2d(centerScreenPos.first + wonderRadius, centerScreenPos.second + wonderRadius);
 	glVertex2d(centerScreenPos.first + wonderRadius, centerScreenPos.second - wonderRadius);
@@ -649,11 +660,19 @@ void DrawingGameVisitor::visit(DevelopmentCard& card) {
  * @param initialOffer The initial offer to display.
  */
 TradingView::TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> initialOffer) : 
-	ViewElement({{0.1, 0.1},{0.9, 0.9}}), initiating(initiating), receiving(receiving),
-	trade(std::bind(trade, std::ref(offer), std::placeholders::_1), {{0.7, 0.1}, {0.9, 0.2}}, "resources/ComicNeue-Bold.ttf", 50, "Trade"),
-	cancel(cancel, {{0.1, 0.1}, {0.3, 0.2}}, "resources/ComicNeue-Bold.ttf", 50, "Cancel"),
+	ViewElement({getGraphicsConfig()["screen.tradingView.bottomLeft"], getGraphicsConfig()["screen.tradingView.topRight"]}),
+	initiating(initiating), 
+	receiving(receiving),
+	trade(
+		std::bind(trade, std::ref(offer), std::placeholders::_1), 
+		{getGraphicsConfig()["screen.tradingView.tradeButton.bottomLeft"], getGraphicsConfig()["screen.tradingView.tradeButton.topRight"]},
+		getGraphicsConfig()["font.path"], getGraphicsConfig()["font.size"], "Trade"
+	),
+	cancel(cancel, 
+		{getGraphicsConfig()["screen.tradingView.cancelButton.bottomLeft"], getGraphicsConfig()["screen.tradingView.cancelButton.topRight"]},
+		getGraphicsConfig()["font.path"], getGraphicsConfig()["font.size"], "Cancel"
+	),
 	offer(initialOffer) {
-	
 }
 
 /**
@@ -674,7 +693,7 @@ bool TradingView::clicked(ScreenCoordinate coord) {
 		return true;
 	}
 	int modifier = coord.first <= 0.5 ? -1 : 1;
-	int resource = (coord.second - 0.2) / 0.13;
+	int resource = (coord.second - getGraphicsConfig()["screen.tradingView.resources.bottomY"]) / getGraphicsConfig()["screen.tradingView.resources.height"];
 	if(resource >= 0 && resource <= 5) {
 		offer[resource] += modifier;
 	}
@@ -696,15 +715,20 @@ void TradingView::render() {
 	glVertex2f(topLeft.first, bottomRight.second);
 	glEnd();
 	
-	auto font = "resources/ComicNeue-Bold.ttf";
-	auto fontSize = 50;
+	auto font = getGraphicsConfig()["font.path"];
+	auto fontSize = getGraphicsConfig()["font.size"];
 	
 	std::string resources[] = {"Wood", "Brick", "Ore", "Wheat", "Wool"};
 	for(int i = 0; i < 5; i++) {
-		auto height = 0.13;
-		renderText(font, fontSize, {0.3, 0.2 + (i * height)}, {0.6, 0.2 + height + (i * height)}, toString(offer[i]) + " " + resources[i]);
+		auto leftX = getGraphicsConfig()["screen.tradingView.resources.leftX"];
+		auto rightX = getGraphicsConfig()["screen.tradingView.resources.rightX"];
+		auto height = getGraphicsConfig()["screen.tradingView.resources.height"];
+		auto bottomY = getGraphicsConfig()["screen.tradingView.resources.bottomY"];
+		renderText(font, fontSize, {leftX, bottomY + (i * height)}, {rightX, bottomY + height + (i * height)}, toString(offer[i]) + " " + resources[i]);
 	}
-	renderText(font, fontSize, {0.1, 0.8}, {0.9, 0.9}, initiating.getName() + " -> " + receiving.getName());
+	auto playersBottomLeft = getGraphicsConfig()["screen.tradingView.players.bottomLeft"];
+	auto playersTopRight = getGraphicsConfig()["screen.tradingView.players.topRight"];
+	renderText(font, fontSize, playersBottomLeft, playersTopRight, initiating.getName() + " -> " + receiving.getName());
 	
 	cancel.render();
 	trade.render();
@@ -723,10 +747,10 @@ ConfirmationDialogue::ConfirmationDialogue(std::function<bool(ScreenCoordinate)>
 	ScreenCoordinate confirmBottomRight = ScreenCoordinate(bottomRight.first - (width * .6), bottomRight.second - (height * .6));
 	ScreenCoordinate cancelTopLeft = ScreenCoordinate(topLeft.first + (width*.6), topLeft.second + (height *.1));
 	ScreenCoordinate cancelBottomRight = ScreenCoordinate(bottomRight.first - (width * .1), bottomRight.second - (height * .6));
-
-	auto font = "resources/ComicNeue-Bold.ttf";
-	auto fontSize = 50;
-
+	
+	auto font = getGraphicsConfig()["font.path"];
+	auto fontSize = getGraphicsConfig()["font.size"];
+	
 	confirmButton = std::unique_ptr<ViewElement>(new ViewButtonText(confirm_action, {confirmTopLeft, confirmBottomRight}, font, fontSize, "Yes"));
 	cancelButton = std::unique_ptr<ViewElement>(new ViewButtonText(cancel_action, {cancelTopLeft, cancelBottomRight}, font, fontSize, "No"));
 }
@@ -750,9 +774,10 @@ void ConfirmationDialogue::render(){
 	glVertex2f(bottomRight.first, bottomRight.second);
 	glVertex2f(topLeft.first, bottomRight.second);
 	glEnd();
-
-	auto font = "resources/ComicNeue-Bold.ttf";
-	auto fontSize = 50;
+	
+	auto font = getGraphicsConfig()["font.path"];
+	auto fontSize = getGraphicsConfig()["font.size"];
+	
 	float width = bottomRight.first - topLeft.first;
 	float height = bottomRight.second - topLeft.second;
 

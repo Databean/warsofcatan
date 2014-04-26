@@ -49,6 +49,15 @@ Player::Player(GameBoard& board, std::string playerName) : name(playerName), boa
 		c = 0;
 	}
 
+	std::get<0>(color) = .01 * (float)(std::rand()%101);
+	std::get<1>(color) = .01 * (float)(std::rand()%101);
+	std::get<2>(color) = .01 * (float)(std::rand()%101);
+	
+	int zeroChannel = std::rand()%3;
+	if(zeroChannel == 0) { std::get<0>(color) = 0; }
+	if(zeroChannel == 1) { std::get<1>(color) = 0; }
+	if(zeroChannel == 2) { std::get<2>(color) = 0; }
+
 }
 
 /**
@@ -84,6 +93,15 @@ Player::Player(GameBoard& board, XMLElement* elem) : board(board)
 	longestRoad = 0;
 	victoryPoints = 0;
 	baseVictoryPoints = 0;
+
+	std::get<0>(color) = .01 * (float)(std::rand()%101);
+	std::get<1>(color) = .01 * (float)(std::rand()%101);
+	std::get<2>(color) = .01 * (float)(std::rand()%101);
+	
+	int zeroChannel = std::rand()%3;
+	if(zeroChannel == 0) { std::get<0>(color) = 0; }
+	if(zeroChannel == 1) { std::get<1>(color) = 0; }
+	if(zeroChannel == 2) { std::get<2>(color) = 0; }
 }
 
 /**
@@ -92,6 +110,11 @@ Player::Player(GameBoard& board, XMLElement* elem) : board(board)
 Player::~Player() {
 
 }
+
+std::tuple<float, float, float> Player::getColor() const {
+	return color;
+}
+
 
 /**
  * The number of development cards the player is holding.
@@ -191,6 +214,7 @@ bool Player::canBuyCity(){
 bool Player::buyCity(){
 	if(canBuyCity()){
 		addMultiple(0,0,-3,-2,0);
+		return true;
 	}
 	return false;
 }
@@ -507,10 +531,8 @@ bool Player::playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate sta
 /**
  * A cheat class that gives the player 5 of every development card, meant for debugging
  */
-void Player::giveDevCardBoon(){
-	for(int i = 0; i < 5; i++){
-		developmentCards[i]+=5;
-	}
+void Player::setStartingValues(){
+	developmentCards[ROADBUILDING] = 1;
 }
 
 

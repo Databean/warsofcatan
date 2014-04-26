@@ -13,6 +13,7 @@
 #include <vector>
 #include <memory>
 
+#include "Config.h"
 #include "GameBoard.h"
 #include "Player.h"
 #include "GameView.h"
@@ -50,7 +51,6 @@ void updateViewport(int width, int height) {
  * Main. Initializes SDL and the model, view, and controller. Also has the main game loop.
  */
 int main(int argc, char *argv[]) {
-	const int windowWidth = 900, windowHeight = 800;
 	
 	if(TTF_Init()==-1) {
 		std::cout << "Error in TTF_Init: " << TTF_GetError() << std::endl;
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 	SDL_Window* displayWindow;
 	SDL_Renderer* displayRenderer;
 	SDL_RendererInfo displayRendererInfo;
-	SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_OPENGL, &displayWindow, &displayRenderer);
+	SDL_CreateWindowAndRenderer(getGraphicsConfig()["screen.width"], getGraphicsConfig()["screen.height"], SDL_WINDOW_OPENGL, &displayWindow, &displayRenderer);
 	SDL_GetRendererInfo(displayRenderer, &displayRendererInfo);
 	/*TODO: Check that we have OpenGL */
 	if ((displayRendererInfo.flags & SDL_RENDERER_ACCELERATED) == 0 || 
@@ -74,21 +74,23 @@ int main(int argc, char *argv[]) {
 	
 	initOpenGL();
 
-	updateViewport(windowWidth, windowHeight);
+	updateViewport(getGraphicsConfig()["screen.width"], getGraphicsConfig()["screen.height"]);
 	
-	GameBoard model({"testPlayer", "testPlayer2", "testPlayer3", "testPlayer4"});
+	GameBoard model({"Player1", "Player2", "Player3", "Player4"});
 	GameView view(model);
 	GameController controller(model, view);
 	
-	Player& firstPlayer = model.getPlayer(0);
+	model.initializeGame();
 	
-	model.PlaceSettlement(Coordinate{0, 0}, firstPlayer);
-	model.PlaceRoad(Coordinate{0, 0}, Coordinate{1, 0}, firstPlayer);
-	model.PlaceRoad(Coordinate{1, 0}, Coordinate{1, 1}, firstPlayer);
-	model.PlaceRoad(Coordinate{1, 1}, Coordinate{0, 2}, firstPlayer);
-	model.PlaceSettlement(Coordinate{0, 2}, firstPlayer);
-	model.UpgradeSettlement(Coordinate{0, 2});
-	
+//	Player& firstPlayer = model.getPlayer(0);
+//
+//	model.PlaceSettlement(Coordinate{0, 0}, firstPlayer);
+//	model.PlaceRoad(Coordinate{0, 0}, Coordinate{1, 0}, firstPlayer);
+//	model.PlaceRoad(Coordinate{1, 0}, Coordinate{1, 1}, firstPlayer);
+//	model.PlaceRoad(Coordinate{1, 1}, Coordinate{0, 2}, firstPlayer);
+//	model.PlaceSettlement(Coordinate{0, 2}, firstPlayer);
+//	model.UpgradeSettlement(Coordinate{0, 2});
+//
 	bool running = true;
 	while(running) {
 		SDL_Event event;
