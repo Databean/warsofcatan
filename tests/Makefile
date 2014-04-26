@@ -8,7 +8,7 @@ run: $(TEST_FILE)
 	./$(TEST_FILE)
 
 $(TEST_FILE): ../$(EXECUTABLE) $(TEST_LINK_FILES) $(wildcard *.cpp)
-	$(CXX) $(CXXFLAGS) $(TEST_INCLUDE) $(wildcard *.cpp) -o $@ $(TEST_LINK_FILES) $(OBJECTS_NO_MAIN) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -I$(TEST_INCLUDE) $(wildcard *.cpp) -o $@ $(TEST_LINK_FILES) $(OBJECTS_NO_MAIN) $(LDFLAGS)
 
 .PHONY: clean
 clean:

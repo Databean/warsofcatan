@@ -278,8 +278,7 @@ void Player::updateVictoryPoints()
 	if(largestArmy){
 		sum_points+=2;
 	}
-
-
+	victoryPoints = sum_points;
 }
 
 /**
