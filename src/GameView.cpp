@@ -104,9 +104,6 @@ GameView::~GameView() {
  * @return void
  */
 void GameView::drawCardCount(std::string font, int fontSize){
-
-	renderText(font, fontSize, {.85, .23}, {1, .30}, "Development Cards");
-
 	renderText(font, fontSize, {0.97, 0.0}, {1.0, 0.05},
 			toString(model.getCurrentPlayer().getRoadBuildingCards()));	//Road Building
 	renderText(font, fontSize, {0.97, 0.05}, {1.0, 0.1},
@@ -117,6 +114,20 @@ void GameView::drawCardCount(std::string font, int fontSize){
 			toString(model.getCurrentPlayer().getMonopolyCards()));		//Monopoly
 	renderText(font, fontSize, {0.97, 0.2}, {1.0, 0.25},
 			toString(model.getCurrentPlayer().getVictoryCards()));		//Victory Point
+}
+
+void GameView::drawResourceCount(std::string font, int fontSize){
+	renderText(font, fontSize, {0.97, 0.35}, {1.0, 0.40},
+			toString(model.getCurrentPlayer().getWood()));		//Wood
+	renderText(font, fontSize, {0.97, 0.40}, {1.0, 0.45},
+			toString(model.getCurrentPlayer().getWool()));		//Sheep
+	renderText(font, fontSize, {0.97, 0.45}, {1.0, 0.50},
+			toString(model.getCurrentPlayer().getOre()));		//Ore
+	renderText(font, fontSize, {0.97, 0.50}, {1.0, 0.55},
+			toString(model.getCurrentPlayer().getBrick()));		//Brick
+	renderText(font, fontSize, {0.97, 0.55}, {1.0, 0.60},
+			toString(model.getCurrentPlayer().getWheat()));		//Wheat
+
 }
 
 
@@ -143,6 +154,7 @@ void GameView::render() {
 	renderText(font, fontSize, {.2, .9}, {.8, 1}, "Settlers of Catan");
 	
 	drawCardCount(font, fontSize);
+	drawResourceCount(font, fontSize);
 
 	glFlush();
 }

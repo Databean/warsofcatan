@@ -409,8 +409,8 @@ std::vector<CornerPiece*> GameBoard::GetNeighboringCorners(
 		const Coordinate& diff = adjacentCoordDiffs[i];
 		Coordinate adjacentPoint(location.first + diff.first,
 				location.second + diff.second);
-		auto it = resources.find(adjacentPoint);
-		if (it != resources.end()) {
+		auto it = corners.find(adjacentPoint);
+		if (it != corners.end()) {
 			GamePiece* piece = it->second.get();
 			if (dynamic_cast<CornerPiece*>(piece)) {
 				v.push_back(static_cast<CornerPiece*>(piece));
@@ -419,6 +419,7 @@ std::vector<CornerPiece*> GameBoard::GetNeighboringCorners(
 	}
 	return v;
 }
+
 
 
 /**
