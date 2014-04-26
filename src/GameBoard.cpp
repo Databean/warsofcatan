@@ -66,6 +66,8 @@ GameBoard::GameBoard(const vector<std::string>& playerNames) {
 		}
 		valid = isValidBoard();
 	}
+	moveRobber(Coordinate(0,4));
+
 }
 
 /**
@@ -99,6 +101,8 @@ void GameBoard::createRing(Coordinate topRight, int sideLength, vector<resourceT
 void GameBoard::insertTile(Coordinate location, vector<resourceType>& resources, vector<int>& rolls) {
 	if(rolls.back() == 0) {
 		addResource(location.first, location.second, DESERT, rolls.back());
+		//moveRobber(Coordinate(location.first, location.second));
+		//std::cout << location.first << location.second << "\n";
 		rolls.pop_back();
 	} else {
 		addResource(location.first, location.second, resources.back(), rolls.back());
