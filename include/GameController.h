@@ -40,10 +40,13 @@ public:
 	bool handleSettlementButtonEvent(ScreenCoordinate);
 	bool handleCityButtonEvent(ScreenCoordinate);
 	bool handleRoadCardButtonEvent(ScreenCoordinate);
+
+	bool handleBuyDevelopmentCardButtonEvent(ScreenCoordinate);
 	bool handleKnightCardButtonEvent(ScreenCoordinate);
 	bool handleYearOfPlentyCardButtonEvent(ScreenCoordinate);
 	bool handleMonopolyCardButtonEvent(ScreenCoordinate);
 	bool handleVictoryPointCardButtonEvent(ScreenCoordinate);
+
 	bool handleCancelButtonEvent(ScreenCoordinate);
 
 	bool handleConfirmRoadCard(ScreenCoordinate);
