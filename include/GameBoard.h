@@ -75,6 +75,8 @@ public:
 
 	void initializeGame();
 
+	GameDice getDice();
+
 	void save(std::ostream& out);
 
 	ResourceTile& getResourceTile(Coordinate location) const;

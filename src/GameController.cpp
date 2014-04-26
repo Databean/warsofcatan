@@ -143,6 +143,9 @@ void printPlayerInfo(const Player& player) {
  */
 bool GameController::nextTurn(ScreenCoordinate) {
 	model.endTurn();
+	if (model.getDice().getFirst() + model.getDice().getSecond() == 7)
+		pushState(ROBBER);
+
 	printPlayerInfo(model.getCurrentPlayer());
 	return true;
 }

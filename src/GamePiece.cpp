@@ -116,12 +116,22 @@ void ResourceTile::Payout() const{
 	if (getBoard().getRobber() == location) //no need to pay out
 		return;
 
-	std::vector<CornerPiece*> neighbors = getBoard().GetNeighboringCorners(location);
-	std::vector<CornerPiece*>::iterator it = neighbors.begin();
+	//std::vector<CornerPiece*> neighbors = getBoard().GetNeighboringCorners(location);
+	//std::vector<CornerPiece*>::iterator it = neighbors.begin();
+
+	std::vector<Settlement*> neighbors = getBoard().GetNeighboringSettlements(location);
+	std::vector<Settlement*>::iterator it = neighbors.begin();
 	while (it != neighbors.end())
 	{
 		(*it)->getOwner().addResource(resource, (*it)->getResourceModifier());
+		std::cout << ((*it)->getOwner().getWood()) << "\n";
+		std::cout << ((*it)->getOwner().getBrick()) << "\n";
+		std::cout << ((*it)->getOwner().getOre()) << "\n";
+		std::cout << ((*it)->getOwner().getWheat()) << "\n";
+		std::cout << ((*it)->getOwner().getWool()) << "\n";
+
 		it++;
 	}
+
 }
 
