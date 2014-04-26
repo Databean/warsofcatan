@@ -338,6 +338,21 @@ TEST(canRobberRob){
 }
 **/
 
+TEST(GameBoardTest, buyCard){
+	GameBoard test_board({"tester1"});
+	Player& test_player = test_board.getPlayer(0);
+
+	ASSERT_TRUE(test_player.getDevCardsInHand() == 0);
+	test_board.buyCard(test_player);
+	ASSERT_TRUE(test_player.getDevCardsInHand() == 0);
+
+	test_player.addOre(1);
+	test_player.addWheat(1);
+	test_player.addWool(1);
+
+	test_board.buyCard(test_player);
+	ASSERT_TRUE(test_player.getDevCardsInHand() == 1);
+}
 
 
 
