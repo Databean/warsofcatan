@@ -159,26 +159,51 @@ bool Player::canBuySettlement(){
 	return getWood() >= 1 && getBrick() >= 1 && getWheat() >= 1 && getWool() >= 1;
 }
 
+/**
+ * Returns the number of knight cards this player has played
+ */
 int Player::getArmySize() const{
 	return armySize;
 }
+
+/**
+ * Returns true if this player has the largest army, false otherwise
+ */
 bool Player::hasLargestArmy() const{
 	return largestArmy;
 }
+
+/**
+ * Sets whether or not this player has the largest army
+ */
 void Player::setLargestArmy(bool newVal){
 	largestArmy = newVal;
 }
 
+/**
+ * Returns the size of this player's longest road
+ */
 int Player::getLongestRoadSize() const{
 	return longestRoadSize;
 }
+
+/**
+ * Returns true if this player has the longet road, false otherwise
+ */
 bool Player::hasLongestRoad() const{
 	return longestRoad;
 }
+
+/**
+ * Sets whether or not this player has the longest road
+ */
 void Player::setLongestRoad(bool newVal){
 	longestRoad = newVal;
 }
 
+/**
+ * Sets how long this player's longest road is
+ */
 void Player::setLongestRoadSize(int newVal){
 	longestRoadSize = newVal;
 }
@@ -261,7 +286,7 @@ bool Player::buyCard(){
 
 
 /**
- * Update the player's internal state with their victory states.
+ * Updates the player's victory points to the amount of points they have.
  */
 void Player::updateVictoryPoints()
 {
@@ -479,6 +504,7 @@ bool Player::playYearOfPlenty(int resourceType){
 	if(developmentCards[YEAROFPLENTY] > 0){
 		developmentCards[YEAROFPLENTY]--;
 		addResource(resourceType, 2);
+		board.discardCard(new YearOfPlentyCard());
 		return true;
 	}
 	return false;
@@ -498,6 +524,7 @@ bool Player::playMonopoly(int resourceType){
 		for(auto& player : board.getPlayers()) {
 			addResource(resourceType, player->giveAllResources(resourceType));
 		}
+		board.discardCard(new MonopolyCard());
 		return true;
 	}
 	return false;
@@ -520,6 +547,7 @@ bool Player::playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate sta
 				board.PlaceRoad(start2, end2, *this);
 			}
 			developmentCards[ROADBUILDING]--;
+			board.discardCard(new RoadBuildingCard());
 			return true;
 		}
 	}

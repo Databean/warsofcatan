@@ -14,7 +14,6 @@
 
 #include "CornerPiece.h"
 #include "GameDice.h"
-
 #include "Settlement.h"
 #include "City.h"
 #include "Wonder.h"
@@ -997,3 +996,54 @@ void GameBoard::payoutResources(int roll)
         }
     }
 }
+
+/**
+ * Buys a card drawn from the deck
+ */
+void GameBoard::buyCard(Player& owner){
+	if(owner.canBuyCard() && deck.getSize() > 0){
+
+		DevelopmentCard * card_ptr = deck.drawCard();
+
+		std::unique_ptr<DevelopmentCard> knight = std::unique_ptr<DevelopmentCard>(new KnightCard());
+		std::unique_ptr<DevelopmentCard> victorypoint = std::unique_ptr<DevelopmentCard>(new VictoryPointCard());
+		std::unique_ptr<DevelopmentCard> monopoly = std::unique_ptr<DevelopmentCard>(new MonopolyCard());
+		std::unique_ptr<DevelopmentCard> yearofplenty = std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard());
+		std::unique_ptr<DevelopmentCard> roadbuilding = std::unique_ptr<DevelopmentCard>(new RoadBuildingCard());
+
+		switch (card_ptr->getType()){
+		case KNIGHT:
+			owner.buyCard(knight);
+			break;
+		case VICTORYPOINT:
+			owner.buyCard(victorypoint);
+			break;
+		case MONOPOLY:
+			owner.buyCard(monopoly);
+			break;
+		case YEAROFPLENTY:
+			owner.buyCard(yearofplenty);
+			break;
+		case ROADBUILDING:
+			owner.buyCard(roadbuilding);
+			break;
+		default:
+			break;
+		}
+
+		delete(card_ptr);
+	}
+}
+
+/**
+ * Discards a card back into the deck
+ */
+void GameBoard::discardCard(DevelopmentCard * card){
+	deck.discard(card);
+}
+
+
+
+
+
+
