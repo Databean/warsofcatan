@@ -1,57 +1,59 @@
-#include "UnitTest++.h"
+#include <stdexcept>
+
+#include "gtest/gtest.h"
+
 #include "Config.h"
 
-#include <stdexcept>
 
 using std::string;
 using std::stringstream;
 
-TEST(readOneString) {
+TEST(ConfigTest, readOneString) {
 	stringstream file("variable=value");
 	Config config(file);
 	
-	CHECK((string)config["variable"] == "value");
+	ASSERT_EQ((string)config["variable"], "value");
 }
 
-TEST(readTwoStrings) {
+TEST(ConfigTest, readTwoStrings) {
 	stringstream file("var_a=val_a\nvar_b=val_b\n");
 	Config config(file);
 	
-	CHECK((string)config["var_a"] == "val_a");
-	CHECK((string)config["var_b"] == "val_b");
+	ASSERT_EQ((string)config["var_a"], "val_a");
+	ASSERT_EQ((string)config["var_b"], "val_b");
 }
 
-TEST(readFloat) {
+TEST(ConfigTest, readFloat) {
 	stringstream file("float=5.0\n");
 	Config config(file);
 	
-	CHECK((float)config["float"] == 5.0f);
+	ASSERT_EQ((float)config["float"], 5.0f);
 }
 
-TEST(readCommentsEmptyLines) {
+TEST(ConfigTest, readCommentsEmptyLines) {
 	stringstream file("#this is a string\nstring=hello\n#we just had a string\n\n\n\n\n");
 	Config config(file);
 	
-	CHECK((string)config["string"] == "hello");
+	ASSERT_EQ((string)config["string"], "hello");
 }
 
-TEST(readInvalid) {
+TEST(ConfigTest, readInvalid) {
 	stringstream file("variable=value");
 	Config config(file);
 	
-	CHECK_THROW((string)config["string"] == "hello", std::runtime_error);
+	ASSERT_THROW((string)config["string"] == "hello", std::runtime_error);
 }
 
-TEST(readCoordinate) {
+TEST(ConfigTest, readCoordinate) {
 	stringstream file("coord=(1,2)");
 	Config config(file);
 	
-	CHECK(Coordinate({1, 2}) == (Coordinate)config["coord"]);
+	ASSERT_EQ(Coordinate({1, 2}), (Coordinate)config["coord"]);
 }
 
-TEST(readScreenCoordinate) {
+TEST(ConfigTest, readScreenCoordinate) {
 	stringstream file("coord=(1.5,2.5)");
 	Config config(file);
 	
-	CHECK(ScreenCoordinate({1.5, 2.5}) == (ScreenCoordinate)config["coord"]);
+	ASSERT_EQ(ScreenCoordinate({1.5, 2.5}), (ScreenCoordinate)config["coord"]);
 }

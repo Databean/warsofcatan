@@ -2,5 +2,7 @@ language: cpp
 before_install: 
  - sudo add-apt-repository ppa:antumdeluge/sdl2 -y
  - sudo apt-get update -y
+ - sudo apt-get install libgtest-dev
+ - cd /usr/src/gtest && sudo cmake . && sudo make && sudo mv libg* /usr/lib/ && cd $TRAVIS_BUILD_DIR
  - sudo apt-get install libsdl2 libsdl2-dev libsdl2-ttf libsdl2-ttf-dev -y
 script: make tests
