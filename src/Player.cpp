@@ -111,7 +111,7 @@ Player::~Player() {
 
 }
 
-std::tuple<float, float, float> Player::getColor(){
+std::tuple<float, float, float> Player::getColor() const {
 	return color;
 }
 
@@ -214,6 +214,7 @@ bool Player::canBuyCity(){
 bool Player::buyCity(){
 	if(canBuyCity()){
 		addMultiple(0,0,-3,-2,0);
+		return true;
 	}
 	return false;
 }

@@ -410,8 +410,8 @@ std::vector<CornerPiece*> GameBoard::GetNeighboringCorners(
 		const Coordinate& diff = adjacentCoordDiffs[i];
 		Coordinate adjacentPoint(location.first + diff.first,
 				location.second + diff.second);
-		auto it = resources.find(adjacentPoint);
-		if (it != resources.end()) {
+		auto it = corners.find(adjacentPoint);
+		if (it != corners.end()) {
 			GamePiece* piece = it->second.get();
 			if (dynamic_cast<CornerPiece*>(piece)) {
 				v.push_back(static_cast<CornerPiece*>(piece));
@@ -489,18 +489,26 @@ bool GameBoard::isRoadConnectionPoint(Coordinate point, Player& Owner) const {
  * @return If the road can be placed at the locations by the player.
  */
 bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const {
-	if (outOfBounds(start) || outOfBounds(end))
+	if (outOfBounds(start) || outOfBounds(end)) {
+		std::cout << "out of bounds" << std::endl;
 		return false;
-
-	if (roadExists(start, end))
+	}
+	
+	if (roadExists(start, end)) {
+		std::cout << "road exists" << std::endl;
 		return false;
-
-	if (!isRoadConnectionPoint(start, Owner) && !isRoadConnectionPoint(end, Owner)) //need to XOR
+	}
+	
+	if (!isRoadConnectionPoint(start, Owner) && !isRoadConnectionPoint(end, Owner)) { //need to XOR
+		std::cout << "not a road connection point" << std::endl;
 		return false;
-
-	if(!Road::isValidRoad(start, end))
+	}
+	
+	if(!Road::isValidRoad(start, end)) {
+		std::cout << "not a valid road" << std::endl;
 		return false;
-
+	}
+	
 	return true;
 }
 
@@ -548,8 +556,12 @@ Coordinate GameBoard::getRobber() const {
  * @returns True if the road was placed, false otherwise
  */
 bool GameBoard::PlaceRoad(Coordinate start, Coordinate end, Player& Owner) {
-	if (!verifyRoadPlacement(start, end, Owner))
+	if (!verifyRoadPlacement(start, end, Owner)) {
+		std::cout << "invalid road placement" << std::endl;
 		return false;
+	}
+	
+	std::cout << "passed verify" << std::endl;
 
 	std::shared_ptr<Road> newRoad;
 	try {
@@ -600,6 +612,7 @@ bool GameBoard::buyRoad(Coordinate start, Coordinate end, Player& Owner){
 		Owner.buyRoad();
 		return true;
 	}
+	std::cout << "failed to buy for some reason" << std::endl;
 	return false;
 }
 
@@ -743,6 +756,61 @@ void GameBoard::updateLargestArmyPlayer(){
 
 }
 
+/**
+ * Whether a player can place a settlement at a location.
+ * @param location The place to put the settlement.
+ * @param owner The player placing the settlement.
+ * @return If the location is a valid place to put a settlement.
+ */
+bool GameBoard::canPlaceSettlement(const Coordinate& location, const Player& owner) {
+	//Don't place this on top of a resource
+	if(resources.find(location) != resources.end()) {
+		std::cout << "can't put settlements on top of resource tiles" << std::endl;
+		return false;
+	}
+	//Don't place this on top of another settlement
+	if(corners.find(location) != corners.end()) {
+		std::cout << "can't put a settlement on top of another corner piece" << std::endl;
+		return false;
+	}
+	//Don't place this off the map
+	if(outOfBounds(location)) {
+		std::cout << "this is out of bounds" << std::endl;
+		return false;
+	}
+	//Can't have a settlement next to another settlement.
+	if(GetNeighboringCorners(location).size() > 0) {
+		std::cout << "there's an adjacent corner piece" << std::endl;
+		return false;
+	}
+	for(auto road : getRoads(location)) {
+		if(road->getOwner() == owner) {
+			//Player has a connecting road
+			return true;
+		}
+	}
+	std::cout << "there are no connecting roads" << std::endl;
+	//Player has no connecting roads
+	return false;
+}
+
+/**
+ * Buy a settlement if possible.
+ * @param location The location to place the settlement.
+ * @param owner The player buying the settlement.
+ * @return If placing the settlement was a success.
+ */
+bool GameBoard::buySettlement(const Coordinate& location, Player& owner) {
+	if(canPlaceSettlement(location, owner) && owner.canBuySettlement()) {
+		if(!owner.buySettlement()) {
+			std::cout << "wat" << std::endl;
+			return false;
+		}
+		PlaceSettlement(location, owner);
+		return true;
+	}
+	return false;
+}
 
 /**
  * Place a settlement on the board.
@@ -753,6 +821,43 @@ void GameBoard::PlaceSettlement(Coordinate location, Player& Owner){
 	if(resources.find(location) == resources.end() && !outOfBounds(location))
 		corners[location] = std::unique_ptr<CornerPiece>(new Settlement(*this, location, Owner));
 
+}
+
+/**
+ * Whether a settlement at a location can be upgraded to a city. 
+ */
+bool GameBoard::canUpgradeSettlement(Coordinate location, const Player& owner) const {
+	auto it = corners.find(location);
+	if(it == corners.end()) {
+		std::cout << "there's nothing there" << std::endl;
+		return false;
+	}
+	if(!it->second) {
+		std::cout << "null ptr there" << std::endl;
+		return false;
+	}
+	if(!(it->second->getOwner() == owner)) {
+		std::cout << "wrong owner" << std::endl;
+		return false;
+	}
+	if(dynamic_cast<const Settlement*>(it->second.get()) == 0) {
+		std::cout << "this isn't a settlement" << std::endl;
+		return false;
+	}
+	return true;
+}
+
+bool GameBoard::buyUpgradeOnSettlement(Coordinate location, Player& owner) {
+	if(canUpgradeSettlement(location, owner) && owner.canBuyCity()) {
+		if(!owner.buyCity()) {
+			std::cout << "wat" << std::endl;
+			return false;
+		}
+		UpgradeSettlement(location);
+		return true;
+	}
+	std::cout << "failed for some reason" << std::endl;
+	return false;
 }
 
 /**

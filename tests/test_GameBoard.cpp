@@ -162,17 +162,13 @@ TEST(GameBoardTest, longest_road_simple){
 TEST(GameBoardTest, payout_simple) {
 	GameBoard test_board(std::vector<std::string>{"tester"});
 	Player& test_player = test_board.getPlayer(0);
-
-
+	
 	test_board.PlaceSettlement(Coordinate(0,2), test_player);
 	
-
-	
 	test_board.getResourceTile(Coordinate(0,1)).Payout();
-
-
-	ASSERT_TRUE(!(test_player.getWheat() || test_player.getWood() || 
-		test_player.getOre() || test_player.getBrick() || test_player.getWool()));
+	
+	ASSERT_TRUE(test_player.getWheat() || test_player.getWood() || 
+		test_player.getOre() || test_player.getBrick() || test_player.getWool());
 }
 
 TEST(GameBoardTest, upgrade_simple){
