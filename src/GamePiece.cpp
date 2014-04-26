@@ -124,11 +124,11 @@ void ResourceTile::Payout() const{
 	while (it != neighbors.end())
 	{
 		(*it)->getOwner().addResource(resource, (*it)->getResourceModifier());
-		std::cout << ((*it)->getOwner().getWood()) << "\n";
+		/*std::cout << ((*it)->getOwner().getWood()) << "\n";
 		std::cout << ((*it)->getOwner().getBrick()) << "\n";
 		std::cout << ((*it)->getOwner().getOre()) << "\n";
 		std::cout << ((*it)->getOwner().getWheat()) << "\n";
-		std::cout << ((*it)->getOwner().getWool()) << "\n";
+		std::cout << ((*it)->getOwner().getWool()) << "\n";*/
 
 		it++;
 	}

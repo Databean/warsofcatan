@@ -160,6 +160,8 @@ bool GameController::nextTurn(ScreenCoordinate) {
 bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 	printPlayerInfo(model.getCurrentPlayer());
 	auto coord = screenToCoord(screenCoord);
+	std::vector<Settlement*> neighbors;
+	int resourceToSteal;	
 	
 	switch (getState()){
 	case BUILDROAD:
@@ -179,6 +181,12 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 			storeClick(coord);
 		
 		model.moveRobber(coord);
+		neighbors = model.GetNeighboringSettlements(coord);
+		if (!neighbors.empty()) {
+			resourceToSteal = neighbors[0]->getOwner().getRandomResource();
+			neighbors[0]->getOwner().addResource(resourceToSteal, -1);
+			model.getCurrentPlayer().addResource(resourceToSteal, 1);
+			} 
 
 		popState();
 		break;
