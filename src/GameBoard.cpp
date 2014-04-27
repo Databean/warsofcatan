@@ -65,6 +65,8 @@ GameBoard::GameBoard(const vector<std::string>& playerNames) {
 		}
 		valid = isValidBoard();
 	}
+	moveRobber(Coordinate(0,4));
+
 }
 
 /**
@@ -126,6 +128,9 @@ GameBoard::GameBoard(const std::vector<std::string>& playerNames, const std::map
 	currentTurn = 0;
 }
 
+GameDice GameBoard::getDice() {
+	return dice;
+}
 /**
  * Construct a board by reading in an XML representation from a stream.
  * @param in The stream to read from.

@@ -149,6 +149,9 @@ void printPlayerInfo(const Player& player) {
  */
 bool GameController::nextTurn(ScreenCoordinate) {
 	model.endTurn();
+	if (model.getDice().getFirst() + model.getDice().getSecond() == 7)
+		pushState(ROBBER);
+
 	printPlayerInfo(model.getCurrentPlayer());
 	return true;
 }
@@ -163,6 +166,8 @@ bool GameController::nextTurn(ScreenCoordinate) {
 bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 	printPlayerInfo(model.getCurrentPlayer());
 	auto coord = screenToCoord(screenCoord);
+	std::vector<Settlement*> neighbors;
+	int resourceToSteal;	
 	
 	switch (getState()){
 	case BUILDROAD:
@@ -178,6 +183,19 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		break;
 	case ROBBER:
 		//model.moveRobber(coord);
+		robPlayers();
+
+		if(!hasClickHistory())
+			storeClick(coord);
+		
+		model.moveRobber(coord);
+		neighbors = model.GetNeighboringSettlements(coord);
+		if (!neighbors.empty()) {
+			resourceToSteal = neighbors[0]->getOwner().getRandomResource();
+			neighbors[0]->getOwner().addResource(resourceToSteal, -1);
+			model.getCurrentPlayer().addResource(resourceToSteal, 1);
+			} 
+
 		popState();
 		break;
 	case BUILDROAD_DEVCARD:
@@ -194,6 +212,26 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 	case KNIGHT_DEVCARD:
 		storeClick(coord);
 		view.setControlStateText("Select a player around that tile to steal from (Select yourself if you don't want to rob anyone)");
+		//model.getCurrentPlayer().playKnight(coord, opponent);
+		/**if(!hasClickHistory())
+			storeClick(coord);
+		
+		model.moveRobber(coord);
+		neighbors = model.GetNeighboringSettlements(coord);
+		if (!neighbors.empty()) {
+			resourceToSteal = neighbors[0]->getOwner().getRandomResource();
+			neighbors[0]->getOwner().addResource(resourceToSteal, -1);
+			model.getCurrentPlayer().addResource(resourceToSteal, 1);
+			} 
+
+		//TODO Decrement knight count
+
+
+		
+		popState();**/
+		break;
+	case YEAROFPLENTY_DEVCARD:
+		model.getCurrentPlayer().playYearOfPlenty(model.getResourceTile(coord).getType());
 		popState();
 		break;
 	case VICTORYPOINT_DEVCARD:
@@ -214,6 +252,26 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		break;
 	}
 	return true;
+}
+
+void GameController :: robPlayers() {
+	for (int i = 0; i < model.getNoOfPlayers(); i++) {
+		int resources[5];
+		model.getPlayer(i).checkResources(resources);
+		//int rSum = resources[0] + resources[1] + resources[2] + resources[3] + resources[4];
+		int rSum = model.getPlayer(i).getWood() + 
+		model.getPlayer(i).getOre() + 
+		model.getPlayer(i).getBrick() + 
+		model.getPlayer(i).getWheat() + 
+		model.getPlayer(i).getWool(); 
+
+		if (rSum > 7) {
+			for (int j = 0 ; j < rSum/2; j++) {
+				model.getPlayer(i).addResource(model.getPlayer(i).getRandomResource(), -1);
+
+			}
+		}
+	}
 }
 
 /**
