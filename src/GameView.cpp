@@ -562,7 +562,7 @@ void drawTexturedRectangle(std::pair<float, float> texTopLeft, float sideLength,
 void DrawingGameVisitor::visit(GameDice& dice) {
 
 	static const GLuint diceTextures = loadImageAsTexture("resources/catan_dice_new.bmp");
-	static const GLuint gameTextures = loadImageAsTexture("resources/catan_sprite_sheet_thatnewnew.bmp");
+	
 	glBindTexture(GL_TEXTURE_2D, diceTextures);
 
 	glColor3d(1.0, 1.0, 1.0);	
@@ -649,10 +649,7 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 	
 	if(tile.getDiceValue() != 0) {
 		if (tile.getBoard().getRobber() == coord) { //draw the robber on this tile
-			//static const GLuint robberTextures = loadImageAsTexture("resource/catan_sprite_sheet_thatnewnew.bmp");
-
-			//glBindTexture(GL_TEXTURE_2D, robberTextures);
-			//glColor3d(1.0, 1.0, 1.0);
+			
 			drawTexturedCircle(make_pair(1240.f, 643.f), 59.5f, coordToScreen(coord), 0.04);
 		}
 		else
