@@ -109,7 +109,7 @@ Coordinate GameController::getLastClick(){
  * Gets a click from param clicks ago
  * @ param an integer
  */
-Coordinate GameController::getPastClick(int howLongAgo){
+Coordinate GameController::getPastClick(unsigned int howLongAgo){
 	if (howLongAgo < clickHistory.size()){
 		return clickHistory[clickHistory.size() - 1 - howLongAgo];
 	}
@@ -473,7 +473,7 @@ bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
 			return handleCancelButtonEvent(coord);
 		}
 	}
-	
+	return true;
 }
 
 /**
