@@ -415,6 +415,28 @@ TEST(PlayerTest, Monopoly_card_2){
 
 }
 
+
+
+TEST(PlayerTest, Monopoly_card_2){
+	GameBoard board({"test-player1", "test-player2"});
+
+	Player& tp1 = board.getPlayer(0);
+	Player& tp2 = board.getPlayer(1);
+
+	std::unique_ptr<DevelopmentCard> test_MonopolyCard = std::unique_ptr<DevelopmentCard>(new MonopolyCard());
+	tp1.buyCard(test_MonopolyCard);
+
+	tp1.addMultiple(0,0,0,1,1);
+	tp2.addMultiple(1,1,0,0,0);
+
+	tp1.playMonopoly(0);
+
+	ASSERT_TRUE(validateResourceAmount(0,0,0,1,1,tp1));
+	ASSERT_TRUE(validateResourceAmount(1,1,0,0,0,tp2));
+
+}
+
+
 TEST(PlayerTest, Monopoly_card_false){
 	GameBoard board({"test-player1", "test-player2"});
 
@@ -447,6 +469,38 @@ TEST(PlayerTest, Year_Of_Plenty_card){
 	tp1.playYearOfPlenty(2);
 
 	ASSERT_TRUE(validateResourceAmount(0,0,2,1,1,tp1));
+
+}
+
+
+
+TEST(PlayerTest, Year_Of_Plenty_card_false){
+	GameBoard board({"test-player1"});
+
+	Player& tp1 = board.getPlayer(0);
+
+	std::unique_ptr<DevelopmentCard> test_YearOfPlentyCard = std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard());
+	tp1.buyCard(test_YearOfPlentyCard);
+
+	tp1.addMultiple(0,0,0,1,1);
+
+	tp1.playYearOfPlenty(2);
+
+	ASSERT_TRUE(validateResourceAmount(0,0,0,1,1,tp1));
+
+}
+
+
+TEST(PlayerTest, Year_Of_Plenty_card_false_2){
+	GameBoard board({"test-player1"});
+
+	Player& tp1 = board.getPlayer(0);
+
+	tp1.addMultiple(0,0,0,1,1);
+
+	tp1.playYearOfPlenty(2);
+
+	ASSERT_TRUE(validateResourceAmount(0,0,0,1,1,tp1));
 
 }
 
