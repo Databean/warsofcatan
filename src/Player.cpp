@@ -639,7 +639,6 @@ bool Player::makeBankTrade(std::array<int, 5> offer, std::array<int, 5> demand) 
 	}
 	int credits = 0;
 	for(int i = 0; i < 5; i++) {
-		std::cout << i << " " << offer[i] << " " << tradeModifiers[i] << std::endl;
 		credits += offer[i] / tradeModifiers[i];
 	}
 	for(int i = 0; i < 5; i++) {

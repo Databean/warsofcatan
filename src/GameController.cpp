@@ -487,7 +487,6 @@ bool GameController::handleBankClick(ScreenCoordinate screenCoord) {
 		std::array<int, 5> splitOffer;
 		std::array<int, 5> splitDemand;
 		for(int i = 0; i < 5; i++) {
-			std::cout << "offer " << i << " " << offer[i] << std::endl;
 			splitOffer[i] = offer[i] > 0 ? 0 : -offer[i];
 			splitDemand[i] = offer[i] < 0 ? 0 : offer[i];
 		}
