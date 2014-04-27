@@ -542,8 +542,8 @@ bool GameController::handleBankClick(ScreenCoordinate screenCoord) {
 		view.removeElement(priority);
 		return true;
 	};
-	
-	view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(model.getCurrentPlayer().getName(), "Bank", tradeFunction, cancelFunction, {0, 0, 0, 0, 0})));
+	std::array<int, 5> initial{{0, 0, 0, 0, 0}};
+	view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(model.getCurrentPlayer().getName(), "Bank", tradeFunction, cancelFunction, initial)));
 	
 	return true;
 }
