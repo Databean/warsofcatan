@@ -38,20 +38,20 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleCancelButtonEvent, this, _1), {{.92, .96}, {1.0, 1.0}}, font, fontSize, "Cancel"));
 	
-	view.addElement(makeViewButtonText(std::bind(/*&GameController::handleBuyDevelopmentCardButtonEvent*/&GameController::viewCardTotals, this, _1), {{.85, .23}, {1, .30}}, font, fontSize, "Development Cards"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleBuyDevelopmentCardButtonEvent, this, _1), {{.85, .23}, {1, .30}}, font, fontSize, "Development Cards"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadCardButtonEvent, this, _1), {{0.85, 0.0}, {0.97, 0.05}}, font, fontSize, "Road Building "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleKnightCardButtonEvent, this, _1), {{0.85, 0.05}, {0.97, 0.10}},  font, fontSize, "Knight "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleYearOfPlentyCardButtonEvent, this, _1), {{0.85, 0.10}, {0.97, 0.15}},  font, fontSize, "Year of Plenty "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleMonopolyCardButtonEvent, this, _1), {{0.85, 0.15}, {0.97, 0.20}},  font, fontSize, "Monopoly "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleVictoryPointCardButtonEvent, this, _1), {{0.85, 0.20}, {0.97, 0.25}},  font, fontSize, "Victory Point "));
 
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleWoodButtonEvent, this, _1), {{.85, .35}, {.97, .40}}, font, fontSize, "Wood "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleSheepButtonEvent, this, _1), {{.85, .40}, {.97, .45}}, font, fontSize, "Sheep "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleOreButtonEvent, this, _1), {{.85, .45}, {.97, .50}}, font, fontSize, "Ore "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleBrickButtonEvent, this, _1), {{.85, .50}, {.97, .55}}, font, fontSize, "Brick "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleWheatButtonEvent, this, _1), {{.85, .55}, {.97, .60}}, font, fontSize, "Wheat "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleWoodButtonEvent, this, _1), {{.85, .30}, {.97, .35}}, font, fontSize, "Wood "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleSheepButtonEvent, this, _1), {{.85, .35}, {.97, .40}}, font, fontSize, "Sheep "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleOreButtonEvent, this, _1), {{.85, .40}, {.97, .45}}, font, fontSize, "Ore "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleBrickButtonEvent, this, _1), {{.85, .45}, {.97, .50}}, font, fontSize, "Brick "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleWheatButtonEvent, this, _1), {{.85, .50}, {.97, .55}}, font, fontSize, "Wheat "));
     
-    //view.addElement(makeViewButtonText(std::bind(&GameController::viewCardTotals, this, _1), {{.85, .35}, {.97, .35}}, font, fontSize, "Show Totals"));
+    view.addElement(makeViewButtonText(std::bind(&GameController::viewCardTotals, this, _1), {{.85, .55}, {.97, .60}}, font, fontSize, "Show Totals"));
 
 
 	stateStack.push_back(BASESTATE);

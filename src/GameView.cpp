@@ -137,23 +137,23 @@ void GameView::drawResourceCount(std::string font, int fontSize)
 {
     if(showTotals==false)
     {
-        renderText(font, fontSize, {0.97, 0.35}, {1.0, 0.40}, "?");		//Wood
-        renderText(font, fontSize, {0.97, 0.40}, {1.0, 0.45}, "?");		//Sheep
-        renderText(font, fontSize, {0.97, 0.45}, {1.0, 0.50}, "?");		//Ore
-        renderText(font, fontSize, {0.97, 0.50}, {1.0, 0.55}, "?");		//Brick
-        renderText(font, fontSize, {0.97, 0.55}, {1.0, 0.60}, "?");     //Wheat
+        renderText(font, fontSize, {0.97, 0.30}, {1.0, 0.35}, "?");		//Wood
+        renderText(font, fontSize, {0.97, 0.35}, {1.0, 0.40}, "?");		//Sheep
+        renderText(font, fontSize, {0.97, 0.40}, {1.0, 0.45}, "?");		//Ore
+        renderText(font, fontSize, {0.97, 0.45}, {1.0, 0.50}, "?");		//Brick
+        renderText(font, fontSize, {0.97, 0.50}, {1.0, 0.55}, "?");     //Wheat
         return;
     }
     
-	renderText(font, fontSize, {0.97, 0.35}, {1.0, 0.40},
+	renderText(font, fontSize, {0.97, 0.30}, {1.0, 0.35},
 			toString(model.getCurrentPlayer().getWood()));		//Wood
-	renderText(font, fontSize, {0.97, 0.40}, {1.0, 0.45},
+	renderText(font, fontSize, {0.97, 0.35}, {1.0, 0.40},
 			toString(model.getCurrentPlayer().getWool()));		//Sheep
-	renderText(font, fontSize, {0.97, 0.45}, {1.0, 0.50},
+	renderText(font, fontSize, {0.97, 0.40}, {1.0, 0.45},
 			toString(model.getCurrentPlayer().getOre()));		//Ore
-	renderText(font, fontSize, {0.97, 0.50}, {1.0, 0.55},
+	renderText(font, fontSize, {0.97, 0.45}, {1.0, 0.50},
 			toString(model.getCurrentPlayer().getBrick()));		//Brick
-	renderText(font, fontSize, {0.97, 0.55}, {1.0, 0.60},
+	renderText(font, fontSize, {0.97, 0.50}, {1.0, 0.55},
 			toString(model.getCurrentPlayer().getWheat()));		//Wheat
 
 }
