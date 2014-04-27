@@ -46,11 +46,13 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleMonopolyCardButtonEvent, this, _1), {{0.85, 0.15}, {0.97, 0.20}},  font, fontSize, "Monopoly "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleVictoryPointCardButtonEvent, this, _1), {{0.85, 0.20}, {0.97, 0.25}},  font, fontSize, "Victory Point "));
 
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleWoodButtonEvent, this, _1), {{.85, .35}, {.97, .40}}, font, fontSize, "Wood "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleSheepButtonEvent, this, _1), {{.85, .40}, {.97, .45}}, font, fontSize, "Sheep "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleOreButtonEvent, this, _1), {{.85, .45}, {.97, .50}}, font, fontSize, "Ore "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleBrickButtonEvent, this, _1), {{.85, .50}, {.97, .55}}, font, fontSize, "Brick "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleWheatButtonEvent, this, _1), {{.85, .55}, {.97, .60}}, font, fontSize, "Wheat "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleWoodButtonEvent, this, _1), {{.85, .30}, {.97, .35}}, font, fontSize, "Wood "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleSheepButtonEvent, this, _1), {{.85, .35}, {.97, .40}}, font, fontSize, "Sheep "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleOreButtonEvent, this, _1), {{.85, .40}, {.97, .45}}, font, fontSize, "Ore "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleBrickButtonEvent, this, _1), {{.85, .45}, {.97, .50}}, font, fontSize, "Brick "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleWheatButtonEvent, this, _1), {{.85, .50}, {.97, .55}}, font, fontSize, "Wheat "));
+    
+    view.addElement(makeViewButtonText(std::bind(&GameController::viewCardTotals, this, _1), {{.85, .55}, {.97, .60}}, font, fontSize, "Show Totals"));
 
 
 	stateStack.push_back(BASESTATE);
@@ -146,13 +148,15 @@ void printPlayerInfo(const Player& player) {
 }
 
 /**
- *  calls a function to advance turn, check for victory and roll dice
+ *  calls a function to advance turn, hide resource and development cards, check for victory, and roll dice
  */
 bool GameController::nextTurn(ScreenCoordinate) {
 	if(getState() != BASESTATE){
 		return false;
 	}
-
+    
+    view.showTotals = false;
+    
 	model.endTurn();
 	if (model.getDice().getFirst() + model.getDice().getSecond() == 7)
 	{
@@ -432,6 +436,19 @@ bool GameController::handleVictoryPointCardButtonEvent(ScreenCoordinate coord){
 	}
 	//pushState(VICTORYPOINT_DEVCARD);
 	return true;
+}
+
+/**
+ * Makes the development and resource card totals visible
+ */
+bool GameController::viewCardTotals(ScreenCoordinate coord)
+{
+    auto font = getGraphicsConfig()["font.path"];
+	auto fontSize = getGraphicsConfig()["font.size"];
+    view.showTotals = !view.showTotals;
+    view.drawCardCount(font, fontSize);
+    view.drawResourceCount(font, fontSize);
+    return true;
 }
 
 
