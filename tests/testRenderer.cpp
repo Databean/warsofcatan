@@ -1,4 +1,5 @@
 #include <iostream>
+#include <tuple>
 
 #include "gtest/gtest.h"
 
@@ -6,14 +7,8 @@
 
 using std::make_pair;
 
-// fix for travis
-#if (!__GNUC__) || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 8) || (__GNUC__ >= 5))
 using std::tuple;
 using std::get;
-#else
-using ::testing::tuple;
-using ::testing::get;
-#endif
 
 class CoordinateConversionTest : public ::testing::TestWithParam<tuple<int, int>> {
 	
