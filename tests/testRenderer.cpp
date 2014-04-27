@@ -2,6 +2,7 @@
 #include <tuple>
 
 #define GTEST_USE_OWN_TR1_TUPLE 0
+#define GTEST_ENV_HAS_STD_TUPLE_ 1
 
 #include "gtest/gtest.h"
 
