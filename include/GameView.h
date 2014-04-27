@@ -53,7 +53,10 @@ private:
 
 	void highlightPoint(ScreenCoordinate & coord);
 	void drawCardCount(std::string font, int fontSize);
+	void drawResourceCount(std::string font, int fontSize);
 	
+	std::string controlStateText;
+
 	GameView(const GameView& o) = delete;
 	GameView& operator=(const GameView& o) = delete;
 public:
@@ -63,12 +66,15 @@ public:
 	void render();
 	bool acceptInput(SDL_Event& event);
 	
+	void setControlStateText(std::string newText);
+
 
 	void addPointOfInterest(ScreenCoordinate);
 	void clearPointsOfInterest();
 	void addElement(std::unique_ptr<ViewElement> element);
 	void addElement(int priority, std::unique_ptr<ViewElement>);
 	
+
 	std::unique_ptr<ViewElement> removeElement(int priority);
 	std::unique_ptr<ViewElement> removeElement(const ViewElement*);
 	std::unique_ptr<ViewElement> removeElement(const ViewElement&);

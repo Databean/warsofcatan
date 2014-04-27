@@ -14,7 +14,6 @@
 
 #include "CornerPiece.h"
 #include "GameDice.h"
-
 #include "Settlement.h"
 #include "City.h"
 #include "Wonder.h"
@@ -66,6 +65,16 @@ GameBoard::GameBoard(const vector<std::string>& playerNames) {
 		}
 		valid = isValidBoard();
 	}
+	//moveRobber(Coordinate(0,4));
+	auto it = getResources().begin();
+	while(it != getResources().end()) {
+		if ((it->second)->getType() == DESERT)
+			moveRobber(it->first);
+		it++;
+	}
+	std::cout << getRobber().first << "\n";
+	std::cout << getRobber().second << "\n";
+
 }
 
 /**
@@ -127,6 +136,9 @@ GameBoard::GameBoard(const std::vector<std::string>& playerNames, const std::map
 	currentTurn = 0;
 }
 
+GameDice GameBoard::getDice() {
+	return dice;
+}
 /**
  * Construct a board by reading in an XML representation from a stream.
  * @param in The stream to read from.
@@ -400,16 +412,15 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(
  * @param location The location to search the neighbors of.
  * @return A vector of the corner pieces in the vicinity.
  */
-std::vector<CornerPiece*> GameBoard::GetNeighboringCorners(
-		Coordinate location) const{
-	static Coordinate adjacentCoordDiffs[] = { Coordinate(0, 1), Coordinate(1,
-			0), Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0),
-			Coordinate(-1, 1) };
+std::vector<CornerPiece*> GameBoard::GetNeighboringCorners(Coordinate location) const{
+	static Coordinate adjacentCoordDiffs[] = { Coordinate(0, 1), Coordinate(1,0),
+			Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0), Coordinate(-1, 1) };
+
 	std::vector<CornerPiece*> v;
 	for (unsigned int i = 0; i < 6; i++) {
 		const Coordinate& diff = adjacentCoordDiffs[i];
-		Coordinate adjacentPoint(location.first + diff.first,
-				location.second + diff.second);
+		Coordinate adjacentPoint(location.first + diff.first, location.second + diff.second);
+
 		auto it = corners.find(adjacentPoint);
 		if (it != corners.end()) {
 			GamePiece* piece = it->second.get();
@@ -420,6 +431,7 @@ std::vector<CornerPiece*> GameBoard::GetNeighboringCorners(
 	}
 	return v;
 }
+
 
 
 /**
@@ -516,21 +528,22 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
  * Move the robber to a new coordinate on the board.
  * @param newRobber The coordinate to move the robber to.
  */
-void GameBoard::moveRobber(Coordinate newRobber) {
+bool GameBoard::moveRobber(Coordinate newRobber) {
 
 	//Bounds check
-	if(resources.count(newRobber) > 0)
+	if(resources.find(newRobber) != resources.end()){
 		robber = newRobber;
+		return true;
+	}
+	return false;
 }
 
 /**
- * DOES NOT WORK BECAUSE getNeighboringCorners() does not work
+ * Returns whether the robber can rob the Player opponent at the recourse tile Coordinate location
+ * @return true if the robber can rob the opponent, false otherwise
  */
 bool GameBoard::canRobberRob(Player& opponent, Coordinate location){
-	std::cout << GetNeighboringCorners(location).size() << "\n";
-
 	for(auto corner : GetNeighboringCorners(location)){
-		std::cout << corner->getOwner().getName() << "derp\n";
 		if(corner->getOwner() == opponent){
 			return true;
 		}
@@ -1102,3 +1115,54 @@ void GameBoard::payoutResources(int roll)
         }
     }
 }
+
+/**
+ * Buys a card drawn from the deck
+ */
+void GameBoard::buyCard(Player& owner){
+	if(owner.canBuyCard() && deck.getSize() > 0){
+
+		DevelopmentCard * card_ptr = deck.drawCard();
+
+		std::unique_ptr<DevelopmentCard> knight = std::unique_ptr<DevelopmentCard>(new KnightCard());
+		std::unique_ptr<DevelopmentCard> victorypoint = std::unique_ptr<DevelopmentCard>(new VictoryPointCard());
+		std::unique_ptr<DevelopmentCard> monopoly = std::unique_ptr<DevelopmentCard>(new MonopolyCard());
+		std::unique_ptr<DevelopmentCard> yearofplenty = std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard());
+		std::unique_ptr<DevelopmentCard> roadbuilding = std::unique_ptr<DevelopmentCard>(new RoadBuildingCard());
+
+		switch (card_ptr->getType()){
+		case KNIGHT:
+			owner.buyCard(knight);
+			break;
+		case VICTORYPOINT:
+			owner.buyCard(victorypoint);
+			break;
+		case MONOPOLY:
+			owner.buyCard(monopoly);
+			break;
+		case YEAROFPLENTY:
+			owner.buyCard(yearofplenty);
+			break;
+		case ROADBUILDING:
+			owner.buyCard(roadbuilding);
+			break;
+		default:
+			break;
+		}
+
+		delete(card_ptr);
+	}
+}
+
+/**
+ * Discards a card back into the deck
+ */
+void GameBoard::discardCard(DevelopmentCard * card){
+	deck.discard(card);
+}
+
+
+
+
+
+

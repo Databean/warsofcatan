@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 
 	updateViewport(getGraphicsConfig()["screen.width"], getGraphicsConfig()["screen.height"]);
 	
-	GameBoard model({"Player1", "Player2", "Player3", "Player4"});
+	GameBoard model({"Southern Tribes", "Western Watch", "North Guard", "East Raiders"});
 	GameView view(model);
 	GameController controller(model, view);
 	

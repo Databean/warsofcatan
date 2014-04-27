@@ -17,6 +17,10 @@
 #include "tinyxml2.h"
 #include "Road.h"
 #include "GameDice.h"
+#include "Deck.h"
+
+#include "DevelopmentCard.h"
+
 
 class GameVisitor;
 
@@ -31,7 +35,7 @@ private:
 
 	GameDice dice;
 
-
+	Deck deck;
 
 	std::map<Coordinate, std::vector<std::shared_ptr<Road>>> roads;
 
@@ -75,7 +79,12 @@ public:
 
 	void initializeGame();
 
+	GameDice getDice();
+
 	void save(std::ostream& out);
+
+	void buyCard(Player& owner);
+	void discardCard(DevelopmentCard * card);
 
 	ResourceTile& getResourceTile(Coordinate location) const;
 
@@ -128,7 +137,7 @@ public:
 
     bool testRollChecking(int* rolls);
 
-    void moveRobber(Coordinate newRobber);
+    bool moveRobber(Coordinate newRobber);
     Coordinate getRobber() const;
     bool canRobberRob(Player& opponent, Coordinate location);
 

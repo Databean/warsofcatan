@@ -253,6 +253,7 @@ void testKnightCard(Player& test_player, bool correct_result, GameBoard& test_bo
 
 }
 
+
 TEST(DevCardTest, KnightCard){
 	GameBoard test_board({"tester1", "tester2", "tester3"});
 	Player& test_player1 = test_board.getPlayer(0);
@@ -261,9 +262,10 @@ TEST(DevCardTest, KnightCard){
 
 	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new KnightCard());
 
-	test_player1.addOre(3);
-	test_player1.addWheat(3);
-	test_player1.addWool(3);
+	test_player1.addOre(4);
+	test_player1.addWheat(4);
+	test_player1.addWool(4);
+	test_player1.buyCard(test_card);
 	test_player1.buyCard(test_card);
 	test_player1.buyCard(test_card);
 	test_player1.buyCard(test_card);
@@ -271,9 +273,9 @@ TEST(DevCardTest, KnightCard){
 	test_board.moveRobber(Coordinate(0,1));
 
 	testKnightCard(test_player1, false, test_board, Coordinate(0,4), test_player2, 0);
-/**DOES NOT WORK BECAUSE getNeighboringCorners() does not work
 	test_player2.addWood(1);
 	test_board.PlaceSettlement(Coordinate(0,3), test_player2);
+	testKnightCard(test_player1, true, test_board, Coordinate(0,4), test_player1, 0);
 	testKnightCard(test_player1, true, test_board, Coordinate(0,4), test_player2, 1);
 
 	test_player3.addWood(1);
@@ -282,15 +284,9 @@ TEST(DevCardTest, KnightCard){
 	testKnightCard(test_player1, true, test_board, Coordinate(0,1), test_player3, 1);
 
 	testKnightCard(test_player1, true, test_board, Coordinate(0,4), test_player2, 0);
-**/
 
 	testKnightCard(test_player1, false, test_board, Coordinate(0,4), test_player3, 0);
 }
-
-
-
-
-
 
 
 

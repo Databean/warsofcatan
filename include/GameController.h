@@ -40,10 +40,19 @@ public:
 	bool handleSettlementButtonEvent(ScreenCoordinate);
 	bool handleCityButtonEvent(ScreenCoordinate);
 	bool handleRoadCardButtonEvent(ScreenCoordinate);
+
+	bool handleBuyDevelopmentCardButtonEvent(ScreenCoordinate);
 	bool handleKnightCardButtonEvent(ScreenCoordinate);
 	bool handleYearOfPlentyCardButtonEvent(ScreenCoordinate);
 	bool handleMonopolyCardButtonEvent(ScreenCoordinate);
 	bool handleVictoryPointCardButtonEvent(ScreenCoordinate);
+
+	bool handleWoodButtonEvent(ScreenCoordinate);
+	bool handleSheepButtonEvent(ScreenCoordinate);
+	bool handleWheatButtonEvent(ScreenCoordinate);
+	bool handleOreButtonEvent(ScreenCoordinate);
+	bool handleBrickButtonEvent(ScreenCoordinate);
+
 	bool handleCancelButtonEvent(ScreenCoordinate);
 
 	bool handleConfirmRoadCard(ScreenCoordinate);
@@ -58,6 +67,8 @@ public:
 	void clearClickHistory();
 	bool hasClickHistory();
 	int getClickHistorySize();
+
+	void robPlayers();
 
 	bool handlePlayerClick(ScreenCoordinate, Player&);
 	bool handleTradeOffer(ScreenCoordinate, Player& initiating, std::array<int, 5>, Player& receiving, std::array<int, 5>);
