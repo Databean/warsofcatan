@@ -478,8 +478,8 @@ bool Player::playVictoryCard(){
  * @return true if the card was used, false otherwise
  */
 bool Player::playKnight(Coordinate location, Player& opponent){
-	if(developmentCards[KNIGHT] > 0 && board.canRobberRob(opponent, location)){
-				board.moveRobber(location);
+	if(developmentCards[KNIGHT] > 0 && (board.canRobberRob(opponent, location) || opponent == *this) && board.moveRobber(location)){
+
 		int resourceToSteal = opponent.getRandomResource();
 		if(resourceToSteal >= 0){
 			addResource(resourceToSteal, 1);

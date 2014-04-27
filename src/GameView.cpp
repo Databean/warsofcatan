@@ -87,6 +87,7 @@ bool ViewElement::handleClick(ScreenCoordinate coord) {
  * @param model The GameBoard the view is displaying.
  */
 GameView::GameView(GameBoard& model) : model(model) {
+	controlStateText = "Welcome to Wars of Catan";
 	
 }
 
@@ -116,6 +117,9 @@ void GameView::drawCardCount(std::string font, int fontSize){
 			toString(model.getCurrentPlayer().getVictoryCards()));		//Victory Point
 }
 
+/**
+ * Draws the count of resources the currentPlayer has
+ */
 void GameView::drawResourceCount(std::string font, int fontSize){
 	renderText(font, fontSize, {0.97, 0.35}, {1.0, 0.40},
 			toString(model.getCurrentPlayer().getWood()));		//Wood
@@ -151,12 +155,19 @@ void GameView::render() {
 	auto fontSize = getGraphicsConfig()["font.size"];
 	
 	glColor3d(1, 1, 1);
-	renderText(font, fontSize, {.2, .9}, {.8, 1}, "Settlers of Catan");
+	renderText(font, fontSize, {.0, .9}, {.85, 1}, controlStateText);
 	
+	renderText(font, fontSize, {.78, .82}, {.8, .92}, ">");
+	renderText(font, fontSize, {.8, .82}, {1., .92}, model.getCurrentPlayer().getName());
+
 	drawCardCount(font, fontSize);
 	drawResourceCount(font, fontSize);
 
 	glFlush();
+}
+
+void GameView::setControlStateText(std::string newText){
+	controlStateText = newText;
 }
 
 /**
@@ -562,6 +573,7 @@ void drawTexturedRectangle(std::pair<float, float> texTopLeft, float sideLength,
 void DrawingGameVisitor::visit(GameDice& dice) {
 
 	static const GLuint diceTextures = loadImageAsTexture("resources/catan_dice_new.bmp");
+
 	glBindTexture(GL_TEXTURE_2D, diceTextures);
 
 	glColor3d(1.0, 1.0, 1.0);	
@@ -583,8 +595,6 @@ void DrawingGameVisitor::visit(GameDice& dice) {
 
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-
-
 	
 }
 
@@ -649,10 +659,7 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 	if(tile.getDiceValue() != 0 || 
 		tile.getBoard().getResourceTile(tile.getBoard().getRobber()).getType() == DESERT) {
 		if (tile.getBoard().getRobber() == coord) { //draw the robber on this tile
-			//static const GLuint robberTextures = loadImageAsTexture("resource/catan_sprite_sheet_thatnewnew.bmp");
-
-			//glBindTexture(GL_TEXTURE_2D, robberTextures);
-			//glColor3d(1.0, 1.0, 1.0);
+			
 			drawTexturedCircle(make_pair(1240.f, 643.f), 59.5f, coordToScreen(coord), 0.04);
 		}
 		else
