@@ -399,16 +399,15 @@ std::vector<Settlement*> GameBoard::GetNeighboringSettlements(
  * @param location The location to search the neighbors of.
  * @return A vector of the corner pieces in the vicinity.
  */
-std::vector<CornerPiece*> GameBoard::GetNeighboringCorners(
-		Coordinate location) const{
-	static Coordinate adjacentCoordDiffs[] = { Coordinate(0, 1), Coordinate(1,
-			0), Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0),
-			Coordinate(-1, 1) };
+std::vector<CornerPiece*> GameBoard::GetNeighboringCorners(Coordinate location) const{
+	static Coordinate adjacentCoordDiffs[] = { Coordinate(0, 1), Coordinate(1,0),
+			Coordinate(1, -1), Coordinate(0, -1), Coordinate(-1, 0), Coordinate(-1, 1) };
+
 	std::vector<CornerPiece*> v;
 	for (unsigned int i = 0; i < 6; i++) {
 		const Coordinate& diff = adjacentCoordDiffs[i];
-		Coordinate adjacentPoint(location.first + diff.first,
-				location.second + diff.second);
+		Coordinate adjacentPoint(location.first + diff.first, location.second + diff.second);
+
 		auto it = corners.find(adjacentPoint);
 		if (it != corners.end()) {
 			GamePiece* piece = it->second.get();
@@ -516,21 +515,22 @@ bool GameBoard::verifyRoadPlacement(Coordinate start, Coordinate end, Player& Ow
  * Move the robber to a new coordinate on the board.
  * @param newRobber The coordinate to move the robber to.
  */
-void GameBoard::moveRobber(Coordinate newRobber) {
+bool GameBoard::moveRobber(Coordinate newRobber) {
 
 	//Bounds check
-	if(resources.count(newRobber) > 0)
+	if(resources.find(newRobber) != resources.end()){
 		robber = newRobber;
+		return true;
+	}
+	return false;
 }
 
 /**
- * DOES NOT WORK BECAUSE getNeighboringCorners() does not work
+ * Returns whether the robber can rob the Player opponent at the recourse tile Coordinate location
+ * @return true if the robber can rob the opponent, false otherwise
  */
 bool GameBoard::canRobberRob(Player& opponent, Coordinate location){
-	std::cout << GetNeighboringCorners(location).size() << "\n";
-
 	for(auto corner : GetNeighboringCorners(location)){
-		std::cout << corner->getOwner().getName() << "derp\n";
 		if(corner->getOwner() == opponent){
 			return true;
 		}
