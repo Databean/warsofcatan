@@ -117,6 +117,9 @@ void GameView::drawCardCount(std::string font, int fontSize){
 			toString(model.getCurrentPlayer().getVictoryCards()));		//Victory Point
 }
 
+/**
+ * Draws the count of resources the currentPlayer has
+ */
 void GameView::drawResourceCount(std::string font, int fontSize){
 	renderText(font, fontSize, {0.97, 0.35}, {1.0, 0.40},
 			toString(model.getCurrentPlayer().getWood()));		//Wood
@@ -154,6 +157,9 @@ void GameView::render() {
 	glColor3d(1, 1, 1);
 	renderText(font, fontSize, {.0, .9}, {.85, 1}, controlStateText);
 	
+	renderText(font, fontSize, {.78, .82}, {.8, .92}, ">");
+	renderText(font, fontSize, {.8, .82}, {1., .92}, model.getCurrentPlayer().getName());
+
 	drawCardCount(font, fontSize);
 	drawResourceCount(font, fontSize);
 

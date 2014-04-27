@@ -28,7 +28,7 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0.20, 0.0}, {0.33, 0.1}}, font, fontSize, "Settlement"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::nextTurn, this, _1), {{0, 0.3}, {0.1, 0.4}}, font, fontSize, "End Turn"));
 	
-	auto playerTopY = 0.9;
+	auto playerTopY = 0.82;
 	for(auto i = 0; i < model.getNoOfPlayers(); i++) {
 		auto width = 0.15;
 		Player& player = model.getPlayer(i);
@@ -209,13 +209,10 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		}
 		break;
 	case KNIGHT_DEVCARD:
-
-		storeClick(coord);
-		view.setControlStateText("Select a player around that tile to steal from (Select yourself if you don't want to rob anyone)");
-		break;
-	case VICTORYPOINT_DEVCARD:
-		model.getCurrentPlayer().playVictoryCard();
-		handleCancelButtonEvent(screenCoord);
+		if(!hasClickHistory()){
+			storeClick(coord);
+			view.setControlStateText("Select a player around that tile to steal from (Select yourself if you don't want to rob anyone)");
+		}
 		break;
 	case BUILDSETTLEMENT:
 		std::cout << "attempting to buy a settlement" << std::endl;
@@ -405,15 +402,15 @@ bool GameController::handleMonopolyCardButtonEvent(ScreenCoordinate coord){
 }
 
 /**
- * Handles a click on the VictoryPoint card button. Will push the victory point card state to the control stack
+ * Handles a click on the VictoryPoint card button. Currently does nothing because victory point cards don't do anything
  * @param coord The place the user clicked
  * @return true
  */
 bool GameController::handleVictoryPointCardButtonEvent(ScreenCoordinate coord){
 	if(getState() != BASESTATE){
-		return true;
+		return false;
 	}
-	pushState(VICTORYPOINT_DEVCARD);
+	//pushState(VICTORYPOINT_DEVCARD);
 	return true;
 }
 
@@ -455,13 +452,17 @@ bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
 		view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating, receiving, tradeFunction, cancelFunction, initial)));
 		std::cout << player.getName() << std::endl;
 		return true;
+
+	//KNIGHT
 	}else if(getState() == KNIGHT_DEVCARD){
 		if(hasClickHistory()){
-			model.getCurrentPlayer().playKnight(getPastClick(0), player);
+			model.getCurrentPlayer().playKnight(getLastClick(), player);
 			return handleCancelButtonEvent(coord);
 		}
+
+	//ROBBER
 	}else if(getState() == ROBBER){
-		if(hasClickHistory() && (model.canRobberRob(player, getPastClick(0)) || player == model.getCurrentPlayer()) &&
+		if(hasClickHistory() && (model.canRobberRob(player, getLastClick()) || player == model.getCurrentPlayer()) &&
 				model.moveRobber(getPastClick(0))){
 
 			int resourceToSteal = player.getRandomResource();
@@ -511,6 +512,9 @@ bool GameController::handleTradeOffer(ScreenCoordinate coord, Player& initiating
 	return true;
 }
 
+/**
+ * Handles clicks on the resource button for Wood
+ */
 bool GameController::handleWoodButtonEvent(ScreenCoordinate coord){
 	if(getState() == YEAROFPLENTY_DEVCARD){
 		model.getCurrentPlayer().playYearOfPlenty(WOOD);
@@ -521,6 +525,10 @@ bool GameController::handleWoodButtonEvent(ScreenCoordinate coord){
 	}
 	return false;
 }
+
+/**
+ * Handles clicks on the resource button for Sheep
+ */
 bool GameController::handleSheepButtonEvent(ScreenCoordinate coord){
 	if(getState() == YEAROFPLENTY_DEVCARD){
 		model.getCurrentPlayer().playYearOfPlenty(SHEEP);
@@ -532,6 +540,10 @@ bool GameController::handleSheepButtonEvent(ScreenCoordinate coord){
 	return false;
 
 }
+
+/**
+ * Handles clicks on the resource button for Wheat
+ */
 bool GameController::handleWheatButtonEvent(ScreenCoordinate coord){
 	if(getState() == YEAROFPLENTY_DEVCARD){
 		model.getCurrentPlayer().playYearOfPlenty(WHEAT);
@@ -543,6 +555,10 @@ bool GameController::handleWheatButtonEvent(ScreenCoordinate coord){
 	return false;
 
 }
+
+/**
+ * Handles clicks on the resource button for Ore
+ */
 bool GameController::handleOreButtonEvent(ScreenCoordinate coord){
 	if(getState() == YEAROFPLENTY_DEVCARD){
 		model.getCurrentPlayer().playYearOfPlenty(STONE);
@@ -554,6 +570,10 @@ bool GameController::handleOreButtonEvent(ScreenCoordinate coord){
 	return false;
 
 }
+
+/**
+ * Handles clicks on the resource button for Brick
+ */
 bool GameController::handleBrickButtonEvent(ScreenCoordinate coord){
 	if(getState() == YEAROFPLENTY_DEVCARD){
 		model.getCurrentPlayer().playYearOfPlenty(BRICK);
