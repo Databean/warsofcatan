@@ -417,7 +417,7 @@ TEST(PlayerTest, Monopoly_card_2){
 
 
 
-TEST(PlayerTest, Monopoly_card_2){
+TEST(PlayerTest, Monopoly_card_false){
 	GameBoard board({"test-player1", "test-player2"});
 
 	Player& tp1 = board.getPlayer(0);
@@ -437,7 +437,7 @@ TEST(PlayerTest, Monopoly_card_2){
 }
 
 
-TEST(PlayerTest, Monopoly_card_false){
+TEST(PlayerTest, Monopoly_card_false_2){
 	GameBoard board({"test-player1", "test-player2"});
 
 	Player& tp1 = board.getPlayer(0);
