@@ -63,7 +63,7 @@ public:
 	ControlState popState();
 	void storeClick(Coordinate clickCoordinate);
 	Coordinate getLastClick();
-	Coordinate getPastClick(int howLongAgo);
+	Coordinate getPastClick(unsigned int howLongAgo);
 	void clearClickHistory();
 	bool hasClickHistory();
 	int getClickHistorySize();
