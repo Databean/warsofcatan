@@ -574,7 +574,6 @@ void DrawingGameVisitor::visit(GameDice& dice) {
 
 	static const GLuint diceTextures = loadImageAsTexture("resources/catan_dice_new.bmp");
 
-	
 	glBindTexture(GL_TEXTURE_2D, diceTextures);
 
 	glColor3d(1.0, 1.0, 1.0);	
@@ -657,7 +656,8 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 	vertexPair(Coordinate(coord.first + adjacentCoordDiffs[0].first, coord.second + adjacentCoordDiffs[0].second));
 	glEnd();
 	
-	if(tile.getDiceValue() != 0) {
+	if(tile.getDiceValue() != 0 || 
+		tile.getBoard().getResourceTile(tile.getBoard().getRobber()).getType() == DESERT) {
 		if (tile.getBoard().getRobber() == coord) { //draw the robber on this tile
 			
 			drawTexturedCircle(make_pair(1240.f, 643.f), 59.5f, coordToScreen(coord), 0.04);

@@ -65,7 +65,15 @@ GameBoard::GameBoard(const vector<std::string>& playerNames) {
 		}
 		valid = isValidBoard();
 	}
-	moveRobber(Coordinate(0,4));
+	//moveRobber(Coordinate(0,4));
+	auto it = getResources().begin();
+	while(it != getResources().end()) {
+		if ((it->second)->getType() == DESERT)
+			moveRobber(it->first);
+		it++;
+	}
+	std::cout << getRobber().first << "\n";
+	std::cout << getRobber().second << "\n";
 
 }
 
