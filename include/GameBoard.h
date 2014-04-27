@@ -43,8 +43,8 @@ private:
 	Coordinate robber;
 
 	int currentTurn;
-
 	int maxVictoryPoints;
+	int winner;
 
     void addResource(int x, int y, resourceType res, int val);
     bool checkRolls(int* rolls);
@@ -92,6 +92,8 @@ public:
 
 	void endTurn();
 	Player& getCurrentPlayer() const;
+	bool hasWinner();
+	Player& getWinner() const;
 
 	int getMaxVictoryPoints();
 	void setMaxVictoryPoints(int maxVicPts);

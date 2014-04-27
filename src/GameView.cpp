@@ -187,6 +187,9 @@ void GameView::render() {
 	drawCardCount(font, fontSize);
 	drawResourceCount(font, fontSize);
 
+	if(model.hasWinner())
+			renderText(font, fontSize, {.2, .4}, {.8, .6}, model.getWinner().getName() + " Wins");
+
 	glFlush();
 }
 
