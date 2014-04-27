@@ -323,11 +323,11 @@ bool GameController::handleCityButtonEvent(ScreenCoordinate coord) {
 }
 
 /**
- * Handles a click on the "create city" button. Changes the internal state to indicate the user is going to be upgrading settlements to cities on the board.
+ * Handles a click on the "create wonder" button. Changes the internal state to indicate the user is going to be upgrading settlements/cities on the board.
  * @param coord The place the user clicked on screen.
  * @return Whether this event was handled by this element. Always true.
  */
-bool GameController::handleCityButtonEvent(ScreenCoordinate coord) {
+bool GameController::handleWonderButtonEvent(ScreenCoordinate coord) {
 	if(getState() != BASESTATE) {
 		return false;
 	}
