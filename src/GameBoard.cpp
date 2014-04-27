@@ -76,7 +76,8 @@ GameBoard::GameBoard(const vector<std::string>& playerNames) {
 	}
 	std::cout << getRobber().first << "\n";
 	std::cout << getRobber().second << "\n";
-
+	
+	maxVictoryPoints = 10;
 }
 
 /**
@@ -334,6 +335,7 @@ ResourceTile& GameBoard::getResourceTile(Coordinate location) const
  */
 void GameBoard::endTurn()
 {
+	std::cout << currentTurn << std::endl;
 	if(getCurrentPlayer().getVictoryPoints() >= getMaxVictoryPoints())
 	{
 		//std::cout<<"GG Bitches";

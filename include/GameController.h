@@ -75,6 +75,8 @@ public:
 
 	bool handlePlayerClick(ScreenCoordinate, Player&);
 	bool handleTradeOffer(ScreenCoordinate, Player& initiating, std::array<int, 5>, Player& receiving, std::array<int, 5>);
+	
+	bool handleBankClick(ScreenCoordinate);
 };
 
 #endif

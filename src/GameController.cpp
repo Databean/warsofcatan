@@ -18,8 +18,6 @@
 GameController::GameController(GameBoard& model, GameView& view) : model(model), view(view) {
 	using namespace std::placeholders;
 	
-	view.addElement(makeViewButton(std::bind(&GameController::handleBoardEvent, this, _1), {{0, 0}, {1, 1}}));
-	
 	auto font = getGraphicsConfig()["font.path"];
 	auto fontSize = getGraphicsConfig()["font.size"];
 	
@@ -36,6 +34,7 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 		view.addElement(makeViewButtonText(std::bind(&GameController::handlePlayerClick, this, _1, std::ref(player)), {{1.0 - width, playerTopY - 0.05}, {1.0, playerTopY}}, font, fontSize, player.getName()));
 		playerTopY -= 0.05;
 	}
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleBankClick, this, _1), {{0, 0.8}, {0.1, 0.9}}, font, fontSize, "Bank"));
 	
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleCancelButtonEvent, this, _1), {{.92, .96}, {1.0, 1.0}}, font, fontSize, "Cancel"));
 	
@@ -45,7 +44,7 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleYearOfPlentyCardButtonEvent, this, _1), {{0.85, 0.10}, {0.97, 0.15}},  font, fontSize, "Year of Plenty "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleMonopolyCardButtonEvent, this, _1), {{0.85, 0.15}, {0.97, 0.20}},  font, fontSize, "Monopoly "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleVictoryPointCardButtonEvent, this, _1), {{0.85, 0.20}, {0.97, 0.25}},  font, fontSize, "Victory Point "));
-
+	
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleWoodButtonEvent, this, _1), {{.85, .30}, {.97, .35}}, font, fontSize, "Wood "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleSheepButtonEvent, this, _1), {{.85, .35}, {.97, .40}}, font, fontSize, "Sheep "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleOreButtonEvent, this, _1), {{.85, .40}, {.97, .45}}, font, fontSize, "Ore "));
@@ -54,7 +53,7 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
     
     view.addElement(makeViewButtonText(std::bind(&GameController::viewCardTotals, this, _1), {{.85, .55}, {.97, .60}}, font, fontSize, "Show Totals"));
 
-
+	view.addElement(100, makeViewButton(std::bind(&GameController::handleBoardEvent, this, _1), {{0, 0}, {1, 1}}));
 	stateStack.push_back(BASESTATE);
 }
 
@@ -491,7 +490,7 @@ bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
 			return true;
 		});
 
-		view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating, receiving, tradeFunction, cancelFunction, initial)));
+		view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating.getName(), receiving.getName(), tradeFunction, cancelFunction, initial)));
 		std::cout << player.getName() << std::endl;
 		return true;
 
@@ -518,6 +517,37 @@ bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
 	}
 	return true;
 }
+
+/**
+ * Handle a player beginning a trade with the bank.
+ */
+bool GameController::handleBankClick(ScreenCoordinate screenCoord) {
+	
+	auto priority = -10;
+	
+	auto tradeFunction = [this, priority](std::array<int, 5> offer, ScreenCoordinate coord) {
+		std::array<int, 5> splitOffer;
+		std::array<int, 5> splitDemand;
+		for(int i = 0; i < 5; i++) {
+			splitOffer[i] = offer[i] > 0 ? 0 : -offer[i];
+			splitDemand[i] = offer[i] < 0 ? 0 : offer[i];
+		}
+		if(model.getCurrentPlayer().makeBankTrade(splitOffer, splitDemand)) {
+			view.removeElement(priority);
+		}
+		return true;
+	};
+	
+	auto cancelFunction = [this, priority](ScreenCoordinate coord) {
+		view.removeElement(priority);
+		return true;
+	};
+	std::array<int, 5> initial{{0, 0, 0, 0, 0}};
+	view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(model.getCurrentPlayer().getName(), "Bank", tradeFunction, cancelFunction, initial)));
+	
+	return true;
+}
+
 
 /**
  * Handle a trade offer from a player.
@@ -549,7 +579,7 @@ bool GameController::handleTradeOffer(ScreenCoordinate coord, Player& initiating
 			return true;
 		});
 		
-		view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating, receiving, tradeFunction, cancelFunction, counterOffer)));
+		view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating.getName(), receiving.getName(), tradeFunction, cancelFunction, counterOffer)));
 	}
 	return true;
 }
@@ -627,4 +657,3 @@ bool GameController::handleBrickButtonEvent(ScreenCoordinate coord){
 	return false;
 
 }
-

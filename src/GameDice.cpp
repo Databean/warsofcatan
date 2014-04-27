@@ -5,13 +5,18 @@
 
 using std::rand;
 
+GameDice::GameDice() {
+	first = 3;
+	second = 3;
+}
+
 /**
  * Re-roll the dice.
  * @return The sum of the two dice.
  */
 int GameDice::roll() {
-	first = rand() % 6 + 1;
-	second = rand() % 6 + 1;
+	first = (rand() % 6) + 1;
+	second = (rand() % 6) + 1;
 	
 	return first + second;
 }
