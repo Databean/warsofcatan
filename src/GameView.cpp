@@ -86,9 +86,10 @@ bool ViewElement::handleClick(ScreenCoordinate coord) {
  * Constrct a GameView.
  * @param model The GameBoard the view is displaying.
  */
-GameView::GameView(GameBoard& model) : model(model) {
+GameView::GameView(GameBoard& model) : model(model)
+{
 	controlStateText = "Welcome to Wars of Catan";
-	
+	showTotals = false;
 }
 
 /**
@@ -104,7 +105,19 @@ GameView::~GameView() {
  * @param font the style of font to use, fontSize the resolution of the font used
  * @return void
  */
-void GameView::drawCardCount(std::string font, int fontSize){
+void GameView::drawCardCount(std::string font, int fontSize)
+{
+    if (showTotals==false)
+    {
+        renderText(font, fontSize, {0.97, 0.0}, {1.0, 0.05}, "?");	//Road Building
+        renderText(font, fontSize, {0.97, 0.05}, {1.0, 0.1}, "?");		//Knight
+        renderText(font, fontSize, {0.97, 0.1}, {1.0, 0.15}, "?");	//Year of Plenty
+        renderText(font, fontSize, {0.97, 0.15}, {1.0, 0.2}, "?");		//Monopoly
+        renderText(font, fontSize, {0.97, 0.2}, {1.0, 0.25}, "?");		//Victory Point
+        return;
+    }
+    
+    
 	renderText(font, fontSize, {0.97, 0.0}, {1.0, 0.05},
 			toString(model.getCurrentPlayer().getRoadBuildingCards()));	//Road Building
 	renderText(font, fontSize, {0.97, 0.05}, {1.0, 0.1},
@@ -120,16 +133,27 @@ void GameView::drawCardCount(std::string font, int fontSize){
 /**
  * Draws the count of resources the currentPlayer has
  */
-void GameView::drawResourceCount(std::string font, int fontSize){
-	renderText(font, fontSize, {0.97, 0.35}, {1.0, 0.40},
+void GameView::drawResourceCount(std::string font, int fontSize)
+{
+    if(showTotals==false)
+    {
+        renderText(font, fontSize, {0.97, 0.30}, {1.0, 0.35}, "?");		//Wood
+        renderText(font, fontSize, {0.97, 0.35}, {1.0, 0.40}, "?");		//Sheep
+        renderText(font, fontSize, {0.97, 0.40}, {1.0, 0.45}, "?");		//Ore
+        renderText(font, fontSize, {0.97, 0.45}, {1.0, 0.50}, "?");		//Brick
+        renderText(font, fontSize, {0.97, 0.50}, {1.0, 0.55}, "?");     //Wheat
+        return;
+    }
+    
+	renderText(font, fontSize, {0.97, 0.30}, {1.0, 0.35},
 			toString(model.getCurrentPlayer().getWood()));		//Wood
-	renderText(font, fontSize, {0.97, 0.40}, {1.0, 0.45},
+	renderText(font, fontSize, {0.97, 0.35}, {1.0, 0.40},
 			toString(model.getCurrentPlayer().getWool()));		//Sheep
-	renderText(font, fontSize, {0.97, 0.45}, {1.0, 0.50},
+	renderText(font, fontSize, {0.97, 0.40}, {1.0, 0.45},
 			toString(model.getCurrentPlayer().getOre()));		//Ore
-	renderText(font, fontSize, {0.97, 0.50}, {1.0, 0.55},
+	renderText(font, fontSize, {0.97, 0.45}, {1.0, 0.50},
 			toString(model.getCurrentPlayer().getBrick()));		//Brick
-	renderText(font, fontSize, {0.97, 0.55}, {1.0, 0.60},
+	renderText(font, fontSize, {0.97, 0.50}, {1.0, 0.55},
 			toString(model.getCurrentPlayer().getWheat()));		//Wheat
 
 }
