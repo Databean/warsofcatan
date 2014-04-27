@@ -387,8 +387,8 @@ TEST(PlayerTest, Monopoly_card_1){
 
 	tp1.playMonopoly(2);
 
-	CHECK(validateResourceAmount(5,5,10,5,5,tp1));
-	CHECK(validateResourceAmount(5,5,0,5,5,tp2));
+	ASSERT_TRUE(validateResourceAmount(5,5,10,5,5,tp1));
+	ASSERT_TRUE(validateResourceAmount(5,5,0,5,5,tp2));
 
 }
 
@@ -409,8 +409,8 @@ TEST(PlayerTest, Monopoly_card_2){
 
 	tp1.playMonopoly(2);
 
-	CHECK(validateResourceAmount(0,0,0,1,1,tp1));
-	CHECK(validateResourceAmount(1,1,0,0,0,tp2));
+	ASSERT_TRUE(validateResourceAmount(0,0,0,1,1,tp1));
+	ASSERT_TRUE(validateResourceAmount(1,1,0,0,0,tp2));
 
 }
 
@@ -425,8 +425,8 @@ TEST(PlayerTest, Monopoly_card_false){
 
 	tp1.playMonopoly(0);
 
-	CHECK(validateResourceAmount(0,0,0,1,1,tp1));
-	CHECK(validateResourceAmount(1,1,0,0,0,tp2));
+	ASSERT_TRUE(validateResourceAmount(0,0,0,1,1,tp1));
+	ASSERT_TRUE(validateResourceAmount(1,1,0,0,0,tp2));
 
 }
 
@@ -445,7 +445,7 @@ TEST(PlayerTest, Year_Of_Plenty_card){
 
 	tp1.playYearOfPlenty(2);
 
-	CHECK(validateResourceAmount(0,0,2,1,1,tp1));
+	ASSERT_TRUE(validateResourceAmount(0,0,2,1,1,tp1));
 
 }
 
@@ -467,8 +467,8 @@ TEST(PlayerTest, Trade_positive){
 
 	tp2.acceptOffer(tp1, offer, demand);
 
-	CHECK(validateResourceAmount(3,3,5,7,7,tp1));
-	CHECK(validateResourceAmount(7,7,5,3,3,tp2));
+	ASSERT_TRUE(validateResourceAmount(3,3,5,7,7,tp1));
+	ASSERT_TRUE(validateResourceAmount(7,7,5,3,3,tp2));
 
 }
 
@@ -487,8 +487,8 @@ TEST(PlayerTest, Trade_negative){
 
 	tp2.acceptOffer(tp1, offer, demand);
 
-	CHECK(validateResourceAmount(2,2,2,2,2,tp1));
-	CHECK(validateResourceAmount(2,2,2,2,2,tp2));
+	ASSERT_TRUE(validateResourceAmount(2,2,2,2,2,tp1));
+	ASSERT_TRUE(validateResourceAmount(2,2,2,2,2,tp2));
 
 }
 
