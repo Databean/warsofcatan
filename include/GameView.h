@@ -52,13 +52,12 @@ private:
 	std::vector<ScreenCoordinate> pointsOfInterest;
 
 	void highlightPoint(ScreenCoordinate & coord);
-	void drawCardCount(std::string font, int fontSize);
-	void drawResourceCount(std::string font, int fontSize);
 	
 	std::string controlStateText;
 
 	GameView(const GameView& o) = delete;
 	GameView& operator=(const GameView& o) = delete;
+    
 public:
 	GameView(GameBoard&);
 	~GameView();
@@ -78,6 +77,10 @@ public:
 	std::unique_ptr<ViewElement> removeElement(int priority);
 	std::unique_ptr<ViewElement> removeElement(const ViewElement*);
 	std::unique_ptr<ViewElement> removeElement(const ViewElement&);
+    
+    void drawCardCount(std::string font, int fontSize);
+	void drawResourceCount(std::string font, int fontSize);
+    bool showTotals;
 };
 
 /**
@@ -202,8 +205,8 @@ std::unique_ptr<ViewElement> makeViewButtonText(Fn fn, std::pair<ScreenCoordinat
 
 class TradingView : public ViewElement {
 private:
-	Player& initiating;
-	Player& receiving;
+	std::string initiating;
+	std::string receiving;
 	
 	ViewButtonText trade;
 	ViewButtonText cancel;
@@ -215,7 +218,7 @@ private:
 protected:
 	virtual bool clicked(ScreenCoordinate coord);
 public:
-	TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> offer);
+	TradingView(const std::string& initiating, const std::string& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> offer);
 	virtual ~TradingView();
 	
 	void render();

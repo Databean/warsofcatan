@@ -40,6 +40,8 @@ GameBoard::GameBoard(const vector<std::string>& playerNames) {
 	}
 	
 	currentTurn = 0;
+	maxVictoryPoints = 10;
+	winner = -1;
 
 	std::srand(std::time(0));
 	
@@ -74,7 +76,8 @@ GameBoard::GameBoard(const vector<std::string>& playerNames) {
 	}
 	std::cout << getRobber().first << "\n";
 	std::cout << getRobber().second << "\n";
-
+	
+	maxVictoryPoints = 10;
 }
 
 /**
@@ -134,6 +137,8 @@ GameBoard::GameBoard(const std::vector<std::string>& playerNames, const std::map
 		throw std::runtime_error("Board is invalid.");
 	}
 	currentTurn = 0;
+	maxVictoryPoints = 10;
+	winner = -1;
 }
 
 GameDice GameBoard::getDice() {
@@ -267,7 +272,9 @@ GameBoard::GameBoard(istream& in) {
 		throw std::runtime_error("Board is invalid.");
 	}
 
-	currentTurn = 0; //have to update <<--
+	currentTurn = 0; 		//have to update
+	maxVictoryPoints = 0;
+	winner = -1;
 }
 
 /**
@@ -328,8 +335,12 @@ ResourceTile& GameBoard::getResourceTile(Coordinate location) const
  */
 void GameBoard::endTurn()
 {
+	std::cout << currentTurn << std::endl;
 	if(getCurrentPlayer().getVictoryPoints() >= getMaxVictoryPoints())
-		std::cout<<"GG Bitches";
+	{
+		//std::cout<<"GG Bitches";
+		winner = currentTurn;
+	}
 
 	currentTurn++;
 	if(currentTurn >= getNoOfPlayers())
@@ -874,6 +885,43 @@ bool GameBoard::buyUpgradeOnSettlement(Coordinate location, Player& owner) {
 }
 
 /**
+ * Whether a settlement/city at a location can be upgraded to a wonder.
+ */
+bool GameBoard::canUpgradeToWonder(Coordinate location, const Player& owner) const {
+	auto it = corners.find(location);
+	if(it == corners.end()) {
+		std::cout << "there's nothing there" << std::endl;
+		return false;
+	}
+	if(!it->second) {
+		std::cout << "null ptr there" << std::endl;
+		return false;
+	}
+	if(!(it->second->getOwner() == owner)) {
+		std::cout << "wrong owner" << std::endl;
+		return false;
+	}
+	if(dynamic_cast<const Settlement*>(it->second.get()) == 0 && dynamic_cast<const City*>(it->second.get()) == 0) {
+		std::cout << "this isn't a settlement or city" << std::endl;
+		return false;
+	}
+	return true;
+}
+
+bool GameBoard::buyUpgradeOnWonder(Coordinate location, Player& owner) {
+	if(canUpgradeToWonder(location, owner) && owner.canBuyCity()) {
+		if(!owner.buyWonder()) {
+			std::cout << "wat" << std::endl;
+			return false;
+		}
+		UpgradeToWonder(location);
+		return true;
+	}
+	std::cout << "failed for some reason" << std::endl;
+	return false;
+}
+
+/**
  * Place a city on the board.
  * @param location Where to place it on the board.
  * @param Owner The player placing the city.
@@ -1055,6 +1103,31 @@ Player& GameBoard::getCurrentPlayer() const
 {
 	return *players[currentTurn];
 }
+
+
+
+/**
+ * @return true if game has a winner, false otherwise
+ */
+bool GameBoard::hasWinner()
+{
+	if(winner == -1)
+		return false;
+	return true;
+}
+
+
+/**
+ * @return reference to the winner if there is one, null otherwise
+ */
+Player& GameBoard::getWinner() const
+{
+	if(winner != -1 && winner < players.size())
+		return *players[winner];
+
+	return *players[0];
+}
+
 
 /**
  * @return no of players

@@ -12,7 +12,7 @@ class GameView;
 class Player;
 
 
-enum ControlState {BASESTATE, MODALSTATE, BUILDROAD, BUILDSETTLEMENT, BUILDCITY, ROBBER,
+enum ControlState {BASESTATE, MODALSTATE, BUILDROAD, BUILDSETTLEMENT, BUILDCITY, BUILDWONDER, ROBBER,
 	VICTORYPOINT_DEVCARD, BUILDROAD_DEVCARD, KNIGHT_DEVCARD, YEAROFPLENTY_DEVCARD, MONOPOLY_DEVCARD};
 
 
@@ -39,6 +39,7 @@ public:
 	bool handleRoadButtonEvent(ScreenCoordinate);
 	bool handleSettlementButtonEvent(ScreenCoordinate);
 	bool handleCityButtonEvent(ScreenCoordinate);
+	bool handleWonderButtonEvent(ScreenCoordinate);
 	bool handleRoadCardButtonEvent(ScreenCoordinate);
 
 	bool handleBuyDevelopmentCardButtonEvent(ScreenCoordinate);
@@ -57,13 +58,15 @@ public:
 
 	bool handleConfirmRoadCard(ScreenCoordinate);
 	bool handleCancelDialogueEvent(ScreenCoordinate);
+    
+    bool viewCardTotals(ScreenCoordinate coord);
 
 	void pushState(ControlState);
 	ControlState getState();
 	ControlState popState();
 	void storeClick(Coordinate clickCoordinate);
 	Coordinate getLastClick();
-	Coordinate getPastClick(int howLongAgo);
+	Coordinate getPastClick(unsigned int howLongAgo);
 	void clearClickHistory();
 	bool hasClickHistory();
 	int getClickHistorySize();
@@ -72,6 +75,8 @@ public:
 
 	bool handlePlayerClick(ScreenCoordinate, Player&);
 	bool handleTradeOffer(ScreenCoordinate, Player& initiating, std::array<int, 5>, Player& receiving, std::array<int, 5>);
+	
+	bool handleBankClick(ScreenCoordinate);
 };
 
 #endif

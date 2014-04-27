@@ -18,14 +18,13 @@
 GameController::GameController(GameBoard& model, GameView& view) : model(model), view(view) {
 	using namespace std::placeholders;
 	
-	view.addElement(makeViewButton(std::bind(&GameController::handleBoardEvent, this, _1), {{0, 0}, {1, 1}}));
-	
 	auto font = getGraphicsConfig()["font.path"];
 	auto fontSize = getGraphicsConfig()["font.size"];
 	
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.10}}, font, fontSize, "Road |"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleCityButtonEvent, this, _1), {{0.10, 0.0}, {0.20, 0.1}}, font, fontSize, "City |"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0.20, 0.0}, {0.33, 0.1}}, font, fontSize, "Settlement"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleWonderButtonEvent, this, _1), {{0.55, 0.0}, {0.65, 0.1}}, font, fontSize, "|Wonder"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::nextTurn, this, _1), {{0, 0.3}, {0.1, 0.4}}, font, fontSize, "End Turn"));
 	
 	auto playerTopY = 0.82;
@@ -35,6 +34,7 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 		view.addElement(makeViewButtonText(std::bind(&GameController::handlePlayerClick, this, _1, std::ref(player)), {{1.0 - width, playerTopY - 0.05}, {1.0, playerTopY}}, font, fontSize, player.getName()));
 		playerTopY -= 0.05;
 	}
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleBankClick, this, _1), {{0, 0.8}, {0.1, 0.9}}, font, fontSize, "Bank"));
 	
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleCancelButtonEvent, this, _1), {{.92, .96}, {1.0, 1.0}}, font, fontSize, "Cancel"));
 	
@@ -44,14 +44,16 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleYearOfPlentyCardButtonEvent, this, _1), {{0.85, 0.10}, {0.97, 0.15}},  font, fontSize, "Year of Plenty "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleMonopolyCardButtonEvent, this, _1), {{0.85, 0.15}, {0.97, 0.20}},  font, fontSize, "Monopoly "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleVictoryPointCardButtonEvent, this, _1), {{0.85, 0.20}, {0.97, 0.25}},  font, fontSize, "Victory Point "));
+	
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleWoodButtonEvent, this, _1), {{.85, .30}, {.97, .35}}, font, fontSize, "Wood "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleSheepButtonEvent, this, _1), {{.85, .35}, {.97, .40}}, font, fontSize, "Sheep "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleOreButtonEvent, this, _1), {{.85, .40}, {.97, .45}}, font, fontSize, "Ore "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleBrickButtonEvent, this, _1), {{.85, .45}, {.97, .50}}, font, fontSize, "Brick "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleWheatButtonEvent, this, _1), {{.85, .50}, {.97, .55}}, font, fontSize, "Wheat "));
+    
+    view.addElement(makeViewButtonText(std::bind(&GameController::viewCardTotals, this, _1), {{.85, .55}, {.97, .60}}, font, fontSize, "Show Totals"));
 
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleWoodButtonEvent, this, _1), {{.85, .35}, {.97, .40}}, font, fontSize, "Wood "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleSheepButtonEvent, this, _1), {{.85, .40}, {.97, .45}}, font, fontSize, "Sheep "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleOreButtonEvent, this, _1), {{.85, .45}, {.97, .50}}, font, fontSize, "Ore "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleBrickButtonEvent, this, _1), {{.85, .50}, {.97, .55}}, font, fontSize, "Brick "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleWheatButtonEvent, this, _1), {{.85, .55}, {.97, .60}}, font, fontSize, "Wheat "));
-
-
+	view.addElement(100, makeViewButton(std::bind(&GameController::handleBoardEvent, this, _1), {{0, 0}, {1, 1}}));
 	stateStack.push_back(BASESTATE);
 }
 
@@ -109,7 +111,7 @@ Coordinate GameController::getLastClick(){
  * Gets a click from param clicks ago
  * @ param an integer
  */
-Coordinate GameController::getPastClick(int howLongAgo){
+Coordinate GameController::getPastClick(unsigned int howLongAgo){
 	if (howLongAgo < clickHistory.size()){
 		return clickHistory[clickHistory.size() - 1 - howLongAgo];
 	}
@@ -138,20 +140,27 @@ int GameController::getClickHistorySize(){
 	return clickHistory.size();
 }
 
-void printPlayerInfo(const Player& player) {
+/**
+ * Now that the GUI has this information implemented, I am returning before this function prints.  To use this function again simply remove the return
+ */
+void printPlayerInfo(const Player& player)
+{
+    return;
 	auto color = player.getColor();
 	std::cout << player.getName() << "'s turn. (" << std::get<0>(color) << ", " << std::get<1>(color) << ", " << std::get<2>(color) <<")" << std::endl;
 	std::cout << "Wood: " << player.getWood() << ", Brick: " << player.getBrick() << ", Ore: " << player.getOre() << ", Wheat: " << player.getWheat() << ", Wool: " << player.getWool() << std::endl;
 }
 
 /**
- *  calls a function to advance turn, check for victory and roll dice
+ *  calls a function to advance turn, hide resource and development cards, check for victory, and roll dice
  */
 bool GameController::nextTurn(ScreenCoordinate) {
 	if(getState() != BASESTATE){
 		return false;
 	}
-
+    
+    view.showTotals = false;
+    
 	model.endTurn();
 	if (model.getDice().getFirst() + model.getDice().getSecond() == 7)
 	{
@@ -221,6 +230,11 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 	case BUILDCITY:
 		std::cout << "attempting to build a city" << std::endl;
 		model.buyUpgradeOnSettlement(coord, model.getCurrentPlayer());
+		handleCancelButtonEvent(screenCoord);
+		break;
+	case BUILDWONDER:
+		std::cout << "attempting to build a wonder" << std::endl;
+		model.buyUpgradeOnWonder(coord, model.getCurrentPlayer());
 		handleCancelButtonEvent(screenCoord);
 		break;
 	default:
@@ -309,6 +323,21 @@ bool GameController::handleCityButtonEvent(ScreenCoordinate coord) {
 
 	view.setControlStateText("Click on a settlement to upgrade it to a city. (2Wh and 3 Ore)");
 	pushState(BUILDCITY);
+	return true;
+}
+
+/**
+ * Handles a click on the "create wonder" button. Changes the internal state to indicate the user is going to be upgrading settlements/cities on the board.
+ * @param coord The place the user clicked on screen.
+ * @return Whether this event was handled by this element. Always true.
+ */
+bool GameController::handleWonderButtonEvent(ScreenCoordinate coord) {
+	if(getState() != BASESTATE) {
+		return false;
+	}
+
+	view.setControlStateText("Click on a settlement/city to upgrade to wonder. (5 of ea rsc)");
+	pushState(BUILDWONDER);
 	return true;
 }
 
@@ -413,6 +442,19 @@ bool GameController::handleVictoryPointCardButtonEvent(ScreenCoordinate coord){
 	return true;
 }
 
+/**
+ * Makes the development and resource card totals visible
+ */
+bool GameController::viewCardTotals(ScreenCoordinate coord)
+{
+    auto font = getGraphicsConfig()["font.path"];
+	auto fontSize = getGraphicsConfig()["font.size"];
+    view.showTotals = !view.showTotals;
+    view.drawCardCount(font, fontSize);
+    view.drawResourceCount(font, fontSize);
+    return true;
+}
+
 
 template<int size>
 auto negativeArr(std::array<int, size> arr) -> std::array<int, size> {
@@ -448,7 +490,7 @@ bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
 			return true;
 		});
 
-		view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating, receiving, tradeFunction, cancelFunction, initial)));
+		view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating.getName(), receiving.getName(), tradeFunction, cancelFunction, initial)));
 		std::cout << player.getName() << std::endl;
 		return true;
 
@@ -473,8 +515,39 @@ bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
 			return handleCancelButtonEvent(coord);
 		}
 	}
-	
+	return true;
 }
+
+/**
+ * Handle a player beginning a trade with the bank.
+ */
+bool GameController::handleBankClick(ScreenCoordinate screenCoord) {
+	
+	auto priority = -10;
+	
+	auto tradeFunction = [this, priority](std::array<int, 5> offer, ScreenCoordinate coord) {
+		std::array<int, 5> splitOffer;
+		std::array<int, 5> splitDemand;
+		for(int i = 0; i < 5; i++) {
+			splitOffer[i] = offer[i] > 0 ? 0 : -offer[i];
+			splitDemand[i] = offer[i] < 0 ? 0 : offer[i];
+		}
+		if(model.getCurrentPlayer().makeBankTrade(splitOffer, splitDemand)) {
+			view.removeElement(priority);
+		}
+		return true;
+	};
+	
+	auto cancelFunction = [this, priority](ScreenCoordinate coord) {
+		view.removeElement(priority);
+		return true;
+	};
+	std::array<int, 5> initial{{0, 0, 0, 0, 0}};
+	view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(model.getCurrentPlayer().getName(), "Bank", tradeFunction, cancelFunction, initial)));
+	
+	return true;
+}
+
 
 /**
  * Handle a trade offer from a player.
@@ -490,10 +563,10 @@ bool GameController::handleTradeOffer(ScreenCoordinate coord, Player& initiating
 		std::array<int, 5> splitOffer;
 		std::array<int, 5> splitDemand;
 		for(int i = 0; i < 5; i++) {
-			splitOffer[i] = counterOffer[i] < 0 ? 0 : -counterOffer[i];
+			splitOffer[i] = counterOffer[i] > 0 ? 0 : -counterOffer[i];
 			splitDemand[i] = counterOffer[i] < 0 ? 0 : counterOffer[i];
 		}
-		initiating.acceptOffer(receiving, splitOffer, splitDemand);
+		initiating.acceptOffer(receiving, splitDemand, splitOffer);
 	} else {
 		//std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction(std::bind(&GameController::handleTradeOffer, this, _2, std::ref(initiating), _1, std::ref(receiving)));
 		std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction([this, &initiating, &receiving, counterOffer](std::array<int, 5> offer, ScreenCoordinate coord) {
@@ -506,7 +579,7 @@ bool GameController::handleTradeOffer(ScreenCoordinate coord, Player& initiating
 			return true;
 		});
 		
-		view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating, receiving, tradeFunction, cancelFunction, counterOffer)));
+		view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating.getName(), receiving.getName(), tradeFunction, cancelFunction, counterOffer)));
 	}
 	return true;
 }
@@ -584,4 +657,3 @@ bool GameController::handleBrickButtonEvent(ScreenCoordinate coord){
 	return false;
 
 }
-

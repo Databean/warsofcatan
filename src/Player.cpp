@@ -624,6 +624,37 @@ bool Player::acceptOffer(Player& p, std::array<int, 5> offer, std::array<int, 5>
 	return true;
 }
 
+/**
+ * Make a trade with the bank if the offer is valid.
+ * @param offer The resources the player is offering.
+ * @param demand The resources the player wants from the bank.
+ */
+bool Player::makeBankTrade(std::array<int, 5> offer, std::array<int, 5> demand) {
+	//Make sure i have the resources i'm offering
+	for(int i = 0; i < 5; i++) {
+		if(offer[i] > resources[i]) {
+			std::cout << "don't have enough " << i << "(" << offer[i] << ">" << resources[i] << ")" << std::endl;
+			return false;
+		}
+	}
+	int credits = 0;
+	for(int i = 0; i < 5; i++) {
+		credits += offer[i] / tradeModifiers[i];
+	}
+	for(int i = 0; i < 5; i++) {
+		credits -= demand[i];
+	}
+	if(credits < 0) {
+		std::cout << "bank finds this unacceptable" << std::endl;
+		return false;
+	}
+	
+	for(int i = 0; i < 5; i++) {
+		resources[i] -= offer[i];
+		resources[i] += demand[i];
+	}
+	return true;
+}
 
 /**
  * picks any one resource at random for robber to steal

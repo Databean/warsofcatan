@@ -43,8 +43,8 @@ private:
 	Coordinate robber;
 
 	int currentTurn;
-
 	int maxVictoryPoints;
+	int winner;
 
     void addResource(int x, int y, resourceType res, int val);
     bool checkRolls(int* rolls);
@@ -92,6 +92,8 @@ public:
 
 	void endTurn();
 	Player& getCurrentPlayer() const;
+	bool hasWinner();
+	Player& getWinner() const;
 
 	int getMaxVictoryPoints();
 	void setMaxVictoryPoints(int maxVicPts);
@@ -120,6 +122,9 @@ public:
 	bool canUpgradeSettlement(Coordinate location, const Player& owner) const;
 	bool buyUpgradeOnSettlement(Coordinate location, Player& owner);
 	
+	bool canUpgradeToWonder(Coordinate location, const Player& owner) const;
+	bool buyUpgradeOnWonder(Coordinate location, Player& owner);
+
 	//void PlaceSettlement(Coordinate location, Player& Owner);
 	void PlaceCity(Coordinate location, Player& Owner);
 	void PlaceWonder(Coordinate location, Player& Owner);

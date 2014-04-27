@@ -116,7 +116,7 @@ public:
 
     void setGenralModifier();			//3:1 port
 
-    bool offerBankTrade(std::array<int, 5> offer, std::array<int, 5> demand);
+    bool makeBankTrade(std::array<int, 5> offer, std::array<int, 5> demand);
 
     bool acceptOffer(Player& p, std::array<int, 5> offer, std::array<int, 5> demand);
 
