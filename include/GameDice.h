@@ -11,6 +11,8 @@ private:
 	int first;
 	int second;
 public:
+	GameDice();
+	
 	int roll();
 	int getFirst() const;
 	int getSecond() const;

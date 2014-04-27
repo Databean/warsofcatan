@@ -202,8 +202,8 @@ std::unique_ptr<ViewElement> makeViewButtonText(Fn fn, std::pair<ScreenCoordinat
 
 class TradingView : public ViewElement {
 private:
-	Player& initiating;
-	Player& receiving;
+	std::string initiating;
+	std::string receiving;
 	
 	ViewButtonText trade;
 	ViewButtonText cancel;
@@ -215,7 +215,7 @@ private:
 protected:
 	virtual bool clicked(ScreenCoordinate coord);
 public:
-	TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> offer);
+	TradingView(const std::string& initiating, const std::string& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> offer);
 	virtual ~TradingView();
 	
 	void render();

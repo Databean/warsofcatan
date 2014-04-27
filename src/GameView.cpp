@@ -180,7 +180,7 @@ bool GameView::acceptInput(SDL_Event& event) {
 		ScreenCoordinate screen = {(float) event.button.x / getGraphicsConfig()["screen.width"], 1.f - (float) event.button.y / getGraphicsConfig()["screen.height"]};
 		for(auto& it : viewElements) {
 			if(it.second->handleClick(screen)) {
-				//break;
+				break;
 			}
 		}
 	}
@@ -579,13 +579,12 @@ void DrawingGameVisitor::visit(GameDice& dice) {
 	glColor3d(1.0, 1.0, 1.0);	
 	static std::map<int, std::pair<float, float>> topLeftOffset;
 	//construct offset map
+	
 	for (int i = 1; i < 7; i++) {
-		
 		//topLeftOffset.emplace(i, make_pair(DiceXCoords[(i-1)%3], DiceYCoords[i/4]));
 		topLeftOffset.insert(make_pair(i, make_pair(DiceXCoords[(i-1)%3], DiceYCoords[i/4])));
 	}
 	
-
 	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, DIE_SCREEN_SIDE_LENGTH, 
 		lDieScreenLoc, DIE_SIDE_LENGTH);
 		
@@ -689,7 +688,7 @@ void DrawingGameVisitor::visit(DevelopmentCard& card) {
  * @param cancel The callback for the "cancel" button
  * @param initialOffer The initial offer to display.
  */
-TradingView::TradingView(Player& initiating, Player& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> initialOffer) : 
+TradingView::TradingView(const std::string& initiating, const std::string& receiving, std::function<bool(std::array<int, 5>, ScreenCoordinate)> trade, std::function<bool(ScreenCoordinate)> cancel, std::array<int, 5> initialOffer) : 
 	ViewElement({getGraphicsConfig()["screen.tradingView.bottomLeft"], getGraphicsConfig()["screen.tradingView.topRight"]}),
 	initiating(initiating), 
 	receiving(receiving),
@@ -748,7 +747,7 @@ void TradingView::render() {
 	auto font = getGraphicsConfig()["font.path"];
 	auto fontSize = getGraphicsConfig()["font.size"];
 	
-	std::string resources[] = {"Wood", "Brick", "Ore", "Wheat", "Wool"};
+	std::string resources[] = {"Wheat", "Wool", "Ore", "Brick", "Wood"};
 	for(int i = 0; i < 5; i++) {
 		auto leftX = getGraphicsConfig()["screen.tradingView.resources.leftX"];
 		auto rightX = getGraphicsConfig()["screen.tradingView.resources.rightX"];
@@ -758,7 +757,7 @@ void TradingView::render() {
 	}
 	auto playersBottomLeft = getGraphicsConfig()["screen.tradingView.players.bottomLeft"];
 	auto playersTopRight = getGraphicsConfig()["screen.tradingView.players.topRight"];
-	renderText(font, fontSize, playersBottomLeft, playersTopRight, initiating.getName() + " -> " + receiving.getName());
+	renderText(font, fontSize, playersBottomLeft, playersTopRight, initiating + " -> " + receiving);
 	
 	cancel.render();
 	trade.render();
