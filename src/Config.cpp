@@ -114,7 +114,13 @@ void Config::init(istream& source) {
 			continue;
 		}
 		string name = line.substr(0, line.find('='));
+		while(name[name.size()-1] == ' ' || name[name.size()-1] == '\t') {
+			name = name.substr(0, name.size()-1);
+		}
 		string value = line.substr(line.find('=') + 1);
+		while(value[0] == ' ' || value[0] == '\t') {
+			value = value.substr(1);
+		}
 		values.insert(std::make_pair(name, ConfigValue(value)));
 	}
 }
