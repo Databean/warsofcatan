@@ -47,6 +47,12 @@ public:
 	bool handleMonopolyCardButtonEvent(ScreenCoordinate);
 	bool handleVictoryPointCardButtonEvent(ScreenCoordinate);
 
+	bool handleWoodButtonEvent(ScreenCoordinate);
+	bool handleSheepButtonEvent(ScreenCoordinate);
+	bool handleWheatButtonEvent(ScreenCoordinate);
+	bool handleOreButtonEvent(ScreenCoordinate);
+	bool handleBrickButtonEvent(ScreenCoordinate);
+
 	bool handleCancelButtonEvent(ScreenCoordinate);
 
 	bool handleConfirmRoadCard(ScreenCoordinate);
