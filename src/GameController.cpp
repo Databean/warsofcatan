@@ -174,7 +174,6 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 	printPlayerInfo(model.getCurrentPlayer());
 	auto coord = screenToCoord(screenCoord);
 	std::vector<Settlement*> neighbors;
-	int resourceToSteal;	
 	
 	switch (getState()){
 	case BUILDROAD:
