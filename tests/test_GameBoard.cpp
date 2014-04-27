@@ -324,19 +324,6 @@ TEST(GameBoardTest, updateLongestRoadPlayer){
 	ASSERT_FALSE(test_player2.hasLongestRoad());
 }
 
-/**
-TEST(canRobberRob){
-	GameBoard test_board({"tester1", "tester2"});
-	Player& test_player1 = test_board.getPlayer(0);
-	Player& test_player2 = test_board.getPlayer(1);
-
-
-	ASSERT_FALSE(test_board.canRobberRob(test_player1, Coordinate(0,1)));
-
-	test_board.PlaceSettlement(Coordinate(0,0), test_player1);
-	ASSERT_TRUE(test_board.canRobberRob(test_player1, Coordinate(0,1)));
-}
-**/
 
 TEST(GameBoardTest, canRobberRob){
 	GameBoard test_board({"tester1", "tester2"});
@@ -355,7 +342,7 @@ TEST(GameBoardTest, buyCard){
 	GameBoard test_board({"tester1"});
 	Player& test_player = test_board.getPlayer(0);
 
-	CHECK(test_player.getDevCardsInHand() == 0);
+	ASSERT_EQ(test_player.getDevCardsInHand(), 0);
 	test_board.buyCard(test_player);
 	ASSERT_EQ(test_player.getDevCardsInHand(), 0);
 
