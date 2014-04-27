@@ -57,6 +57,8 @@ public:
 
 	bool handleConfirmRoadCard(ScreenCoordinate);
 	bool handleCancelDialogueEvent(ScreenCoordinate);
+    
+    bool viewCardTotals(ScreenCoordinate coord);
 
 	void pushState(ControlState);
 	ControlState getState();

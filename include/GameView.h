@@ -52,13 +52,12 @@ private:
 	std::vector<ScreenCoordinate> pointsOfInterest;
 
 	void highlightPoint(ScreenCoordinate & coord);
-	void drawCardCount(std::string font, int fontSize);
-	void drawResourceCount(std::string font, int fontSize);
 	
 	std::string controlStateText;
 
 	GameView(const GameView& o) = delete;
 	GameView& operator=(const GameView& o) = delete;
+    
 public:
 	GameView(GameBoard&);
 	~GameView();
@@ -78,6 +77,10 @@ public:
 	std::unique_ptr<ViewElement> removeElement(int priority);
 	std::unique_ptr<ViewElement> removeElement(const ViewElement*);
 	std::unique_ptr<ViewElement> removeElement(const ViewElement&);
+    
+    void drawCardCount(std::string font, int fontSize);
+	void drawResourceCount(std::string font, int fontSize);
+    bool showTotals;
 };
 
 /**

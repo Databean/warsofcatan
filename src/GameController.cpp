@@ -38,7 +38,7 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleCancelButtonEvent, this, _1), {{.92, .96}, {1.0, 1.0}}, font, fontSize, "Cancel"));
 	
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleBuyDevelopmentCardButtonEvent, this, _1), {{.85, .23}, {1, .30}}, font, fontSize, "Development Cards"));
+	view.addElement(makeViewButtonText(std::bind(/*&GameController::handleBuyDevelopmentCardButtonEvent*/&GameController::viewCardTotals, this, _1), {{.85, .23}, {1, .30}}, font, fontSize, "Development Cards"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadCardButtonEvent, this, _1), {{0.85, 0.0}, {0.97, 0.05}}, font, fontSize, "Road Building "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleKnightCardButtonEvent, this, _1), {{0.85, 0.05}, {0.97, 0.10}},  font, fontSize, "Knight "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleYearOfPlentyCardButtonEvent, this, _1), {{0.85, 0.10}, {0.97, 0.15}},  font, fontSize, "Year of Plenty "));
@@ -50,6 +50,8 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleOreButtonEvent, this, _1), {{.85, .45}, {.97, .50}}, font, fontSize, "Ore "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleBrickButtonEvent, this, _1), {{.85, .50}, {.97, .55}}, font, fontSize, "Brick "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleWheatButtonEvent, this, _1), {{.85, .55}, {.97, .60}}, font, fontSize, "Wheat "));
+    
+    //view.addElement(makeViewButtonText(std::bind(&GameController::viewCardTotals, this, _1), {{.85, .35}, {.97, .35}}, font, fontSize, "Show Totals"));
 
 
 	stateStack.push_back(BASESTATE);
@@ -145,13 +147,15 @@ void printPlayerInfo(const Player& player) {
 }
 
 /**
- *  calls a function to advance turn, check for victory and roll dice
+ *  calls a function to advance turn, hide resource and development cards, check for victory, and roll dice
  */
 bool GameController::nextTurn(ScreenCoordinate) {
 	if(getState() != BASESTATE){
 		return false;
 	}
-
+    
+    view.showTotals = false;
+    
 	model.endTurn();
 	if (model.getDice().getFirst() + model.getDice().getSecond() == 7)
 	{
@@ -411,6 +415,19 @@ bool GameController::handleVictoryPointCardButtonEvent(ScreenCoordinate coord){
 	}
 	//pushState(VICTORYPOINT_DEVCARD);
 	return true;
+}
+
+/**
+ * Makes the development and resource card totals visible
+ */
+bool GameController::viewCardTotals(ScreenCoordinate coord)
+{
+    auto font = getGraphicsConfig()["font.path"];
+	auto fontSize = getGraphicsConfig()["font.size"];
+    view.showTotals = !view.showTotals;
+    view.drawCardCount(font, fontSize);
+    view.drawResourceCount(font, fontSize);
+    return true;
 }
 
 
