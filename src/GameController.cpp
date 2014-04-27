@@ -141,7 +141,12 @@ int GameController::getClickHistorySize(){
 	return clickHistory.size();
 }
 
-void printPlayerInfo(const Player& player) {
+/**
+ * Now that the GUI has this information implemented, I am returning before this function prints.  To use this function again simply remove the return
+ */
+void printPlayerInfo(const Player& player)
+{
+    return;
 	auto color = player.getColor();
 	std::cout << player.getName() << "'s turn. (" << std::get<0>(color) << ", " << std::get<1>(color) << ", " << std::get<2>(color) <<")" << std::endl;
 	std::cout << "Wood: " << player.getWood() << ", Brick: " << player.getBrick() << ", Ore: " << player.getOre() << ", Wheat: " << player.getWheat() << ", Wool: " << player.getWool() << std::endl;
