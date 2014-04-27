@@ -874,6 +874,43 @@ bool GameBoard::buyUpgradeOnSettlement(Coordinate location, Player& owner) {
 }
 
 /**
+ * Whether a settlement/city at a location can be upgraded to a wonder.
+ */
+bool GameBoard::canUpgradeToWonder(Coordinate location, const Player& owner) const {
+	auto it = corners.find(location);
+	if(it == corners.end()) {
+		std::cout << "there's nothing there" << std::endl;
+		return false;
+	}
+	if(!it->second) {
+		std::cout << "null ptr there" << std::endl;
+		return false;
+	}
+	if(!(it->second->getOwner() == owner)) {
+		std::cout << "wrong owner" << std::endl;
+		return false;
+	}
+	if(dynamic_cast<const Settlement*>(it->second.get()) == 0 && dynamic_cast<const City*>(it->second.get()) == 0) {
+		std::cout << "this isn't a settlement or city" << std::endl;
+		return false;
+	}
+	return true;
+}
+
+bool GameBoard::buyUpgradeOnWonder(Coordinate location, Player& owner) {
+	if(canUpgradeToWonder(location, owner) && owner.canBuyCity()) {
+		if(!owner.buyWonder()) {
+			std::cout << "wat" << std::endl;
+			return false;
+		}
+		UpgradeToWonder(location);
+		return true;
+	}
+	std::cout << "failed for some reason" << std::endl;
+	return false;
+}
+
+/**
  * Place a city on the board.
  * @param location Where to place it on the board.
  * @param Owner The player placing the city.

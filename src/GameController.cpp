@@ -25,7 +25,8 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.10}}, font, fontSize, "Road |"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleCityButtonEvent, this, _1), {{0.10, 0.0}, {0.20, 0.1}}, font, fontSize, "City |"));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0.20, 0.0}, {0.33, 0.1}}, font, fontSize, "Settlement"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0.20, 0.0}, {0.33, 0.1}}, font, fontSize, "Settlement |"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleWonderButtonEvent, this, _1), {{0.33, 0.0}, {0.43, 0.1}}, font, fontSize, "Wonder"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::nextTurn, this, _1), {{0, 0.3}, {0.1, 0.4}}, font, fontSize, "End Turn"));
 	
 	auto playerTopY = 0.82;
@@ -223,6 +224,11 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		model.buyUpgradeOnSettlement(coord, model.getCurrentPlayer());
 		handleCancelButtonEvent(screenCoord);
 		break;
+	case BUILDWONDER:
+		std::cout << "attempting to build a wonder" << std::endl;
+		model.buyUpgradeOnWonder(coord, model.getCurrentPlayer());
+		handleCancelButtonEvent(screenCoord);
+		break;
 	default:
 		break;
 	}
@@ -309,6 +315,21 @@ bool GameController::handleCityButtonEvent(ScreenCoordinate coord) {
 
 	view.setControlStateText("Click on a settlement to upgrade it to a city. (2Wh and 3 Ore)");
 	pushState(BUILDCITY);
+	return true;
+}
+
+/**
+ * Handles a click on the "create wonder" button. Changes the internal state to indicate the user is going to be upgrading settlements/cities on the board.
+ * @param coord The place the user clicked on screen.
+ * @return Whether this event was handled by this element. Always true.
+ */
+bool GameController::handleWonderButtonEvent(ScreenCoordinate coord) {
+	if(getState() != BASESTATE) {
+		return false;
+	}
+
+	view.setControlStateText("Click on a settlement/city to upgrade to wonder. (5 of ea rsc)");
+	pushState(BUILDWONDER);
 	return true;
 }
 
