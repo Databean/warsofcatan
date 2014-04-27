@@ -213,10 +213,6 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		storeClick(coord);
 		view.setControlStateText("Select a player around that tile to steal from (Select yourself if you don't want to rob anyone)");
 		break;
-	case YEAROFPLENTY_DEVCARD:
-		model.getCurrentPlayer().playYearOfPlenty(model.getResourceTile(coord).getType());
-		popState();
-		break;
 	case VICTORYPOINT_DEVCARD:
 		model.getCurrentPlayer().playVictoryCard();
 		handleCancelButtonEvent(screenCoord);
