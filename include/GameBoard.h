@@ -137,7 +137,7 @@ public:
 
     bool testRollChecking(int* rolls);
 
-    void moveRobber(Coordinate newRobber);
+    bool moveRobber(Coordinate newRobber);
     Coordinate getRobber() const;
     bool canRobberRob(Player& opponent, Coordinate location);
 
