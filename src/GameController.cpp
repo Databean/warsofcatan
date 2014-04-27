@@ -490,10 +490,10 @@ bool GameController::handleTradeOffer(ScreenCoordinate coord, Player& initiating
 		std::array<int, 5> splitOffer;
 		std::array<int, 5> splitDemand;
 		for(int i = 0; i < 5; i++) {
-			splitOffer[i] = counterOffer[i] < 0 ? 0 : -counterOffer[i];
+			splitOffer[i] = counterOffer[i] > 0 ? 0 : -counterOffer[i];
 			splitDemand[i] = counterOffer[i] < 0 ? 0 : counterOffer[i];
 		}
-		initiating.acceptOffer(receiving, splitOffer, splitDemand);
+		initiating.acceptOffer(receiving, splitDemand, splitOffer);
 	} else {
 		//std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction(std::bind(&GameController::handleTradeOffer, this, _2, std::ref(initiating), _1, std::ref(receiving)));
 		std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction([this, &initiating, &receiving, counterOffer](std::array<int, 5> offer, ScreenCoordinate coord) {

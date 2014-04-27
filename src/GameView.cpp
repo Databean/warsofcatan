@@ -748,7 +748,7 @@ void TradingView::render() {
 	auto font = getGraphicsConfig()["font.path"];
 	auto fontSize = getGraphicsConfig()["font.size"];
 	
-	std::string resources[] = {"Wood", "Brick", "Ore", "Wheat", "Wool"};
+	std::string resources[] = {"Wheat", "Wool", "Ore", "Brick", "Wood"};
 	for(int i = 0; i < 5; i++) {
 		auto leftX = getGraphicsConfig()["screen.tradingView.resources.leftX"];
 		auto rightX = getGraphicsConfig()["screen.tradingView.resources.rightX"];
