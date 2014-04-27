@@ -1,19 +1,29 @@
 #include <iostream>
+#include <vector>
 
 #include "gtest/gtest.h"
 
 #include "Renderer.h"
 
+using std::vector;
 using std::make_pair;
 
-TEST(RendererTest, coordToScreen) {
+class CoordinateConversionTest : public ::testing::TestWithParam<Coordinate> {
+	
+};
+
+TEST_P(CoordinateConversionTest, IsReversable) {
+	ASSERT_EQ(GetParam(), screenToCoord(coordToScreen(GetParam())));
+}
+
+vector<Coordinate> makeInputs() {
+	vector<Coordinate> ret;
 	for(int x = -5; x < 5; x++) {
-		for(auto y = -5; y < 5; y++) {
-			auto original = make_pair(x, y);
-			auto screen = coordToScreen(original);
-			auto back = screenToCoord(screen);
-			ASSERT_EQ(original.first, back.first);
-			ASSERT_EQ(original.second, back.second);
+		for(int y = -5; y < 5; y++) {
+			ret.push_back(Coordinate{x, y});
 		}
 	}
+	return std::move(ret);
 }
+
+INSTANTIATE_TEST_CASE_P(LargeSquare, CoordinateConversionTest, ::testing::ValuesIn(makeInputs()));
