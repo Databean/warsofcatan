@@ -25,8 +25,8 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.10}}, font, fontSize, "Road |"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleCityButtonEvent, this, _1), {{0.10, 0.0}, {0.20, 0.1}}, font, fontSize, "City |"));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0.20, 0.0}, {0.33, 0.1}}, font, fontSize, "Settlement |"));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleWonderButtonEvent, this, _1), {{0.33, 0.0}, {0.43, 0.1}}, font, fontSize, "Wonder"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0.20, 0.0}, {0.33, 0.1}}, font, fontSize, "Settlement"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleWonderButtonEvent, this, _1), {{0.55, 0.0}, {0.65, 0.1}}, font, fontSize, "|Wonder"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::nextTurn, this, _1), {{0, 0.3}, {0.1, 0.4}}, font, fontSize, "End Turn"));
 	
 	auto playerTopY = 0.82;
