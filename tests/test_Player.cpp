@@ -376,7 +376,7 @@ TEST(PlayerTest, Monopoly_card_1){
 	Player& tp1 = board.getPlayer(0);
 	Player& tp2 = board.getPlayer(1);
 
-	tp1.addMultiple(1,1,1,0,0);
+	tp1.addMultiple(0,0,1,1,1);
 
 	std::unique_ptr<DevelopmentCard> test_MonopolyCard = std::unique_ptr<DevelopmentCard>(new MonopolyCard());
 	tp1.buyCard(test_MonopolyCard);
@@ -399,7 +399,7 @@ TEST(PlayerTest, Monopoly_card_2){
 	Player& tp1 = board.getPlayer(0);
 	Player& tp2 = board.getPlayer(1);
 
-	tp1.addMultiple(1,1,1,0,0);
+	tp1.addMultiple(0,0,1,1,1);
 
 	std::unique_ptr<DevelopmentCard> test_MonopolyCard = std::unique_ptr<DevelopmentCard>(new MonopolyCard());
 	tp1.buyCard(test_MonopolyCard);
@@ -408,6 +408,7 @@ TEST(PlayerTest, Monopoly_card_2){
 	tp2.addMultiple(1,1,0,0,0);
 
 	tp1.playMonopoly(2);
+
 
 	ASSERT_TRUE(validateResourceAmount(0,0,0,1,1,tp1));
 	ASSERT_TRUE(validateResourceAmount(1,1,0,0,0,tp2));
@@ -436,7 +437,7 @@ TEST(PlayerTest, Year_Of_Plenty_card){
 
 	Player& tp1 = board.getPlayer(0);
 
-	tp1.addMultiple(1,1,1,0,0);
+	tp1.addMultiple(0,0,1,1,1);
 
 	std::unique_ptr<DevelopmentCard> test_YearOfPlentyCard = std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard());
 	tp1.buyCard(test_YearOfPlentyCard);
@@ -467,8 +468,8 @@ TEST(PlayerTest, Trade_positive){
 
 	tp2.acceptOffer(tp1, offer, demand);
 
-	ASSERT_TRUE(validateResourceAmount(3,3,5,7,7,tp1));
-	ASSERT_TRUE(validateResourceAmount(7,7,5,3,3,tp2));
+	ASSERT_TRUE(validateResourceAmount(7,7,5,3,3,tp1));
+	ASSERT_TRUE(validateResourceAmount(3,3,5,7,7,tp2));
 
 }
 
