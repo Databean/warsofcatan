@@ -370,7 +370,7 @@ TEST(PlayerTest, UpdateVictoryPoints_all){
 
 //INSERT DEV CARD TESTS HERE
 
-TEST(Monopoly_card_1){
+TEST(PlayerTest, Monopoly_card_1){
 	GameBoard board({"test-player1", "test-player2"});
 
 	Player& tp1 = board.getPlayer(0);
@@ -393,7 +393,7 @@ TEST(Monopoly_card_1){
 }
 
 
-TEST(Monopoly_card_2){
+TEST(PlayerTest, Monopoly_card_2){
 	GameBoard board({"test-player1", "test-player2"});
 
 	Player& tp1 = board.getPlayer(0);
@@ -414,7 +414,7 @@ TEST(Monopoly_card_2){
 
 }
 
-TEST(Monopoly_card_false){
+TEST(PlayerTest, Monopoly_card_false){
 	GameBoard board({"test-player1", "test-player2"});
 
 	Player& tp1 = board.getPlayer(0);
@@ -431,7 +431,7 @@ TEST(Monopoly_card_false){
 }
 
 
-TEST(Year_Of_Plenty_card){
+TEST(PlayerTest, Year_Of_Plenty_card){
 	GameBoard board({"test-player1"});
 
 	Player& tp1 = board.getPlayer(0);
@@ -453,7 +453,7 @@ TEST(Year_Of_Plenty_card){
 
 //INSERT TRADING TESTS HERE
 
-TEST(Trade_positive){
+TEST(PlayerTest, Trade_positive){
 	GameBoard board({"test-player1", "test-player2"});
 
 	Player& tp1 = board.getPlayer(0);
@@ -473,7 +473,7 @@ TEST(Trade_positive){
 }
 
 
-TEST(Trade_negative){
+TEST(PlayerTest, Trade_negative){
 	GameBoard board({"test-player1", "test-player2"});
 
 	Player& tp1 = board.getPlayer(0);
