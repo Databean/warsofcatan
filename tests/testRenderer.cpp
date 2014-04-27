@@ -6,12 +6,21 @@
 
 using std::make_pair;
 
-class CoordinateConversionTest : public ::testing::TestWithParam<std::tuple<int, int>> {
+// fix for travis
+#if (!__GNUC__) || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 8) || (__GNUC__ >= 5))
+using std::tuple;
+using std::get;
+#else
+using ::testing::tuple;
+using ::testing::get;
+#endif
+
+class CoordinateConversionTest : public ::testing::TestWithParam<tuple<int, int>> {
 	
 };
 
 TEST_P(CoordinateConversionTest, IsReversable) {
-	auto pair = make_pair(std::get<0>(GetParam()), std::get<1>(GetParam()));
+	auto pair = make_pair(get<0>(GetParam()), get<1>(GetParam()));
 	ASSERT_EQ(pair, screenToCoord(coordToScreen(pair)));
 }
 
