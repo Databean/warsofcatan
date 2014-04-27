@@ -40,6 +40,8 @@ GameBoard::GameBoard(const vector<std::string>& playerNames) {
 	}
 	
 	currentTurn = 0;
+	maxVictoryPoints = 10;
+	winner = -1;
 
 	std::srand(std::time(0));
 	
@@ -126,6 +128,8 @@ GameBoard::GameBoard(const std::vector<std::string>& playerNames, const std::map
 		throw std::runtime_error("Board is invalid.");
 	}
 	currentTurn = 0;
+	maxVictoryPoints = 10;
+	winner = -1;
 }
 
 GameDice GameBoard::getDice() {
@@ -259,7 +263,9 @@ GameBoard::GameBoard(istream& in) {
 		throw std::runtime_error("Board is invalid.");
 	}
 
-	currentTurn = 0; //have to update <<--
+	currentTurn = 0; 		//have to update
+	maxVictoryPoints = 0;
+	winner = -1;
 }
 
 /**
@@ -321,7 +327,10 @@ ResourceTile& GameBoard::getResourceTile(Coordinate location) const
 void GameBoard::endTurn()
 {
 	if(getCurrentPlayer().getVictoryPoints() >= getMaxVictoryPoints())
-		std::cout<<"GG Bitches";
+	{
+		//std::cout<<"GG Bitches";
+		winner = currentTurn;
+	}
 
 	currentTurn++;
 	if(currentTurn >= getNoOfPlayers())
@@ -1047,6 +1056,19 @@ Player& GameBoard::getCurrentPlayer() const
 {
 	return *players[currentTurn];
 }
+
+
+/**
+ * @return reference to the winner if there is one, null otherwise
+ */
+Player& GameBoard::getWinner() const
+{
+	if(winner != -1 && winner < players.size())
+		return *players[winner];
+
+	return nullptr;
+}
+
 
 /**
  * @return no of players

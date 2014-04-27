@@ -368,3 +368,127 @@ TEST(PlayerTest, UpdateVictoryPoints_all){
 }
 
 
+//INSERT DEV CARD TESTS HERE
+
+TEST(Monopoly_card_1){
+	GameBoard board({"test-player1", "test-player2"});
+
+	Player& tp1 = board.getPlayer(0);
+	Player& tp2 = board.getPlayer(1);
+
+	tp1.addMultiple(1,1,1,0,0);
+
+	std::unique_ptr<DevelopmentCard> test_MonopolyCard = std::unique_ptr<DevelopmentCard>(new MonopolyCard());
+	tp1.buyCard(test_MonopolyCard);
+
+
+	tp1.addMultiple(5,5,5,5,5);
+	tp2.addMultiple(5,5,5,5,5);
+
+	tp1.playMonopoly(2);
+
+	CHECK(validateResourceAmount(5,5,10,5,5,tp1));
+	CHECK(validateResourceAmount(5,5,0,5,5,tp2));
+
+}
+
+
+TEST(Monopoly_card_2){
+	GameBoard board({"test-player1", "test-player2"});
+
+	Player& tp1 = board.getPlayer(0);
+	Player& tp2 = board.getPlayer(1);
+
+	tp1.addMultiple(1,1,1,0,0);
+
+	std::unique_ptr<DevelopmentCard> test_MonopolyCard = std::unique_ptr<DevelopmentCard>(new MonopolyCard());
+	tp1.buyCard(test_MonopolyCard);
+
+	tp1.addMultiple(0,0,0,1,1);
+	tp2.addMultiple(1,1,0,0,0);
+
+	tp1.playMonopoly(2);
+
+	CHECK(validateResourceAmount(0,0,0,1,1,tp1));
+	CHECK(validateResourceAmount(1,1,0,0,0,tp2));
+
+}
+
+TEST(Monopoly_card_false){
+	GameBoard board({"test-player1", "test-player2"});
+
+	Player& tp1 = board.getPlayer(0);
+	Player& tp2 = board.getPlayer(1);
+
+	tp1.addMultiple(0,0,0,1,1);
+	tp2.addMultiple(1,1,0,0,0);
+
+	tp1.playMonopoly(0);
+
+	CHECK(validateResourceAmount(0,0,0,1,1,tp1));
+	CHECK(validateResourceAmount(1,1,0,0,0,tp2));
+
+}
+
+
+TEST(Year_Of_Plenty_card){
+	GameBoard board({"test-player1"});
+
+	Player& tp1 = board.getPlayer(0);
+
+	tp1.addMultiple(1,1,1,0,0);
+
+	std::unique_ptr<DevelopmentCard> test_YearOfPlentyCard = std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard());
+	tp1.buyCard(test_YearOfPlentyCard);
+
+	tp1.addMultiple(0,0,0,1,1);
+
+	tp1.playYearOfPlenty(2);
+
+	CHECK(validateResourceAmount(0,0,2,1,1,tp1));
+
+}
+
+
+
+//INSERT TRADING TESTS HERE
+
+TEST(Trade_positive){
+	GameBoard board({"test-player1", "test-player2"});
+
+	Player& tp1 = board.getPlayer(0);
+	Player& tp2 = board.getPlayer(1);
+
+	tp1.addMultiple(5,5,5,5,5);
+	tp2.addMultiple(5,5,5,5,5);
+
+	std::array<int, 5> offer = {{2,2,0,0,0}};
+	std::array<int, 5> demand = {{0,0,0,2,2}};
+
+	tp2.acceptOffer(tp1, offer, demand);
+
+	CHECK(validateResourceAmount(3,3,5,7,7,tp1));
+	CHECK(validateResourceAmount(7,7,5,3,3,tp2));
+
+}
+
+
+TEST(Trade_negative){
+	GameBoard board({"test-player1", "test-player2"});
+
+	Player& tp1 = board.getPlayer(0);
+	Player& tp2 = board.getPlayer(1);
+
+	tp1.addMultiple(2,2,2,2,2);
+	tp2.addMultiple(2,2,2,2,2);
+
+	std::array<int, 5> offer = {{5,5,0,0,0}};
+	std::array<int, 5> demand = {{0,0,0,5,5}};
+
+	tp2.acceptOffer(tp1, offer, demand);
+
+	CHECK(validateResourceAmount(2,2,2,2,2,tp1));
+	CHECK(validateResourceAmount(2,2,2,2,2,tp2));
+
+}
+
