@@ -189,11 +189,13 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		}
 		break;
 	case ROBBER:
-		//model.moveRobber(coord);
 		robPlayers();
-
 		if(!hasClickHistory())
+		{
 			storeClick(coord);
+			view.setControlStateText("Click the name of the player you want to rob(choose yourself to not rob anyone)");
+		}
+
 		break;
 	case BUILDROAD_DEVCARD:
 		storeClick(coord);
