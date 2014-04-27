@@ -23,10 +23,10 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	auto font = getGraphicsConfig()["font.path"];
 	auto fontSize = getGraphicsConfig()["font.size"];
 	
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.1}}, font, fontSize, "Road"));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0, 0.1}, {0.1, 0.2}}, font, fontSize, "Stlm"));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleCityButtonEvent, this, _1), {{0, 0.2}, {0.1, 0.3}}, font, fontSize, "City"));
-	view.addElement(makeViewButtonText(std::bind(&GameController::nextTurn, this, _1), {{0, 0.3}, {0.1, 0.4}}, font, fontSize, "Turn"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.10}}, font, fontSize, "Road |"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleCityButtonEvent, this, _1), {{0.10, 0.0}, {0.20, 0.1}}, font, fontSize, "City |"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0.20, 0.0}, {0.33, 0.1}}, font, fontSize, "Settlement"));
+	view.addElement(makeViewButtonText(std::bind(&GameController::nextTurn, this, _1), {{0, 0.3}, {0.1, 0.4}}, font, fontSize, "End Turn"));
 	
 	auto playerTopY = 0.9;
 	for(auto i = 0; i < model.getNoOfPlayers(); i++) {
@@ -36,7 +36,7 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 		playerTopY -= 0.05;
 	}
 	
-	view.addElement(makeViewButtonColor(std::bind(&GameController::handleCancelButtonEvent, this, _1), {{.95, .95}, {1.0, 1.0}}, std::make_tuple(1.f, 0.0f, 0.f)));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleCancelButtonEvent, this, _1), {{.92, .96}, {1.0, 1.0}}, font, fontSize, "Cancel"));
 	
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleBuyDevelopmentCardButtonEvent, this, _1), {{.85, .23}, {1, .30}}, font, fontSize, "Development Cards"));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadCardButtonEvent, this, _1), {{0.85, 0.0}, {0.97, 0.05}}, font, fontSize, "Road Building "));
@@ -45,6 +45,11 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleMonopolyCardButtonEvent, this, _1), {{0.85, 0.15}, {0.97, 0.20}},  font, fontSize, "Monopoly "));
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleVictoryPointCardButtonEvent, this, _1), {{0.85, 0.20}, {0.97, 0.25}},  font, fontSize, "Victory Point "));
 
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleWoodButtonEvent, this, _1), {{.85, .35}, {.97, .40}}, font, fontSize, "Wood "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleSheepButtonEvent, this, _1), {{.85, .40}, {.97, .45}}, font, fontSize, "Sheep "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleOreButtonEvent, this, _1), {{.85, .45}, {.97, .50}}, font, fontSize, "Ore "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleBrickButtonEvent, this, _1), {{.85, .50}, {.97, .55}}, font, fontSize, "Brick "));
+	view.addElement(makeViewButtonText(std::bind(&GameController::handleWheatButtonEvent, this, _1), {{.85, .55}, {.97, .60}}, font, fontSize, "Wheat "));
 
 
 	stateStack.push_back(BASESTATE);
@@ -143,13 +148,21 @@ void printPlayerInfo(const Player& player) {
  *  calls a function to advance turn, check for victory and roll dice
  */
 bool GameController::nextTurn(ScreenCoordinate) {
+	if(getState() != BASESTATE){
+		return false;
+	}
+
 	model.endTurn();
 	if (model.getDice().getFirst() + model.getDice().getSecond() == 7)
+	{
+		view.setControlStateText("The Robber is out! Click a tile to place it!");
 		pushState(ROBBER);
+	}
 
 	printPlayerInfo(model.getCurrentPlayer());
 	return true;
 }
+
 
 
 /**
@@ -170,27 +183,19 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		} else {
 			if (model.buyRoad(getLastClick(), coord, model.getCurrentPlayer()));
 			{
-				popState();
+				handleCancelButtonEvent(screenCoord);
 			}
 			clearClickHistory();
 		}
 		break;
 	case ROBBER:
-		//model.moveRobber(coord);
 		robPlayers();
-
 		if(!hasClickHistory())
+		{
 			storeClick(coord);
-		
-		model.moveRobber(coord);
-		neighbors = model.GetNeighboringSettlements(coord);
-		if (!neighbors.empty()) {
-			resourceToSteal = neighbors[0]->getOwner().getRandomResource();
-			neighbors[0]->getOwner().addResource(resourceToSteal, -1);
-			model.getCurrentPlayer().addResource(resourceToSteal, 1);
-			} 
+			view.setControlStateText("Click the name of the player you want to rob(choose yourself to not rob anyone)");
+		}
 
-		popState();
 		break;
 	case BUILDROAD_DEVCARD:
 		storeClick(coord);
@@ -204,45 +209,23 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		}
 		break;
 	case KNIGHT_DEVCARD:
-		//model.getCurrentPlayer().playKnight(coord, opponent);
-		if(!hasClickHistory())
-			storeClick(coord);
-		
-		model.moveRobber(coord);
-		neighbors = model.GetNeighboringSettlements(coord);
-		if (!neighbors.empty()) {
-			resourceToSteal = neighbors[0]->getOwner().getRandomResource();
-			neighbors[0]->getOwner().addResource(resourceToSteal, -1);
-			model.getCurrentPlayer().addResource(resourceToSteal, 1);
-			} 
 
-		//TODO Decrement knight count
-
-
-		
-		popState();
-		break;
-	case YEAROFPLENTY_DEVCARD:
-		model.getCurrentPlayer().playYearOfPlenty(model.getResourceTile(coord).getType());
-		popState();
-		break;
-	case MONOPOLY_DEVCARD:
-		model.getCurrentPlayer().playYearOfPlenty(model.getResourceTile(coord).getType());
-		popState();
+		storeClick(coord);
+		view.setControlStateText("Select a player around that tile to steal from (Select yourself if you don't want to rob anyone)");
 		break;
 	case VICTORYPOINT_DEVCARD:
 		model.getCurrentPlayer().playVictoryCard();
-		popState();
+		handleCancelButtonEvent(screenCoord);
 		break;
 	case BUILDSETTLEMENT:
 		std::cout << "attempting to buy a settlement" << std::endl;
 		model.buySettlement(coord, model.getCurrentPlayer());
-		popState();
+		handleCancelButtonEvent(screenCoord);
 		break;
 	case BUILDCITY:
 		std::cout << "attempting to build a city" << std::endl;
 		model.buyUpgradeOnSettlement(coord, model.getCurrentPlayer());
-		popState();
+		handleCancelButtonEvent(screenCoord);
 		break;
 	default:
 		break;
@@ -275,9 +258,15 @@ void GameController :: robPlayers() {
  * reset the control state back to the base state.
  */
 bool GameController::handleCancelButtonEvent(ScreenCoordinate){
+	if(getState() == ROBBER){
+		clearClickHistory();
+		return true;
+	}
+
 	while(getState() != BASESTATE){
 		popState();
 	}
+	view.setControlStateText(" ");
 	clearClickHistory();
 	return true;
 }
@@ -291,8 +280,9 @@ bool GameController::handleCancelButtonEvent(ScreenCoordinate){
 bool GameController::handleRoadButtonEvent(ScreenCoordinate coord) {
 	clearClickHistory();
 	if(getState() != BASESTATE){
-		return true;
+		return false;
 	}
+	view.setControlStateText("Click two adjacent corner points to place a road. (1Br and 1Wd)");
 	pushState(BUILDROAD);
 	return true;
 }
@@ -304,8 +294,9 @@ bool GameController::handleRoadButtonEvent(ScreenCoordinate coord) {
  */
 bool GameController::handleSettlementButtonEvent(ScreenCoordinate coord) {
 	if(getState() != BASESTATE){
-		return true;
+		return false;
 	}
+	view.setControlStateText("Click on a corner tile to build a settlement there. (1Br, 1Wh, 1Wd, and 1Sh)");
 	pushState(BUILDSETTLEMENT);
 	return true;
 }
@@ -316,9 +307,12 @@ bool GameController::handleSettlementButtonEvent(ScreenCoordinate coord) {
  * @return Whether this event was handled by this element. Always true.
  */
 bool GameController::handleCityButtonEvent(ScreenCoordinate coord) {
-	if(getState() == BASESTATE) {
-		pushState(BUILDCITY);
+	if(getState() != BASESTATE) {
+		return false;
 	}
+
+	view.setControlStateText("Click on a settlement to upgrade it to a city. (2Wh and 3 Ore)");
+	pushState(BUILDCITY);
 	return true;
 }
 
@@ -333,6 +327,8 @@ bool GameController::handleRoadCardButtonEvent(ScreenCoordinate coord){
 		return true;
 	}
 	clearClickHistory();
+
+	view.setControlStateText("Playing Road Building Card: Click on adjacent points for the roads you want.");
 	pushState(BUILDROAD_DEVCARD);
 	return true;
 }
@@ -373,6 +369,8 @@ bool GameController::handleKnightCardButtonEvent(ScreenCoordinate coord){
 	if(getState() != BASESTATE){
 		return true;
 	}
+
+	view.setControlStateText("Select a tile that you want to place the robber on");
 	pushState(KNIGHT_DEVCARD);
 	return true;
 }
@@ -386,6 +384,8 @@ bool GameController::handleYearOfPlentyCardButtonEvent(ScreenCoordinate coord){
 	if(getState() != BASESTATE){
 		return true;
 	}
+
+	view.setControlStateText("Playing Year of Plenty Card: Click on the resource you want on the side of the screen");
 	pushState(YEAROFPLENTY_DEVCARD);
 	return true;
 }
@@ -399,6 +399,7 @@ bool GameController::handleMonopolyCardButtonEvent(ScreenCoordinate coord){
 	if(getState() != BASESTATE){
 		return true;
 	}
+	view.setControlStateText("Playing Monopoly Card: Click on the resource you want on the side of the screen");
 	pushState(MONOPOLY_DEVCARD);
 	return true;
 }
@@ -431,28 +432,48 @@ auto negativeArr(std::array<int, size> arr) -> std::array<int, size> {
  * @param player The player whose name was clicked on.
  */
 bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
-	using namespace std::placeholders;
-	Player& initiating = *model.getPlayers()[0];
-	Player& receiving = player;
-	auto priority = -10;
-	
-	std::array<int, 5> initial{{0, 0, 0, 0, 0}};
-	
-	//std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction(std::bind(&GameController::handleTradeOffer, this, _2, std::ref(initiating), _1, std::ref(receiving)));
-	std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction([this, &initiating, &receiving](std::array<int, 5> offer, ScreenCoordinate coord) {
+	if(getState() == BASESTATE){
+		using namespace std::placeholders;
+		Player& initiating = *model.getPlayers()[0];
+		Player& receiving = player;
+		auto priority = -10;
+
 		std::array<int, 5> initial{{0, 0, 0, 0, 0}};
-		std::array<int, 5> reverseOffer = negativeArr<5>(offer);
-		handleTradeOffer(coord, receiving, initial, initiating, reverseOffer);
+
+		//std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction(std::bind(&GameController::handleTradeOffer, this, _2, std::ref(initiating), _1, std::ref(receiving)));
+		std::function<bool(std::array<int, 5>, ScreenCoordinate)> tradeFunction([this, &initiating, &receiving](std::array<int, 5> offer, ScreenCoordinate coord) {
+			std::array<int, 5> initial{{0, 0, 0, 0, 0}};
+			std::array<int, 5> reverseOffer = negativeArr<5>(offer);
+			handleTradeOffer(coord, receiving, initial, initiating, reverseOffer);
+			return true;
+		});
+		std::function<bool(ScreenCoordinate)> cancelFunction([this, priority](ScreenCoordinate coord) {
+			view.removeElement(priority);
+			return true;
+		});
+
+		view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating, receiving, tradeFunction, cancelFunction, initial)));
+		std::cout << player.getName() << std::endl;
 		return true;
-	});
-	std::function<bool(ScreenCoordinate)> cancelFunction([this, priority](ScreenCoordinate coord) {
-		view.removeElement(priority); 
-		return true;
-	});
+	}else if(getState() == KNIGHT_DEVCARD){
+		if(hasClickHistory()){
+			model.getCurrentPlayer().playKnight(getPastClick(0), player);
+			return handleCancelButtonEvent(coord);
+		}
+	}else if(getState() == ROBBER){
+		if(hasClickHistory() && (model.canRobberRob(player, getPastClick(0)) || player == model.getCurrentPlayer()) &&
+				model.moveRobber(getPastClick(0))){
+
+			int resourceToSteal = player.getRandomResource();
+			if(resourceToSteal >= 0){
+				model.getCurrentPlayer().addResource(resourceToSteal, 1);
+				player.addResource(resourceToSteal, -1);
+			}
+			popState();
+			return handleCancelButtonEvent(coord);
+		}
+	}
 	
-	view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating, receiving, tradeFunction, cancelFunction, initial)));
-	std::cout << player.getName() << std::endl;
-	return true;
 }
 
 /**
@@ -488,5 +509,60 @@ bool GameController::handleTradeOffer(ScreenCoordinate coord, Player& initiating
 		view.addElement(priority, std::unique_ptr<ViewElement>(new TradingView(initiating, receiving, tradeFunction, cancelFunction, counterOffer)));
 	}
 	return true;
+}
+
+bool GameController::handleWoodButtonEvent(ScreenCoordinate coord){
+	if(getState() == YEAROFPLENTY_DEVCARD){
+		model.getCurrentPlayer().playYearOfPlenty(WOOD);
+		return handleCancelButtonEvent(coord);
+	}else if(getState() == MONOPOLY_DEVCARD){
+		model.getCurrentPlayer().playMonopoly(WOOD);
+		return handleCancelButtonEvent(coord);
+	}
+	return false;
+}
+bool GameController::handleSheepButtonEvent(ScreenCoordinate coord){
+	if(getState() == YEAROFPLENTY_DEVCARD){
+		model.getCurrentPlayer().playYearOfPlenty(SHEEP);
+		return handleCancelButtonEvent(coord);
+	}else if(getState() == MONOPOLY_DEVCARD){
+		model.getCurrentPlayer().playMonopoly(SHEEP);
+		return handleCancelButtonEvent(coord);
+	}
+	return false;
+
+}
+bool GameController::handleWheatButtonEvent(ScreenCoordinate coord){
+	if(getState() == YEAROFPLENTY_DEVCARD){
+		model.getCurrentPlayer().playYearOfPlenty(WHEAT);
+		return handleCancelButtonEvent(coord);
+	}else if(getState() == MONOPOLY_DEVCARD){
+		model.getCurrentPlayer().playMonopoly(WHEAT);
+		return handleCancelButtonEvent(coord);
+	}
+	return false;
+
+}
+bool GameController::handleOreButtonEvent(ScreenCoordinate coord){
+	if(getState() == YEAROFPLENTY_DEVCARD){
+		model.getCurrentPlayer().playYearOfPlenty(STONE);
+		return handleCancelButtonEvent(coord);
+	}else if(getState() == MONOPOLY_DEVCARD){
+		model.getCurrentPlayer().playMonopoly(STONE);
+		return handleCancelButtonEvent(coord);
+	}
+	return false;
+
+}
+bool GameController::handleBrickButtonEvent(ScreenCoordinate coord){
+	if(getState() == YEAROFPLENTY_DEVCARD){
+		model.getCurrentPlayer().playYearOfPlenty(BRICK);
+		return handleCancelButtonEvent(coord);
+	}else if(getState() == MONOPOLY_DEVCARD){
+		model.getCurrentPlayer().playMonopoly(BRICK);
+		return handleCancelButtonEvent(coord);
+	}
+	return false;
+
 }
 
