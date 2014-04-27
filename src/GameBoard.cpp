@@ -1058,6 +1058,18 @@ Player& GameBoard::getCurrentPlayer() const
 }
 
 
+
+/**
+ * @return true if game has a winner, false otherwise
+ */
+bool GameBoard::hasWinner()
+{
+	if(winner == -1)
+		return false;
+	return true;
+}
+
+
 /**
  * @return reference to the winner if there is one, null otherwise
  */
@@ -1066,7 +1078,7 @@ Player& GameBoard::getWinner() const
 	if(winner != -1 && winner < players.size())
 		return *players[winner];
 
-	return nullptr;
+	return *players[0];
 }
 
 

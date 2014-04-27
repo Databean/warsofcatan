@@ -92,6 +92,7 @@ public:
 
 	void endTurn();
 	Player& getCurrentPlayer() const;
+	bool hasWinner();
 	Player& getWinner() const;
 
 	int getMaxVictoryPoints();
