@@ -148,9 +148,16 @@ void printPlayerInfo(const Player& player) {
  *  calls a function to advance turn, check for victory and roll dice
  */
 bool GameController::nextTurn(ScreenCoordinate) {
+	if(getState() != BASESTATE){
+		return false;
+	}
+
 	model.endTurn();
 	if (model.getDice().getFirst() + model.getDice().getSecond() == 7)
+	{
+		view.setControlStateText("The Robber is out! Click a tile to place it!");
 		pushState(ROBBER);
+	}
 
 	printPlayerInfo(model.getCurrentPlayer());
 	return true;
@@ -187,16 +194,6 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 
 		if(!hasClickHistory())
 			storeClick(coord);
-		
-		model.moveRobber(coord);
-		neighbors = model.GetNeighboringSettlements(coord);
-		if (!neighbors.empty()) {
-			resourceToSteal = neighbors[0]->getOwner().getRandomResource();
-			neighbors[0]->getOwner().addResource(resourceToSteal, -1);
-			model.getCurrentPlayer().addResource(resourceToSteal, 1);
-			} 
-
-		popState();
 		break;
 	case BUILDROAD_DEVCARD:
 		storeClick(coord);
@@ -210,25 +207,9 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		}
 		break;
 	case KNIGHT_DEVCARD:
+
 		storeClick(coord);
 		view.setControlStateText("Select a player around that tile to steal from (Select yourself if you don't want to rob anyone)");
-		//model.getCurrentPlayer().playKnight(coord, opponent);
-		/**if(!hasClickHistory())
-			storeClick(coord);
-		
-		model.moveRobber(coord);
-		neighbors = model.GetNeighboringSettlements(coord);
-		if (!neighbors.empty()) {
-			resourceToSteal = neighbors[0]->getOwner().getRandomResource();
-			neighbors[0]->getOwner().addResource(resourceToSteal, -1);
-			model.getCurrentPlayer().addResource(resourceToSteal, 1);
-			} 
-
-		//TODO Decrement knight count
-
-
-		
-		popState();**/
 		break;
 	case YEAROFPLENTY_DEVCARD:
 		model.getCurrentPlayer().playYearOfPlenty(model.getResourceTile(coord).getType());
@@ -279,6 +260,11 @@ void GameController :: robPlayers() {
  * reset the control state back to the base state.
  */
 bool GameController::handleCancelButtonEvent(ScreenCoordinate){
+	if(getState() == ROBBER){
+		clearClickHistory();
+		return true;
+	}
+
 	while(getState() != BASESTATE){
 		popState();
 	}
@@ -327,7 +313,7 @@ bool GameController::handleCityButtonEvent(ScreenCoordinate coord) {
 		return false;
 	}
 
-	view.setControlStateText("Click on a settlement to upgrade it to a city. (3Wh and 2Ore)");
+	view.setControlStateText("Click on a settlement to upgrade it to a city. (2Wh and 3 Ore)");
 	pushState(BUILDCITY);
 	return true;
 }
@@ -472,7 +458,22 @@ bool GameController::handlePlayerClick(ScreenCoordinate coord, Player& player) {
 		std::cout << player.getName() << std::endl;
 		return true;
 	}else if(getState() == KNIGHT_DEVCARD){
-		model.getCurrentPlayer().playKnight(getPastClick(0), player);
+		if(hasClickHistory()){
+			model.getCurrentPlayer().playKnight(getPastClick(0), player);
+			return handleCancelButtonEvent(coord);
+		}
+	}else if(getState() == ROBBER){
+		if(hasClickHistory() && (model.canRobberRob(player, getPastClick(0)) || player == model.getCurrentPlayer()) &&
+				model.moveRobber(getPastClick(0))){
+
+			int resourceToSteal = player.getRandomResource();
+			if(resourceToSteal >= 0){
+				model.getCurrentPlayer().addResource(resourceToSteal, 1);
+				player.addResource(resourceToSteal, -1);
+			}
+			popState();
+			return handleCancelButtonEvent(coord);
+		}
 	}
 	
 }
