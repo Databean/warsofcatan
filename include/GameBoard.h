@@ -79,6 +79,8 @@ public:
 
 	void initializeGame();
 
+	GameDice getDice();
+
 	void save(std::ostream& out);
 
 	void buyCard(Player& owner);

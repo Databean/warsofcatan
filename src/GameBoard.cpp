@@ -65,6 +65,8 @@ GameBoard::GameBoard(const vector<std::string>& playerNames) {
 		}
 		valid = isValidBoard();
 	}
+	moveRobber(Coordinate(0,4));
+
 }
 
 /**
@@ -98,6 +100,8 @@ void GameBoard::createRing(Coordinate topRight, int sideLength, vector<resourceT
 void GameBoard::insertTile(Coordinate location, vector<resourceType>& resources, vector<int>& rolls) {
 	if(rolls.back() == 0) {
 		addResource(location.first, location.second, DESERT, rolls.back());
+		//moveRobber(Coordinate(location.first, location.second));
+		//std::cout << location.first << location.second << "\n";
 		rolls.pop_back();
 	} else {
 		addResource(location.first, location.second, resources.back(), rolls.back());
@@ -126,6 +130,9 @@ GameBoard::GameBoard(const std::vector<std::string>& playerNames, const std::map
 	currentTurn = 0;
 }
 
+GameDice GameBoard::getDice() {
+	return dice;
+}
 /**
  * Construct a board by reading in an XML representation from a stream.
  * @param in The stream to read from.
