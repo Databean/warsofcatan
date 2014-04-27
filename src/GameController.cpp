@@ -203,6 +203,21 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 		break;
 	case KNIGHT_DEVCARD:
 		//model.getCurrentPlayer().playKnight(coord, opponent);
+		if(!hasClickHistory())
+			storeClick(coord);
+		
+		model.moveRobber(coord);
+		neighbors = model.GetNeighboringSettlements(coord);
+		if (!neighbors.empty()) {
+			resourceToSteal = neighbors[0]->getOwner().getRandomResource();
+			neighbors[0]->getOwner().addResource(resourceToSteal, -1);
+			model.getCurrentPlayer().addResource(resourceToSteal, 1);
+			} 
+
+		//TODO Decrement knight count
+			
+
+		
 		popState();
 		break;
 	case YEAROFPLENTY_DEVCARD:
