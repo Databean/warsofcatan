@@ -606,7 +606,13 @@ int Player::giveAllResources(int resourceType){
 
 bool Player::acceptOffer(Player& p, std::array<int, 5> offer, std::array<int, 5> demand)
 {
-	if(!checkResources(offer.data()) || !p.checkResources(demand.data())) {
+	std::cout << getName() << "\t" << p.getName() << std::endl;
+	for(int i = 0; i < 5; i++) {
+		std::cout << offer[i] << " " << demand[i] << std::endl;
+	}
+	if(!checkResources(demand.data()) || !p.checkResources(offer.data())) {
+		std::cout << "failed" << std::endl;
+		std::cout << checkResources(offer.data()) << " " << p.checkResources(demand.data()) << std::endl;
 		return false;
 	}
 	p.addWood(demand[WOOD_INDEX] - offer[WOOD_INDEX]);
