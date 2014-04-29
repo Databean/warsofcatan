@@ -505,7 +505,7 @@ bool Player::playYearOfPlenty(int resourceType){
 	if(developmentCards[YEAROFPLENTY] > 0){
 		developmentCards[YEAROFPLENTY]--;
 		addResource(resourceType, 2);
-		board.discardCard(new YearOfPlentyCard());
+		board.discardCard(YEAROFPLENTY);
 		return true;
 	}
 	return false;
@@ -525,7 +525,7 @@ bool Player::playMonopoly(int resourceType){
 		for(auto& player : board.getPlayers()) {
 			addResource(resourceType, player->giveAllResources(resourceType));
 		}
-		board.discardCard(new MonopolyCard());
+		board.discardCard(MONOPOLY);
 		return true;
 	}
 	return false;
@@ -548,7 +548,7 @@ bool Player::playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate sta
 				board.PlaceRoad(start2, end2, *this);
 			}
 			developmentCards[ROADBUILDING]--;
-			board.discardCard(new RoadBuildingCard());
+			board.discardCard(ROADBUILDING);
 			return true;
 		}
 	}
