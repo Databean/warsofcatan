@@ -86,7 +86,7 @@ DevCardType Deck::drawCard()
     
     if(this->getSize() == 0)
     {
-        return KNIGHT;
+        return NULLTYPE;
     }
     
     DevCardType card = this->deck.back();

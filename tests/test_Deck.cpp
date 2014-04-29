@@ -14,7 +14,7 @@ TEST(DeckTest, deck_draw)
 {
     Deck* testDeck= new Deck();
     DevCardType temp = testDeck->drawCard();
-    ASSERT_NE(temp, KNIGHT);
+    ASSERT_NE(temp, NULLTYPE);
     testDeck->discard(temp);
 //    temp = NULL;
 //    delete testDeck;
@@ -27,7 +27,7 @@ TEST(DeckTest, reshuffle_discard_pile)
     for (int i = 0; i<300; i++)
     {
         drawn = testDeck->drawCard();
-        ASSERT_NE(drawn, KNIGHT);
+        ASSERT_NE(drawn, NULLTYPE);
         testDeck->discard(drawn);
 //        drawn = NULL;
     }
