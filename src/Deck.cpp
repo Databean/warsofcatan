@@ -49,19 +49,19 @@ Deck::Deck()
 Deck::~Deck() {
 	// TODO Auto-generated destructor stub
 
-	while(!this->deck.empty())
-	{
-		delete this->deck.back();
-		this->deck.pop_back();
-		//std::cout<<":";
-	}
-    
-    while(!this->discardPile.empty())
-	{
-		delete this->discardPile.back();
-		this->discardPile.pop_back();
-		//std::cout<<":";
-	}
+//	while(!this->deck.empty())
+//	{
+//		delete this->deck.back();
+//		this->deck.pop_back();
+//		//std::cout<<":";
+//	}
+//
+//    while(!this->discardPile.empty())
+//	{
+//		delete this->discardPile.back();
+//		this->discardPile.pop_back();
+//		//std::cout<<":";
+//	}
 }
 
 /**
@@ -86,7 +86,7 @@ DevCardType Deck::drawCard()
     
     if(this->getSize() == 0)
     {
-        return NULL;
+        return KNIGHT;
     }
     
     DevCardType card = this->deck.back();
