@@ -13,23 +13,23 @@
 TEST(DeckTest, deck_draw)
 {
     Deck* testDeck= new Deck();
-    DevelopmentCard* temp = testDeck->drawCard();
-    ASSERT_NE(temp, nullptr);
+    DevCardType temp = testDeck->drawCard();
+    ASSERT_NE(temp, KNIGHT);
     testDeck->discard(temp);
-    temp = NULL;
-    delete testDeck;
+//    temp = NULL;
+//    delete testDeck;
 }
 
 TEST(DeckTest, reshuffle_discard_pile)
 {
     Deck* testDeck= new Deck();
-    DevelopmentCard* drawn = NULL;
+    DevCardType drawn;
     for (int i = 0; i<300; i++)
     {
         drawn = testDeck->drawCard();
-        ASSERT_NE(drawn, nullptr);
+        ASSERT_NE(drawn, Knight);
         testDeck->discard(drawn);
-        drawn = NULL;
+//        drawn = NULL;
     }
     delete testDeck;
 }

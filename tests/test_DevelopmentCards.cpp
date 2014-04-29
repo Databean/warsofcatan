@@ -7,10 +7,11 @@
 
 #include "GameBoard.h"
 #include "GamePiece.h"
-#include "DevelopmentCard.h"
+//#include "DevelopmentCard.h"
+#include "Player.h"
 #include "Util.h"
 
-void testBuyingCard(Player& test_player, std::unique_ptr<DevelopmentCard> card, bool correct_result){
+void testBuyingCard(Player& test_player, DevCardType card, bool correct_result){
 	int prevOre = test_player.getOre();
 	int prevWheat = test_player.getWheat();
 	int prevWool = test_player.getWool();
@@ -37,17 +38,17 @@ TEST(DevCardTest, buying_card){
 	testPlayer.addWheat(5);
 	testPlayer.addWool(5);
 	
-	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new KnightCard()), true);
-	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new VictoryPointCard()), true);
-	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard()), true);
-	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new MonopolyCard()), true);
-	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new RoadBuildingCard()), true);
+	testBuyingCard(testPlayer, KNIGHT, true);
+	testBuyingCard(testPlayer, VICTORYPOINT, true);
+	testBuyingCard(testPlayer, YEAROFPLENTY, true);
+	testBuyingCard(testPlayer, MONOPOLY, true);
+	testBuyingCard(testPlayer, ROADBUILDING, true);
 	
-	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new KnightCard()), false);
-	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new VictoryPointCard()), false);
-	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard()), false);
-	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new MonopolyCard()), false);
-	testBuyingCard(testPlayer, std::unique_ptr<DevelopmentCard>(new RoadBuildingCard()), false);
+	testBuyingCard(testPlayer, KNIGHT, false);
+	testBuyingCard(testPlayer, VICTORYPOINT, false);
+	testBuyingCard(testPlayer, YEAROFPLENTY, false);
+	testBuyingCard(testPlayer, MONOPOLY, false);
+	testBuyingCard(testPlayer, ROADBUILDING, false);
 }
 
 void testRoadBuildingCard(Player& test_player, bool correct_result, GameBoard& test_board, Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2){
@@ -79,7 +80,8 @@ TEST(DevCardTest, RoadBuildingCard){
 	Player& test_player = *test_board.getPlayers()[0];
 
 	test_board.PlaceSettlement(Coordinate(0,0), test_player);
-	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new RoadBuildingCard());
+//	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new RoadBuildingCard());
+	DevCardType test_card = ROADBUILDING;
 
 	test_player.addOre(4);
 	test_player.addWheat(4);
@@ -117,8 +119,8 @@ TEST(DevCardTest, VictoryPointCard){
 	GameBoard test_board({"tester1"});
 	Player& test_player = *test_board.getPlayers()[0];
 
-	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new VictoryPointCard());
-
+//	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new VictoryPointCard());
+	DevCardType test_card = VICTORYPOINT;
 	test_player.addOre(2);
 	test_player.addWheat(2);
 	test_player.addWool(2);
@@ -157,7 +159,9 @@ TEST(DevCardTest, MonopolyCard){
 	Player& test_player2 = test_board.getPlayer(1);
 	Player& test_player3 = test_board.getPlayer(2);
 
-	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new MonopolyCard());
+//	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new MonopolyCard());
+	DevCardType test_card = MONOPOLY;
+
 
 	test_player1.addOre(3);
 	test_player1.addWheat(3);
@@ -205,7 +209,9 @@ TEST(DevCardTest, YearOfPlentyCard){
 	GameBoard test_board({"tester1"});
 	Player& test_player = test_board.getPlayer(0);
 
-	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<YearOfPlentyCard>(new YearOfPlentyCard());
+//	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<YearOfPlentyCard>(new YearOfPlentyCard());
+	DevCardType test_card = YEAROFPLENTY;
+
 
 	test_player.addOre(2);
 	test_player.addWheat(2);
@@ -260,7 +266,8 @@ TEST(DevCardTest, KnightCard){
 	Player& test_player2 = test_board.getPlayer(1);
 	Player& test_player3 = test_board.getPlayer(2);
 
-	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new KnightCard());
+//	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new KnightCard());
+	DevCardType test_card = KNIGHT;
 
 	test_player1.addOre(4);
 	test_player1.addWheat(4);
