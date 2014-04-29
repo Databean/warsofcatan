@@ -15,18 +15,18 @@ void testBuyingCard(Player& test_player, DevCardType card, bool correct_result){
 	int prevOre = test_player.getOre();
 	int prevWheat = test_player.getWheat();
 	int prevWool = test_player.getWool();
-	int prevCards = test_player.getDevelopmentCards(card->getType());
+	int prevCards = test_player.getDevelopmentCards(card);
 	ASSERT_EQ(test_player.buyCard(card), correct_result);
 	if(correct_result){
 		ASSERT_EQ(prevOre, test_player.getOre()+1);
 		ASSERT_EQ(prevWheat, test_player.getWheat()+1);
 		ASSERT_EQ(prevWool, test_player.getWool()+1);
-		ASSERT_EQ(prevCards, test_player.getDevelopmentCards(card->getType()) -1);
+		ASSERT_EQ(prevCards, test_player.getDevelopmentCards(card) -1);
 	}else{
 		ASSERT_EQ(prevOre, test_player.getOre());
 		ASSERT_EQ(prevWheat, test_player.getWheat());
 		ASSERT_EQ(prevWool, test_player.getWool());
-		ASSERT_EQ(prevCards, test_player.getDevelopmentCards(card->getType()));
+		ASSERT_EQ(prevCards, test_player.getDevelopmentCards(card));
 	}
 }
 

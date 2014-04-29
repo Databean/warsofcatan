@@ -27,7 +27,7 @@ TEST(DeckTest, reshuffle_discard_pile)
     for (int i = 0; i<300; i++)
     {
         drawn = testDeck->drawCard();
-        ASSERT_NE(drawn, Knight);
+        ASSERT_NE(drawn, KNIGHT);
         testDeck->discard(drawn);
 //        drawn = NULL;
     }

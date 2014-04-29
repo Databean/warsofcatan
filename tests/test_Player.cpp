@@ -350,7 +350,7 @@ TEST(PlayerTest, UpdateVictoryPoints_all){
 	test_player.addWheat(4);
 	test_player.addWool(4);
 
-	test_player.buyCard(VICTORY);
+	test_player.buyCard(VICTORYPOINT);
 	ASSERT_EQ(test_player.getVictoryPoints(), 5);
 
 //	std::unique_ptr<DevelopmentCard> test_KnightCard = std::unique_ptr<DevelopmentCard>(new KnightCard());
