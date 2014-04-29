@@ -341,10 +341,10 @@ int Player::getVictoryPointCards()
  * Acquire a development card.
  * @param card An owning pointer to the card the player acquired.
  */
-bool Player::buyCard(std::unique_ptr<DevelopmentCard>& card)
+bool Player::buyCard(DevCardType card)
 {
 	if(getWheat() > 0 && getOre() > 0 && getWool() > 0){
-		developmentCards[card->getType()]++;
+		developmentCards[card]++;
 		addWheat(-1);
 		addOre(-1);
 		addWool(-1);

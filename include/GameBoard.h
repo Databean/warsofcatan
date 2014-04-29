@@ -84,7 +84,7 @@ public:
 	void save(std::ostream& out);
 
 	void buyCard(Player& owner);
-	void discardCard(DevelopmentCard * card);
+	void discardCard(DevCardType card);
 
 	ResourceTile& getResourceTile(Coordinate location) const;
 

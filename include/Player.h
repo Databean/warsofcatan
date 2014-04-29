@@ -78,7 +78,7 @@ public:
 
     int getDevCardsInHand();
 
-    bool buyCard(std::unique_ptr<DevelopmentCard> &card);
+    bool buyCard(DevCardType card);
     std::string getName() const;
     GameBoard* getBoard();
     void setBoard(GameBoard* newboard);
