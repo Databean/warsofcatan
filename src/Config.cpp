@@ -156,7 +156,7 @@ void Config::init(istream& source) {
 const ConfigValue& Config::operator[](const string& name) const {
 	auto it = values.find(name);
 	if(it == values.end()) {
-		throw runtime_error("No such key in the config");
+		throw runtime_error("No such key in the config: \"" + name + "\"");
 	} else {
 		return it->second;
 	}

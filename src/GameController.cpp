@@ -61,24 +61,66 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 		getGraphicsConfig()["screen.bankButton.area"],
 		font, fontSize, getGraphicsConfig()["screen.bankButton.text"]));
 	
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleCancelButtonEvent, this, _1), {{.92, .96}, {1.0, 1.0}}, font, fontSize, "Cancel"));
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleCancelButtonEvent, this, _1), 
+		getGraphicsConfig()["screen.cancelButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.cancelButton.text"]));
 	
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleBuyDevelopmentCardButtonEvent, this, _1), {{.85, .23}, {1, .30}}, font, fontSize, "Development Cards"));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadCardButtonEvent, this, _1), {{0.85, 0.0}, {0.97, 0.05}}, font, fontSize, "Road Building "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleKnightCardButtonEvent, this, _1), {{0.85, 0.05}, {0.97, 0.10}},  font, fontSize, "Knight "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleYearOfPlentyCardButtonEvent, this, _1), {{0.85, 0.10}, {0.97, 0.15}},  font, fontSize, "Year of Plenty "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleMonopolyCardButtonEvent, this, _1), {{0.85, 0.15}, {0.97, 0.20}},  font, fontSize, "Monopoly "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleVictoryPointCardButtonEvent, this, _1), {{0.85, 0.20}, {0.97, 0.25}},  font, fontSize, "Victory Point "));
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleBuyDevelopmentCardButtonEvent, this, _1),
+		getGraphicsConfig()["screen.developmentCardButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.developmentCardButton.text"]));
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleRoadCardButtonEvent, this, _1),
+		getGraphicsConfig()["screen.roadBuildingButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.roadBuildingButton.text"]));
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleKnightCardButtonEvent, this, _1), 
+		getGraphicsConfig()["screen.knightButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.knightButton.text"]));
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleYearOfPlentyCardButtonEvent, this, _1), 
+		getGraphicsConfig()["screen.yearOfPlentyButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.yearOfPlentyButton.text"]));
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleMonopolyCardButtonEvent, this, _1), 
+		getGraphicsConfig()["screen.monopolyButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.monopolyButton.text"]));
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleVictoryPointCardButtonEvent, this, _1), 
+		getGraphicsConfig()["screen.victoryPointButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.victoryPointButton.text"]));
 	
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleWoodButtonEvent, this, _1), {{.85, .30}, {.97, .35}}, font, fontSize, "Wood "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleSheepButtonEvent, this, _1), {{.85, .35}, {.97, .40}}, font, fontSize, "Sheep "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleOreButtonEvent, this, _1), {{.85, .40}, {.97, .45}}, font, fontSize, "Ore "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleBrickButtonEvent, this, _1), {{.85, .45}, {.97, .50}}, font, fontSize, "Brick "));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleWheatButtonEvent, this, _1), {{.85, .50}, {.97, .55}}, font, fontSize, "Wheat "));
-    
-    view.addElement(makeViewButtonText(std::bind(&GameController::viewCardTotals, this, _1), {{.85, .55}, {.97, .60}}, font, fontSize, "Show Totals"));
-
-	view.addElement(100, makeViewButton(std::bind(&GameController::handleBoardEvent, this, _1), {{0, 0}, {1, 1}}));
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleWoodButtonEvent, this, _1), 
+		getGraphicsConfig()["screen.woodButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.woodButton.text"]));
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleSheepButtonEvent, this, _1), 
+		getGraphicsConfig()["screen.sheepButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.sheepButton.text"]));
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleOreButtonEvent, this, _1), 
+		getGraphicsConfig()["screen.oreButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.oreButton.text"]));
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleBrickButtonEvent, this, _1), 
+		getGraphicsConfig()["screen.brickButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.brickButton.text"]));
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleWheatButtonEvent, this, _1), 
+		getGraphicsConfig()["screen.wheatButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.wheatButton.text"]));
+	
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::viewCardTotals, this, _1), 
+		getGraphicsConfig()["screen.showTotalButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.showTotalButton.text"]));
+	
+	view.addElement(100, makeViewButton(
+		std::bind(&GameController::handleBoardEvent, this, _1), 
+		getGraphicsConfig()["screen.board.area"]));
+	
 	stateStack.push_back(BASESTATE);
 }
 
@@ -166,17 +208,6 @@ int GameController::getClickHistorySize(){
 }
 
 /**
- * Now that the GUI has this information implemented, I am returning before this function prints.  To use this function again simply remove the return
- */
-void printPlayerInfo(const Player& player)
-{
-    return;
-	auto color = player.getColor();
-	std::cout << player.getName() << "'s turn. (" << std::get<0>(color) << ", " << std::get<1>(color) << ", " << std::get<2>(color) <<")" << std::endl;
-	std::cout << "Wood: " << player.getWood() << ", Brick: " << player.getBrick() << ", Ore: " << player.getOre() << ", Wheat: " << player.getWheat() << ", Wool: " << player.getWool() << std::endl;
-}
-
-/**
  *  calls a function to advance turn, hide resource and development cards, check for victory, and roll dice
  */
 bool GameController::nextTurn(ScreenCoordinate) {
@@ -192,8 +223,6 @@ bool GameController::nextTurn(ScreenCoordinate) {
 		view.setControlStateText("The Robber is out! Click a tile to place it!");
 		pushState(ROBBER);
 	}
-
-	printPlayerInfo(model.getCurrentPlayer());
 	return true;
 }
 
@@ -205,7 +234,6 @@ bool GameController::nextTurn(ScreenCoordinate) {
  * @return Whether this event was handled by this element. Always true.
  */
 bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
-	printPlayerInfo(model.getCurrentPlayer());
 	auto coord = screenToCoord(screenCoord);
 	std::vector<Settlement*> neighbors;
 	
