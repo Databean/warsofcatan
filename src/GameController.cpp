@@ -1,7 +1,5 @@
 #include "GameController.h"
 
-#include <iostream>
-#include <functional>
 #include <memory>
 
 #include "Config.h"
@@ -295,21 +293,17 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 	return true;
 }
 
-void GameController :: robPlayers() {
+void GameController::robPlayers() {
 	for (int i = 0; i < model.getNoOfPlayers(); i++) {
-		int resources[5];
-		model.getPlayer(i).checkResources(resources);
-		//int rSum = resources[0] + resources[1] + resources[2] + resources[3] + resources[4];
-		int rSum = model.getPlayer(i).getWood() + 
-		model.getPlayer(i).getOre() + 
-		model.getPlayer(i).getBrick() + 
-		model.getPlayer(i).getWheat() + 
-		model.getPlayer(i).getWool(); 
-
-		if (rSum > 7) {
-			for (int j = 0 ; j < rSum/2; j++) {
+		int resourceSum = model.getPlayer(i).getWood() + 
+			model.getPlayer(i).getOre() + 
+			model.getPlayer(i).getBrick() + 
+			model.getPlayer(i).getWheat() + 
+			model.getPlayer(i).getWool(); 
+		
+		if (resourceSum > 7) {
+			for (int j = 0 ; j < resourceSum/2; j++) {
 				model.getPlayer(i).addResource(model.getPlayer(i).getRandomResource(), -1);
-
 			}
 		}
 	}
