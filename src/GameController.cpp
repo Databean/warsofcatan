@@ -21,20 +21,45 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 	auto font = getGraphicsConfig()["font.path"];
 	auto fontSize = getGraphicsConfig()["font.size"];
 	
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleRoadButtonEvent, this, _1), {{0, 0}, {0.1, 0.10}}, font, fontSize, "Road |"));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleCityButtonEvent, this, _1), {{0.10, 0.0}, {0.20, 0.1}}, font, fontSize, "City |"));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleSettlementButtonEvent, this, _1), {{0.20, 0.0}, {0.33, 0.1}}, font, fontSize, "Settlement"));
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleWonderButtonEvent, this, _1), {{0.55, 0.0}, {0.65, 0.1}}, font, fontSize, "|Wonder"));
-	view.addElement(makeViewButtonText(std::bind(&GameController::nextTurn, this, _1), {{0, 0.3}, {0.1, 0.4}}, font, fontSize, "End Turn"));
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleRoadButtonEvent, this, _1),
+		getGraphicsConfig()["screen.roadButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.roadButton.text"]));
 	
-	auto playerTopY = 0.82;
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleCityButtonEvent, this, _1), 
+		getGraphicsConfig()["screen.cityButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.cityButton.text"]));
+	
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleSettlementButtonEvent, this, _1), 
+		getGraphicsConfig()["screen.settlementButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.settlementButton.text"]));
+	
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleWonderButtonEvent, this, _1),
+		getGraphicsConfig()["screen.wonderButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.wonderButton.text"]));
+	
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::nextTurn, this, _1), 
+		getGraphicsConfig()["screen.endTurnButton.area"],							
+		font, fontSize, "End Turn"));
+	
+	float playerY = getGraphicsConfig()["screen.players.topY"];
 	for(auto i = 0; i < model.getNoOfPlayers(); i++) {
-		auto width = 0.15;
+		float right = getGraphicsConfig()["screen.players.right"];
+		float width = getGraphicsConfig()["screen.players.width"];
+		float height = getGraphicsConfig()["screen.players.height"];
 		Player& player = model.getPlayer(i);
-		view.addElement(makeViewButtonText(std::bind(&GameController::handlePlayerClick, this, _1, std::ref(player)), {{1.0 - width, playerTopY - 0.05}, {1.0, playerTopY}}, font, fontSize, player.getName()));
-		playerTopY -= 0.05;
+		view.addElement(makeViewButtonText(std::bind(&GameController::handlePlayerClick, this, _1, std::ref(player)), {{right - width, playerY - height}, {right, playerY}}, font, fontSize, player.getName()));
+		playerY -= height;
 	}
-	view.addElement(makeViewButtonText(std::bind(&GameController::handleBankClick, this, _1), {{0, 0.8}, {0.1, 0.9}}, font, fontSize, "Bank"));
+	
+	view.addElement(makeViewButtonText(
+		std::bind(&GameController::handleBankClick, this, _1), 
+		getGraphicsConfig()["screen.bankButton.area"],
+		font, fontSize, getGraphicsConfig()["screen.bankButton.text"]));
 	
 	view.addElement(makeViewButtonText(std::bind(&GameController::handleCancelButtonEvent, this, _1), {{.92, .96}, {1.0, 1.0}}, font, fontSize, "Cancel"));
 	
