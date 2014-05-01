@@ -121,7 +121,7 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 		std::bind(&GameController::handleBoardEvent, this, _1), 
 		getGraphicsConfig()["screen.board.area"]));
 	
-	stateStack.push_back(BASESTATE);
+	state = BASESTATE;
 }
 
 /**
@@ -135,9 +135,10 @@ GameController::~GameController() {
  * Pushes the given state onto the control stack
  */
 void GameController::pushState(ControlState newState){
-	if (newState != BASESTATE){
-		stateStack.push_back(newState);
+	if(state != BASESTATE) {
+		throw std::runtime_error("oh no! i misunderstood how this function works");
 	}
+	state = newState;
 }
 
 /**
@@ -145,10 +146,7 @@ void GameController::pushState(ControlState newState){
  */
 ControlState GameController::popState(){
 	ControlState currState = getState();
-	if(currState == BASESTATE){
-		return currState;
-	}
-	stateStack.pop_back();
+	state = BASESTATE;
 	return currState;
 }
 
@@ -156,7 +154,7 @@ ControlState GameController::popState(){
  * returns the current state of the controller
  */
 ControlState GameController::getState(){
-	return stateStack.back();
+	return state;
 }
 
 /**
@@ -259,14 +257,15 @@ bool GameController::handleBoardEvent(ScreenCoordinate screenCoord) {
 
 		break;
 	case BUILDROAD_DEVCARD:
-		storeClick(coord);
+		if(getClickHistorySize() <= 4) {
+			storeClick(coord);
+		}
 		if(getClickHistorySize() >= 4){
 			using namespace std::placeholders;
 			view.addElement(28, makeConfirmationDialogue(
 				std::bind(&GameController::handleConfirmRoadCard, this, _1),
 				std::bind(&GameController::handleCancelDialogueEvent, this, _1), {{.2, .3}, {.8, .6}},
 				"Use road building card on these points?"));
-			pushState(MODALSTATE);
 		}
 		break;
 	case KNIGHT_DEVCARD:
