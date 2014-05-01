@@ -4,6 +4,7 @@
 #include <utility>
 #include <sstream>
 #include <memory>
+#include <stdexcept>
 
 typedef std::pair<int, int> Coordinate;
 typedef std::pair<float, float> ScreenCoordinate;
