@@ -8,18 +8,20 @@
  * @param end The other endpoint of the road.
  * @param Owner The player owning the road.
  */
-Road::Road(Coordinate start, Coordinate end, Player& Owner) : owner(Owner) {
-	if(start < end) {
+Road::Road(Coordinate start, Coordinate end, Player& Owner) :
+		owner(Owner) {
+	if (start < end) {
 		this->start = start;
 		this->end = end;
 	} else {
 		this->end = start;
 		this->start = end;
 	}
-	
+
 	//If the input is bad, throw an exception so bad roads won't be built
-	if(!isValidRoad(start, end)){
-		throw std::invalid_argument("Road must start on one corner and go to a corner exactly 1 away");
+	if (!isValidRoad(start, end)) {
+		throw std::invalid_argument(
+				"Road must start on one corner and go to a corner exactly 1 away");
 	}
 }
 
@@ -27,7 +29,7 @@ Road::Road(Coordinate start, Coordinate end, Player& Owner) : owner(Owner) {
  * Destructor
  */
 Road::~Road() {
-	
+
 }
 
 /**
@@ -36,16 +38,16 @@ Road::~Road() {
  * @param end the other end of the road
  * @return If the road is a valid road.
  */
-bool Road::isValidRoad(Coordinate start, Coordinate end){
+bool Road::isValidRoad(Coordinate start, Coordinate end) {
 	if (start == end)
 		return false;
 	if (abs((start.second - end.second) > 1))
 		return false;
 
-	int dist = std::abs((start.first - end.first) + (start.second - end.second));
+	int dist = std::abs(
+			(start.first - end.first) + (start.second - end.second));
 	return (dist <= 1);
 }
-
 
 /**
  * Accepts a GameVisitor. This is used to serialize a road object or render it.
@@ -55,12 +57,11 @@ void Road::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
 }
 
-
 /**
  * The starting coordinate of the road.
  * @return The start.
  */
-Coordinate Road::getStart() const{
+Coordinate Road::getStart() const {
 	return start;
 }
 
@@ -68,7 +69,7 @@ Coordinate Road::getStart() const{
  * The ending coordinate of the road.
  * @return The end.
  */
-Coordinate Road::getEnd() const{
+Coordinate Road::getEnd() const {
 	return end;
 }
 
@@ -87,10 +88,11 @@ bool Road::operator==(const Road& other) const {
  * @param otherRoad The road to compare this road two.
  * @return true if the roads have the same coordinates whether they are matching starting or ending coordinates doesn't matter
  */
-bool Road::equals(const Road& otherRoad) const{
+bool Road::equals(const Road& otherRoad) const {
 	Coordinate otherstart = otherRoad.getStart();
 	Coordinate otherend = otherRoad.getEnd();
-	return equals(otherstart, otherend) && (owner.getName() == otherRoad.owner.getName());
+	return equals(otherstart, otherend)
+			&& (owner.getName() == otherRoad.owner.getName());
 }
 
 /**
@@ -99,8 +101,10 @@ bool Road::equals(const Road& otherRoad) const{
  * @param otherEnd The other endpoint of the road to compare to.
  * @return true if the roads have the same coordinates whether they are matching starting or ending coordinates doesn't matter
  */
-bool Road::equals(const Coordinate& otherStart, const Coordinate& otherEnd) const{
-	if((otherStart == start && otherEnd == end) || (otherStart == end && otherEnd == start))
+bool Road::equals(const Coordinate& otherStart,
+		const Coordinate& otherEnd) const {
+	if ((otherStart == start && otherEnd == end)
+			|| (otherStart == end && otherEnd == start))
 		return true;
 	return false;
 }
