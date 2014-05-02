@@ -20,6 +20,7 @@ $(EXECUTABLE): $(ALLFILES)
 .PHONY: tests
 tests: $(EXECUTABLE)
 	cd tests && $(MAKE)
+	tests/main.test
 
 .PHONY: clean
 clean:
