@@ -21,7 +21,6 @@
 
 #include "DevelopmentCard.h"
 
-
 class GameVisitor;
 
 /**
@@ -37,7 +36,7 @@ private:
 
 	Deck deck;
 
-	std::map<Coordinate, std::vector<std::shared_ptr<Road>>> roads;
+	std::map<Coordinate, std::vector<std::shared_ptr<Road>>>roads;
 
 	std::vector<std::unique_ptr<Player>> players;
 	Coordinate robber;
@@ -46,11 +45,10 @@ private:
 	int maxVictoryPoints;
 	int winner;
 
-    void addResource(int x, int y, resourceType res, int val);
-    bool checkRolls(int* rolls);
+	void addResource(int x, int y, resourceType res, int val);
+	bool checkRolls(int* rolls);
 
 	bool isValidBoard() const;
-
 
 	bool outOfBounds(const Coordinate& coord) const;
 	bool roadExists(Coordinate start, Coordinate end) const;
@@ -64,11 +62,11 @@ private:
 
 	void createRing(Coordinate topRight, int sideLength, std::vector<resourceType>& resources, std::vector<int>& rolls);
 	void insertTile(Coordinate location, std::vector<resourceType>& resources, std::vector<int>& rolls);
-    
-    std::pair<int, int> startTurn();
-    void enableRobber();
-    void payoutResources(int roll);
-    
+
+	std::pair<int, int> startTurn();
+	void enableRobber();
+	void payoutResources(int roll);
+
 public:
 	GameBoard(const std::vector<std::string>& playerNames);
 	GameBoard(const std::vector<std::string>& playerNames, const std::map<Coordinate, std::pair<resourceType, int>>& resourceLocations);
@@ -112,16 +110,16 @@ public:
 	void PlaceSettlement(Coordinate location, Player& Owner);
 	void UpgradeSettlement(Coordinate location);
 	void UpgradeToWonder(Coordinate location);
-	
+
 	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const;
 	bool buyRoad(Coordinate start, Coordinate end, Player& Owner);
-	
+
 	bool canPlaceSettlement(const Coordinate& location, const Player& owner);
 	bool buySettlement(const Coordinate& location, Player& owner);
-	
+
 	bool canUpgradeSettlement(Coordinate location, const Player& owner) const;
 	bool buyUpgradeOnSettlement(Coordinate location, Player& owner);
-	
+
 	bool canUpgradeToWonder(Coordinate location, const Player& owner) const;
 	bool buyUpgradeOnWonder(Coordinate location, Player& owner);
 
@@ -136,15 +134,15 @@ public:
 	bool operator==(const GameBoard& other) const;
 
 	const std::vector<std::unique_ptr<Player>>& getPlayers() const;
-	
+
 	int getNoOfPlayers();
 	Player& getPlayer(int index);
 
-    bool testRollChecking(int* rolls);
+	bool testRollChecking(int* rolls);
 
-    bool moveRobber(Coordinate newRobber);
-    Coordinate getRobber() const;
-    bool canRobberRob(Player& opponent, Coordinate location);
+	bool moveRobber(Coordinate newRobber);
+	Coordinate getRobber() const;
+	bool canRobberRob(Player& opponent, Coordinate location);
 
 };
 
