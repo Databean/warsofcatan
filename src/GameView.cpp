@@ -24,7 +24,7 @@ float DiceYCoords[2] = {3.f, 142.f};
 std::pair<std::pair<float, float>, std::pair<float, float>> lDieScreenLoc= make_pair(make_pair(0.6f, 0.82f), make_pair(0.66f, 0.88f));
 std::pair<std::pair<float, float>, std::pair<float, float>> rDieScreenLoc= make_pair(make_pair(0.68f, 0.82f), make_pair(0.74f, 0.88f));
 
-//#define DIE_SIDE_LENGTH 0.06f
+//The length of a side of the dice on the sprite sheet in pixels.
 #define DIE_SCREEN_SIDE_LENGTH 105.f
 
 
@@ -57,26 +57,32 @@ GameView::~GameView() {
  */
 void GameView::drawCardCount(std::string font, int fontSize)
 {
+	std::pair<std::pair<float, float>, std::pair<float, float>> roadBuildingRect = getGraphicsConfig()["screen.roadBuildingCount.area"];
+	std::pair<std::pair<float, float>, std::pair<float, float>> knightRect = getGraphicsConfig()["screen.knightCount.area"];
+	std::pair<std::pair<float, float>, std::pair<float, float>> yearOfPlentyRect = getGraphicsConfig()["screen.yearOfPlentyCount.area"];
+	std::pair<std::pair<float, float>, std::pair<float, float>> monopolyRect = getGraphicsConfig()["screen.monopolyCount.area"];
+	std::pair<std::pair<float, float>, std::pair<float, float>> victoryPointRect = getGraphicsConfig()["screen.victoryPointCount.area"];
+
     if (showTotals==false)
     {
-        renderText(font, fontSize, {0.97, 0.0}, {1.0, 0.05}, "?");		//Road Building
-        renderText(font, fontSize, {0.97, 0.05}, {1.0, 0.1}, "?");		//Knight
-        renderText(font, fontSize, {0.97, 0.1}, {1.0, 0.15}, "?");		//Year of Plenty
-        renderText(font, fontSize, {0.97, 0.15}, {1.0, 0.2}, "?");		//Monopoly
-        renderText(font, fontSize, {0.97, 0.2}, {1.0, 0.25}, "?");		//Victory Point
+        renderText(font, fontSize, roadBuildingRect.first, roadBuildingRect.second, "?");		//Road Building
+        renderText(font, fontSize, knightRect.first, knightRect.second, "?");					//Knight
+        renderText(font, fontSize, yearOfPlentyRect.first, yearOfPlentyRect.second, "?");		//Year of Plenty
+        renderText(font, fontSize, monopolyRect.first, monopolyRect.second, "?");				//Monopoly
+        renderText(font, fontSize, victoryPointRect.first, victoryPointRect.second, "?");		//Victory Point
         return;
     }
     
-	renderText(font, fontSize, {0.97, 0.0}, {1.0, 0.05},
-			toString(model.getCurrentPlayer().getRoadBuildingCards()));	//Road Building
-	renderText(font, fontSize, {0.97, 0.05}, {1.0, 0.1},
-			toString(model.getCurrentPlayer().getKnightCards()));		//Knight
-	renderText(font, fontSize, {0.97, 0.1}, {1.0, 0.15},
-			toString(model.getCurrentPlayer().getYearOfPlentyCards()));	//Year of Plenty
-	renderText(font, fontSize, {0.97, 0.15}, {1.0, 0.2},
-			toString(model.getCurrentPlayer().getMonopolyCards()));		//Monopoly
-	renderText(font, fontSize, {0.97, 0.2}, {1.0, 0.25},
-			toString(model.getCurrentPlayer().getVictoryCards()));		//Victory Point
+	renderText(font, fontSize, roadBuildingRect.first, roadBuildingRect.second,
+			toString(model.getCurrentPlayer().getRoadBuildingCards()));				//Road Building
+	renderText(font, fontSize, knightRect.first, knightRect.second,
+			toString(model.getCurrentPlayer().getKnightCards()));					//Knight
+	renderText(font, fontSize, yearOfPlentyRect.first, yearOfPlentyRect.second,
+			toString(model.getCurrentPlayer().getYearOfPlentyCards()));				//Year of Plenty
+	renderText(font, fontSize, monopolyRect.first, monopolyRect.second,
+			toString(model.getCurrentPlayer().getMonopolyCards()));					//Monopoly
+	renderText(font, fontSize, victoryPointRect.first, victoryPointRect.second,
+			toString(model.getCurrentPlayer().getVictoryCards()));					//Victory Point
 }
 
 /**
@@ -88,25 +94,32 @@ void GameView::drawCardCount(std::string font, int fontSize)
  */
 void GameView::drawResourceCount(std::string font, int fontSize)
 {
+
+	std::pair<std::pair<float, float>, std::pair<float, float>> woodRect = getGraphicsConfig()["screen.woodResources.area"];
+	std::pair<std::pair<float, float>, std::pair<float, float>> sheepRect = getGraphicsConfig()["screen.sheepResources.area"];
+	std::pair<std::pair<float, float>, std::pair<float, float>> oreRect = getGraphicsConfig()["screen.oreResources.area"];
+	std::pair<std::pair<float, float>, std::pair<float, float>> brickRect = getGraphicsConfig()["screen.brickResources.area"];
+	std::pair<std::pair<float, float>, std::pair<float, float>> wheatRect = getGraphicsConfig()["screen.wheatResources.area"];
+
     if(showTotals==false)
     {
-        renderText(font, fontSize, {0.97, 0.30}, {1.0, 0.35}, "?");		//Wood
-        renderText(font, fontSize, {0.97, 0.35}, {1.0, 0.40}, "?");		//Sheep
-        renderText(font, fontSize, {0.97, 0.40}, {1.0, 0.45}, "?");		//Ore
-        renderText(font, fontSize, {0.97, 0.45}, {1.0, 0.50}, "?");		//Brick
-        renderText(font, fontSize, {0.97, 0.50}, {1.0, 0.55}, "?");     //Wheat
+        renderText(font, fontSize, woodRect.first, woodRect.second, "?");		//Wood
+        renderText(font, fontSize, sheepRect.first, sheepRect.second, "?");		//Sheep
+        renderText(font, fontSize, oreRect.first, oreRect.second, "?");			//Ore
+        renderText(font, fontSize, brickRect.first, brickRect.second, "?");		//Brick
+        renderText(font, fontSize, wheatRect.first, wheatRect.second, "?");     //Wheat
         return;
     }
     
-	renderText(font, fontSize, {0.97, 0.30}, {1.0, 0.35},
+	renderText(font, fontSize, woodRect.first, woodRect.second,
 			toString(model.getCurrentPlayer().getWood()));		//Wood
-	renderText(font, fontSize, {0.97, 0.35}, {1.0, 0.40},
+	renderText(font, fontSize, sheepRect.first, sheepRect.second,
 			toString(model.getCurrentPlayer().getWool()));		//Sheep
-	renderText(font, fontSize, {0.97, 0.40}, {1.0, 0.45},
+	renderText(font, fontSize, oreRect.first, oreRect.second,
 			toString(model.getCurrentPlayer().getOre()));		//Ore
-	renderText(font, fontSize, {0.97, 0.45}, {1.0, 0.50},
+	renderText(font, fontSize, brickRect.first, brickRect.second,
 			toString(model.getCurrentPlayer().getBrick()));		//Brick
-	renderText(font, fontSize, {0.97, 0.50}, {1.0, 0.55},
+	renderText(font, fontSize, wheatRect.first, wheatRect.second,
 			toString(model.getCurrentPlayer().getWheat()));		//Wheat
 
 }
