@@ -35,14 +35,15 @@ ConfigValue::operator string() const {
 	return value;
 }
 
+
 /**
- * Convert the ConfigValue into a game Coordinate.
- * @throws runtime_error If the value cannot be converted.
- * @return The text of the ConfigValue, interpreted as a game Coordinate.
+ * Read a pair (S,T) in from a stream.
+ * @throws runtime_error If the pair is not in the form (S,T).
+ * @param stream The stream to read in from.
+ * @param ret The pair to read into.
  */
-ConfigValue::operator Coordinate() const {
-	stringstream stream(value);
-	Coordinate ret;
+template<class S, class T>
+void readPair(std::stringstream& stream, std::pair<S, T>& ret) {
 	char c = stream.get();
 	if(c != '(') {
 		throw runtime_error("Attempt to read a coordinate out of a non-coordinate value");
@@ -53,6 +54,21 @@ ConfigValue::operator Coordinate() const {
 		throw runtime_error("Attempt to read a coordinate out of a non-coordinate value");
 	}
 	stream >> ret.second;
+	c = stream.get();
+	if(c != ')') {
+		throw runtime_error("Attempt to read a coordinate out of a non-coordinate value");
+	}
+}
+
+/**
+ * Convert the ConfigValue into a game Coordinate.
+ * @throws runtime_error If the value cannot be converted.
+ * @return The text of the ConfigValue, interpreted as a game Coordinate.
+ */
+ConfigValue::operator Coordinate() const {
+	stringstream stream(value);
+	Coordinate ret;
+	readPair(stream, ret);
 	return ret;
 }
 
@@ -64,16 +80,28 @@ ConfigValue::operator Coordinate() const {
 ConfigValue::operator ScreenCoordinate() const {
 	stringstream stream(value);
 	ScreenCoordinate ret;
+	readPair(stream, ret);
+	return ret;
+}
+
+/**
+ * Convert the ConfigValue into a pair of ScreenCoordinates.
+ * @throws runtime_error If the value cannot be converted.
+ * @return The text of the ConfigValue, interpreted as a pair of ScreenCoordinates.
+ */
+ConfigValue::operator std::pair<ScreenCoordinate, ScreenCoordinate>() const {
+	stringstream stream(value);
+	std::pair<ScreenCoordinate, ScreenCoordinate> ret;
 	char c = stream.get();
 	if(c != '(') {
 		throw runtime_error("Attempt to read a coordinate out of a non-coordinate value");
 	}
-	stream >> ret.first;
+	readPair(stream, ret.first);
 	c = stream.get();
 	if(c != ',') {
 		throw runtime_error("Attempt to read a coordinate out of a non-coordinate value");
 	}
-	stream >> ret.second;
+	readPair(stream, ret.second);
 	return ret;
 }
 
@@ -114,7 +142,13 @@ void Config::init(istream& source) {
 			continue;
 		}
 		string name = line.substr(0, line.find('='));
+		while(name[name.size()-1] == ' ' || name[name.size()-1] == '\t') {
+			name = name.substr(0, name.size()-1);
+		}
 		string value = line.substr(line.find('=') + 1);
+		while(value[0] == ' ' || value[0] == '\t') {
+			value = value.substr(1);
+		}
 		values.insert(std::make_pair(name, ConfigValue(value)));
 	}
 }
@@ -128,7 +162,7 @@ void Config::init(istream& source) {
 const ConfigValue& Config::operator[](const string& name) const {
 	auto it = values.find(name);
 	if(it == values.end()) {
-		throw runtime_error("No such key in the config");
+		throw runtime_error("No such key in the config: \"" + name + "\"");
 	} else {
 		return it->second;
 	}
