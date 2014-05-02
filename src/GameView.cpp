@@ -121,9 +121,11 @@ void GameView::render() {
 	DrawingGameVisitor visitor(*this);
 	model.accept(visitor);
 	
+	//Render UI items
 	for(auto it = viewElements.rbegin(); it != viewElements.rend(); it++) {
 		it->second->render();
 	}
+	//Render clicked points
 	for(auto& it : pointsOfInterest) {
 		highlightPoint(it);
 	}
@@ -146,20 +148,34 @@ void GameView::render() {
 	glFlush();
 }
 
+/**
+ * Pushes a coordinate into the points of interest history to be highlighted on screen
+ * @param coord the point of interest to add
+ */
 void GameView::addPointOfInterest(ScreenCoordinate coord){
 	pointsOfInterest.push_back(coord);
 }
 
+/**
+ * Clears the points of interest history, so those points will no longer be highlighted.
+ */
 void GameView::clearPointsOfInterest(){
 	pointsOfInterest.clear();
 }
 
+/**
+ * Highlights a coordinate with a small blue square
+ * @param coord the coordinate to be highlighted on screen
+ */
 void GameView::highlightPoint(ScreenCoordinate & coord){
 	std::tuple<float,float,float> color(0.f,0.f,1.f);
 	renderRectangle({coord.first - .01, coord.second - .01}, {coord.first + .01, coord.second + .01}, color);
 }
 
-
+/**
+ * Sets the text to be displayed at the top of the screen
+ * @param newText the new text to be displayed on screen. An empty string will cause a crash.
+ */
 void GameView::setControlStateText(std::string newText){
 	controlStateText = newText;
 }
