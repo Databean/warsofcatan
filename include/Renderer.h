@@ -16,6 +16,9 @@ GLuint loadImageAsTexture(const std::string& name);
 GLuint loadTextAsTexture(const std::string& font, int fontSize, const std::string& text);
 
 void renderText(const std::string& font, int fontSize, const std::pair<float, float> bottomLeft, const std::pair<float, float> topRight, const std::string& text);
+void renderText(const std::pair<float, float> bottomLeft, const std::pair<float, float> topRight, const GLuint& texture);
+void renderRectangle(const std::pair<float, float> bottomLeft, const std::pair<float, float> topRight, const std::tuple<float, float, float> color);
+
 
 std::pair<float, float> coordToScreen(const Coordinate& coord);
 Coordinate screenToCoord(const std::pair<float, float>&);

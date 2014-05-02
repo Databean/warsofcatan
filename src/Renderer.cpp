@@ -110,6 +110,49 @@ void renderText(const std::string& fontPath, int fontSize, const std::pair<float
 }
 
 /**
+ * Render some text on screen.
+ *
+ * @param bottomLeft The bottom left screen coordinate of the bounding box to draw to.
+ * @param topRight The top right screen coordinate of the bounding box to draw to.
+ * @param texture The texture of text to render.
+ */
+void renderText(const std::pair<float, float> bottomLeft, const std::pair<float, float> topRight, const GLuint& texture){
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glColor3f(1.0, 1.0, 1.0);
+
+	glBegin(GL_QUADS);
+	glTexCoord2i(0, 1);
+	glVertex2f(bottomLeft.first, bottomLeft.second);
+	glTexCoord2i(1, 1);
+	glVertex2f(topRight.first, bottomLeft.second);
+	glTexCoord2i(1, 0);
+	glVertex2f(topRight.first, topRight.second);
+	glTexCoord2i(0, 0);
+	glVertex2f(bottomLeft.first, topRight.second);
+	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+/**
+ * Render a colored rectangle on the screen
+ *
+ * @param bottomLeft the bottom left corner of the box
+ * @param topRight the top right corner of the box
+ * @param color the rgb color percentages of the box
+ */
+void renderRectangle(const std::pair<float, float> bottomLeft, const std::pair<float, float> topRight, const std::tuple<float, float, float> color){
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
+
+	glBegin(GL_QUADS);
+	glVertex2f(bottomLeft.first, bottomLeft.second);
+	glVertex2f(topRight.first, bottomLeft.second);
+	glVertex2f(topRight.first, topRight.second);
+	glVertex2f(bottomLeft.first, topRight.second);
+	glEnd();
+}
+
+/**
  * Loads an image into an OpenGL texture.
  * @param name The file name of the texture to load.
  * @return An OpenGL texture.
