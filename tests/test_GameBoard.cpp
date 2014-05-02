@@ -50,6 +50,9 @@ TEST(GameBoardTest, randomize_rolls_pass)
 	ASSERT_TRUE(true); //constructor should not have thrown an exception
 }
 
+/**
+ * ROAD TESTS BEGIN
+ */
 TEST(GameBoardTest, place_road_good){
 	Coordinate start(0,0);
 	Coordinate end(1,0);
@@ -159,33 +162,6 @@ TEST(GameBoardTest, longest_road_simple){
 	ASSERT_EQ(longest_path, 2);
 }
 
-TEST(GameBoardTest, payout_simple) {
-	GameBoard test_board(std::vector<std::string>{"tester"});
-	Player& test_player = test_board.getPlayer(0);
-	
-	test_board.PlaceSettlement(Coordinate(0,2), test_player);
-	
-	test_board.getResourceTile(Coordinate(0,1)).Payout();
-	
-	ASSERT_TRUE(test_player.getWheat() || test_player.getWood() || 
-		test_player.getOre() || test_player.getBrick() || test_player.getWool());
-}
-
-TEST(GameBoardTest, upgrade_simple){
-	GameBoard test_board(std::vector<std::string>{"tester"});
-	Player& test_player = test_board.getPlayer(0);
-
-
-
-	test_board.PlaceSettlement(Coordinate(0,2), test_player);
-
-	test_board.PlaceSettlement(Coordinate(1,0), test_player);
-
-	test_board.UpgradeSettlement(Coordinate(1,0));
-
-	ASSERT_EQ((test_board.GetNeighboringSettlements(Coordinate(0,1)).size()), 1);
-}
-
 TEST(GameBoardTest, longest_road_complex){
 	GameBoard test_board(std::vector<std::string>{"tester"});
 	Player& test_player = test_board.getPlayer(0);
@@ -240,6 +216,39 @@ TEST(GameBoardTest, buy_road_good){
 		ASSERT_EQ(test_player.getBrick(), 0);
 	}
 }
+
+/**
+ * ROAD TESTS END
+ */
+
+TEST(GameBoardTest, payout_simple) {
+	GameBoard test_board(std::vector<std::string>{"tester"});
+	Player& test_player = test_board.getPlayer(0);
+
+	test_board.PlaceSettlement(Coordinate(0,2), test_player);
+
+	test_board.getResourceTile(Coordinate(0,1)).Payout();
+
+	ASSERT_TRUE(test_player.getWheat() || test_player.getWood() ||
+		test_player.getOre() || test_player.getBrick() || test_player.getWool());
+}
+
+TEST(GameBoardTest, upgrade_simple){
+	GameBoard test_board(std::vector<std::string>{"tester"});
+	Player& test_player = test_board.getPlayer(0);
+
+
+
+	test_board.PlaceSettlement(Coordinate(0,2), test_player);
+
+	test_board.PlaceSettlement(Coordinate(1,0), test_player);
+
+	test_board.UpgradeSettlement(Coordinate(1,0));
+
+	ASSERT_EQ((test_board.GetNeighboringSettlements(Coordinate(0,1)).size()), 1);
+}
+
+
 
 TEST(GameBoardTest, canPlayRoadBuildCard){
 	Coordinate start1(0,0);
