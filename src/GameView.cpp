@@ -21,15 +21,13 @@ using std::unique_ptr;
 
 float DiceXCoords[3] = {9.f, 134.f, 259.f};
 float DiceYCoords[2] = {3.f, 142.f};
-std::pair<float, float> lDieScreenLoc= make_pair(0.6f, 0.82f);
-std::pair<float, float> rDieScreenLoc= make_pair(0.68f, 0.82f);
+std::pair<std::pair<float, float>, std::pair<float, float>> lDieScreenLoc= make_pair(make_pair(0.6f, 0.82f), make_pair(0.66f, 0.88f));
+std::pair<std::pair<float, float>, std::pair<float, float>> rDieScreenLoc= make_pair(make_pair(0.68f, 0.82f), make_pair(0.74f, 0.88f));
 
-#define DIE_SIDE_LENGTH 0.06f
+//#define DIE_SIDE_LENGTH 0.06f
 #define DIE_SCREEN_SIDE_LENGTH 105.f
 
-#define EMPLACE_SQUARE_VERTEX(imXOff, imYOff, scXOff, scYOff) \
-texCoordPair({texTopLeft.first + imXOff, texTopLeft.second + imYOff}); \
-glVertex2d(screenTopLeft.first + scXOff, screenTopLeft.second + scYOff);
+
 
 
 /**
@@ -51,22 +49,23 @@ GameView::~GameView() {
 
 
 /**
- * Draws the amount of development cards the current player has.
- * @param font the style of font to use, fontSize the resolution of the font used
+ * Draws the amount of development cards the current player has. If resources are set to be hidden,
+ * it will display '?' instead.
+ * @param font the style of font to use
+ * @param fontSize the resolution of the font used
  * @return void
  */
 void GameView::drawCardCount(std::string font, int fontSize)
 {
     if (showTotals==false)
     {
-        renderText(font, fontSize, {0.97, 0.0}, {1.0, 0.05}, "?");	//Road Building
+        renderText(font, fontSize, {0.97, 0.0}, {1.0, 0.05}, "?");		//Road Building
         renderText(font, fontSize, {0.97, 0.05}, {1.0, 0.1}, "?");		//Knight
-        renderText(font, fontSize, {0.97, 0.1}, {1.0, 0.15}, "?");	//Year of Plenty
+        renderText(font, fontSize, {0.97, 0.1}, {1.0, 0.15}, "?");		//Year of Plenty
         renderText(font, fontSize, {0.97, 0.15}, {1.0, 0.2}, "?");		//Monopoly
         renderText(font, fontSize, {0.97, 0.2}, {1.0, 0.25}, "?");		//Victory Point
         return;
     }
-    
     
 	renderText(font, fontSize, {0.97, 0.0}, {1.0, 0.05},
 			toString(model.getCurrentPlayer().getRoadBuildingCards()));	//Road Building
@@ -81,7 +80,11 @@ void GameView::drawCardCount(std::string font, int fontSize)
 }
 
 /**
- * Draws the count of resources the currentPlayer has
+ * Draws the count of resources the currentPlayer has. If resources are set to be hidden,
+ * it will display '?' instead.
+ * @param font the style of font to use
+ * @param fontSize the resolution of the font used
+ * @return void
  */
 void GameView::drawResourceCount(std::string font, int fontSize)
 {
@@ -152,15 +155,8 @@ void GameView::clearPointsOfInterest(){
 }
 
 void GameView::highlightPoint(ScreenCoordinate & coord){
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glColor3f(0., 0., 1.);
-	glBegin(GL_QUADS);
-	glVertex2f(coord.first - .01, coord.second - .01);
-	glVertex2f(coord.first + .01 , coord.second - .01);
-	glVertex2f(coord.first + .01, coord.second + .01);
-	glVertex2f(coord.first - .01, coord.second + .01);
-	glEnd();
-
+	std::tuple<float,float,float> color(0.f,0.f,1.f);
+	renderRectangle({coord.first - .01, coord.second - .01}, {coord.first + .01, coord.second + .01}, color);
 }
 
 
@@ -314,20 +310,13 @@ void DrawingGameVisitor::visit(Road& road) {
  * @param settlement The settlement to draw.
  */
 void DrawingGameVisitor::visit(Settlement& settlement) {
-	static const auto settlementRadius = 0.03;
+	static const auto settlementRadius = 0.02;
 	
 	auto centerScreenPos = coordToScreen(settlement.getLocation());
-	
-	glBindTexture(GL_TEXTURE_2D, 0);
 	auto color = settlement.getOwner().getColor();
-	glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
 
-	glBegin(GL_QUADS);
-	glVertex2d(centerScreenPos.first, centerScreenPos.second + settlementRadius);
-	glVertex2d(centerScreenPos.first + settlementRadius, centerScreenPos.second);
-	glVertex2d(centerScreenPos.first, centerScreenPos.second - settlementRadius);
-	glVertex2d(centerScreenPos.first - settlementRadius, centerScreenPos.second);
-	glEnd();
+	renderRectangle({centerScreenPos.first+settlementRadius, centerScreenPos.second+settlementRadius},
+			{centerScreenPos.first - settlementRadius, centerScreenPos.second - settlementRadius}, color);
 }
 
 /**
@@ -338,18 +327,10 @@ void DrawingGameVisitor::visit(City& city) {
 	static const auto cityRadius = 0.03;
 	
 	auto centerScreenPos = coordToScreen(city.getLocation());
-	
-	glBindTexture(GL_TEXTURE_2D, 0);
-
 	auto color = city.getOwner().getColor();
-	glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
-
-	glBegin(GL_QUADS);
-	glVertex2d(centerScreenPos.first + cityRadius, centerScreenPos.second + cityRadius);
-	glVertex2d(centerScreenPos.first + cityRadius, centerScreenPos.second - cityRadius);
-	glVertex2d(centerScreenPos.first - cityRadius, centerScreenPos.second - cityRadius);
-	glVertex2d(centerScreenPos.first - cityRadius, centerScreenPos.second + cityRadius);
-	glEnd();
+	
+	renderRectangle({centerScreenPos.first+cityRadius, centerScreenPos.second+cityRadius},
+			{centerScreenPos.first - cityRadius, centerScreenPos.second - cityRadius}, color);
 }
 
 /**
@@ -360,18 +341,10 @@ void DrawingGameVisitor::visit(Wonder& wonder) {
 	static const auto wonderRadius = 0.06;
 
 	auto centerScreenPos = coordToScreen(wonder.getLocation());
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
 	auto color = wonder.getOwner().getColor();
-	glColor3f(std::get<0>(color), std::get<1>(color), std::get<2>(color));
 
-	glBegin(GL_QUADS);
-	glVertex2d(centerScreenPos.first + wonderRadius, centerScreenPos.second + wonderRadius);
-	glVertex2d(centerScreenPos.first + wonderRadius, centerScreenPos.second - wonderRadius);
-	glVertex2d(centerScreenPos.first - wonderRadius, centerScreenPos.second - wonderRadius);
-	glVertex2d(centerScreenPos.first - wonderRadius, centerScreenPos.second + wonderRadius);
-	glEnd();
+	renderRectangle({centerScreenPos.first+wonderRadius, centerScreenPos.second+wonderRadius},
+				{centerScreenPos.first - wonderRadius, centerScreenPos.second - wonderRadius}, color);
 }
 
 /**
@@ -379,50 +352,9 @@ void DrawingGameVisitor::visit(Wonder& wonder) {
  * @param player The player to draw.
  */
 void DrawingGameVisitor::visit(Player& player) {
-	//TODO: draw cards, resources, etc.
-}
-
-/**
- * Convenience method to draw a circle that corresponds to a circular texture in the texture file.
- * @param texCenter The center of the texture.
- * @param texRadius The radius of the texture.
- * @param screenCenter The center of the circle drawn on screen.
- * @param screenRadius The radius of the circle drawn on screen.
- * @param articulation The number of points to draw in the circle.
- */
-void drawTexturedCircle(std::pair<float, float> texCenter, float texRadius, std::pair<float, float> screenCenter, float screenRadius, int articulation = 20) {
-	glBegin(GL_TRIANGLE_FAN);
-	texCoordPair(texCenter);
-	glVertex2f(screenCenter.first, screenCenter.second);
-	for(int i = 0; i < articulation + 1; i++) {
-		double angle = ((double) i) * (2. * M_PI) / (double)articulation;
-		double tangle = ((double) -i) * (2. * M_PI) / (double)articulation;
-		texCoordPair({texCenter.first + texRadius * std::cos(tangle), texCenter.second + texRadius * std::sin(tangle)});
-		glVertex2d(screenCenter.first + (screenRadius * std::cos(angle)), screenCenter.second + (screenRadius * std::sin(angle)));
-		
-	}
-	glEnd();
-}
-
-/**
- * Draw a textured square oriented parallel to the ground
- * @param texTopLeft image coordinates of the top left side of our square texture
- * @param sideLength image domain side length (in pixels)
- * @param screenTopLeft GL coordinates for the top left of our square to render
- * @param screenSideLength GL image domain square side length
- */
-void drawTexturedRectangle(std::pair<float, float> texTopLeft, float sideLength, std::pair<float, float> screenTopLeft, float screenSideLength) {
-	
-	glBegin(GL_QUADS);
-
-	EMPLACE_SQUARE_VERTEX(0.0f,			0.0f, 		0.0f,				0.0f)
-	EMPLACE_SQUARE_VERTEX(sideLength,	0.0f, 		screenSideLength,	0.0f)
-	EMPLACE_SQUARE_VERTEX(sideLength,	sideLength,	screenSideLength,	screenSideLength)
-	EMPLACE_SQUARE_VERTEX(0.0f,			sideLength,	0.0f,				screenSideLength)
-
-	glEnd();
 
 }
+
 
 /**
  * Draw both dice.
@@ -432,27 +364,25 @@ void DrawingGameVisitor::visit(GameDice& dice) {
 
 	static const GLuint diceTextures = loadImageAsTexture("resources/catan_dice_new.bmp");
 
-	glBindTexture(GL_TEXTURE_2D, diceTextures);
-
 	glColor3d(1.0, 1.0, 1.0);	
 	static std::map<int, std::pair<float, float>> topLeftOffset;
 	//construct offset map
 	
 	for (int i = 1; i < 7; i++) {
-		//topLeftOffset.emplace(i, make_pair(DiceXCoords[(i-1)%3], DiceYCoords[i/4]));
 		topLeftOffset.insert(make_pair(i, make_pair(DiceXCoords[(i-1)%3], DiceYCoords[i/4])));
 	}
 	
-	drawTexturedRectangle(topLeftOffset.find(dice.getFirst())->second, DIE_SCREEN_SIDE_LENGTH, 
-		lDieScreenLoc, DIE_SIDE_LENGTH);
-		
+	//draw Left die
+	std::pair<float, float> topLeft = topLeftOffset.find(dice.getFirst())->second;
+	std::pair<float, float> texture_bottomLeft = make_pair(topLeft.first, topLeft.second + DIE_SCREEN_SIDE_LENGTH);
+	std::pair<float, float> texture_topRight = make_pair(topLeft.first + DIE_SCREEN_SIDE_LENGTH, topLeft.second);
+	renderTexturedRectangle(lDieScreenLoc.first, lDieScreenLoc.second, texture_bottomLeft, texture_topRight, diceTextures);
 
-	drawTexturedRectangle(topLeftOffset.find(dice.getSecond())->second, DIE_SCREEN_SIDE_LENGTH, 
-		rDieScreenLoc, DIE_SIDE_LENGTH);
-
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	
+	//draw Right die
+	topLeft = topLeftOffset.find(dice.getSecond())->second;
+	texture_bottomLeft = make_pair(topLeft.first, topLeft.second + DIE_SCREEN_SIDE_LENGTH);
+	texture_topRight = make_pair(topLeft.first + DIE_SCREEN_SIDE_LENGTH, topLeft.second);
+	renderTexturedRectangle(rDieScreenLoc.first, rDieScreenLoc.second, texture_bottomLeft, texture_topRight, diceTextures);
 }
 
 /**
@@ -464,6 +394,9 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 	static const GLuint tileTextures = loadImageAsTexture("resources/catan_sprite_sheet.bmp");
 	
 	glBindTexture(GL_TEXTURE_2D, tileTextures);
+
+	//Map the locations of the top-right locations of the images in the sprite sheet
+	//For resource tiles
 	static const std::map<resourceType, pair<float, float>> topRightPoints = {
 		make_pair(WOOD, make_pair(260.f, 17.f)),
 		make_pair(BRICK, make_pair(629.f, 17.f)),
@@ -480,6 +413,8 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 		make_pair(-260.f, 130.f),
 		make_pair(-175, -1)
 	};
+
+	//For number tiles
 	static const std::map<int, pair<float, float>> numberTexPoints = {
 		make_pair(2, make_pair(1238.5f, 70.5f)),
 		make_pair(3, make_pair(1365.5f, 70.5f)),
@@ -500,6 +435,7 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 	}
 	glColor3d(1.0, 1.0, 1.0);
 	
+	//Draw the resource tiles of the board
 	glBegin(GL_TRIANGLE_FAN);
 	auto average = averagePoint(resourceTexOffsets);
 	texCoordPair({average.first + topRightPoint->second.first, average.second + topRightPoint->second.second});
@@ -512,15 +448,17 @@ void DrawingGameVisitor::visit(ResourceTile& tile) {
 	texCoordPair(topRightPoint->second);
 	vertexPair(Coordinate(coord.first + adjacentCoordDiffs[0].first, coord.second + adjacentCoordDiffs[0].second));
 	glEnd();
+	//end drawing tiles of board
 	
+	//Draw the number tiles
 	if(tile.getDiceValue() != 0 || 
 		tile.getBoard().getResourceTile(tile.getBoard().getRobber()).getType() == DESERT) {
 		if (tile.getBoard().getRobber() == coord) { //draw the robber on this tile
 			
-			drawTexturedCircle(make_pair(1240.f, 643.f), 59.5f, coordToScreen(coord), 0.04);
+			renderTexturedCircle(make_pair(1240.f, 643.f), 59.5f, coordToScreen(coord), 0.04, tileTextures);
 		}
 		else
-			drawTexturedCircle(numberTexPoints.find(tile.getDiceValue())->second, radius, coordToScreen(coord), 0.04);
+			renderTexturedCircle(numberTexPoints.find(tile.getDiceValue())->second, radius, coordToScreen(coord), 0.04, tileTextures);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	

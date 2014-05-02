@@ -153,6 +153,69 @@ void renderRectangle(const std::pair<float, float> bottomLeft, const std::pair<f
 }
 
 /**
+ * Convenience method to draw a circle that corresponds to a circular texture in the texture file.
+ * @param texCenter The center of the texture.
+ * @param texRadius The radius of the texture.
+ * @param screenCenter The center of the circle drawn on screen.
+ * @param screenRadius The radius of the circle drawn on screen.
+ * @param articulation The number of points to draw in the circle.
+ */
+void renderTexturedCircle(const std::pair<float, float> texCenter, const float texRadius, const std::pair<float, float> screenCenter,
+		const float screenRadius, const GLuint& texture, int articulation) {
+
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glColor3d(1.0, 1.0, 1.0);
+
+	glBegin(GL_TRIANGLE_FAN);
+	texCoordPair(texCenter);
+	glVertex2f(screenCenter.first, screenCenter.second);
+	for(int i = 0; i < articulation + 1; i++) {
+		double angle = ((double) i) * (2. * M_PI) / (double)articulation;
+		double tangle = ((double) -i) * (2. * M_PI) / (double)articulation;
+		texCoordPair({texCenter.first + texRadius * std::cos(tangle), texCenter.second + texRadius * std::sin(tangle)});
+		glVertex2d(screenCenter.first + (screenRadius * std::cos(angle)), screenCenter.second + (screenRadius * std::sin(angle)));
+
+	}
+	glEnd();
+
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+/**
+ * Draw a textured square oriented parallel to the ground
+ * @param texTopLeft image coordinates of the top left side of our square texture
+ * @param sideLength image domain side length (in pixels)
+ * @param screenTopLeft GL coordinates for the top left of our square to render
+ * @param screenSideLength GL image domain square side length
+ */
+void renderTexturedRectangle(const std::pair<float, float> screenBottomLeft, const std::pair<float, float> screenTopRight,
+		const std::pair<float, float> texBottomLeft, const std::pair<float, float> texTopRight, const GLuint& texture){
+
+
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glColor3d(1.0, 1.0, 1.0);
+
+	glBegin(GL_QUADS);
+	texCoordPair({texBottomLeft.first, texBottomLeft.second});
+	glVertex2d(screenBottomLeft.first, screenBottomLeft.second);
+
+	texCoordPair({texTopRight.first, texBottomLeft.second});
+	glVertex2d(screenTopRight.first, screenBottomLeft.second);
+
+	texCoordPair({texTopRight.first, texTopRight.second});
+	glVertex2d(screenTopRight.first, screenTopRight.second);
+
+	texCoordPair({texBottomLeft.first, texTopRight.second});
+	glVertex2d(screenBottomLeft.first, screenTopRight.second);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+
+
+/**
  * Loads an image into an OpenGL texture.
  * @param name The file name of the texture to load.
  * @return An OpenGL texture.
