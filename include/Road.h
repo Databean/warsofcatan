@@ -33,11 +33,11 @@ public:
 	Coordinate getStart() const;
 	Coordinate getEnd() const;
 
-	bool equals(const Road& otherRoad);
-	bool equals(const Coordinate& otherStart, const Coordinate& otherEnd);
+	bool equals(const Road& otherRoad) const;
+	bool equals(const Coordinate& otherStart, const Coordinate& otherEnd) const;
 	
 	Player& getOwner();
-	const Player& getOwner() const;
+	//const Player& getOwner() const;
 	
 	virtual void accept(GameVisitor& visitor);
 	bool operator==(const Road&) const;
