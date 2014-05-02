@@ -55,16 +55,6 @@ void Road::accept(GameVisitor& visitor) {
 	visitor.visit(*this);
 }
 
-/**
- *
- */
-bool Road::operator==(const Road& other) const {
-	return equals(other);
-
-//			getStart() == other.getStart() &&
-//		getEnd() == other.getEnd() &&
-//		owner.getName() == other.owner.getName();
-}
 
 /**
  * The starting coordinate of the road.
@@ -80,6 +70,16 @@ Coordinate Road::getStart() const{
  */
 Coordinate Road::getEnd() const{
 	return end;
+}
+
+/**
+ * Equals operator overloaded for roads. Order of start and end doesn't matter as long as they are the same
+ * Players also need to have the same names.
+ * @param other the other road that this road is being compared to
+ * @return true if the roads are equal, false otherwise
+ */
+bool Road::operator==(const Road& other) const {
+	return equals(other);
 }
 
 /**
@@ -112,11 +112,3 @@ bool Road::equals(const Coordinate& otherStart, const Coordinate& otherEnd) cons
 Player& Road::getOwner() {
 	return owner;
 }
-
-///**
-// * The const owner of this road.
-// * @return The owner.
-// */
-//const Player& Road::getOwner() const {
-//	return owner;
-//}
