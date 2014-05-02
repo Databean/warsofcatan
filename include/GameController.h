@@ -25,7 +25,7 @@ private:
 	GameBoard& model;
 	GameView& view;
 	
-	std::vector<ControlState> stateStack;
+	ControlState state;
 	std::vector<Coordinate> clickHistory;
 	
 	GameController(const GameController& o) : model(o.model), view(o.view) {} //deleted

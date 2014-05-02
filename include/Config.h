@@ -27,6 +27,7 @@ public:
 	operator std::string() const;
 	operator Coordinate() const;
 	operator ScreenCoordinate() const;
+	operator std::pair<ScreenCoordinate, ScreenCoordinate>() const;
 };
 
 /**
