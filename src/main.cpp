@@ -18,6 +18,7 @@
 #include "Player.h"
 #include "GameView.h"
 #include "GameController.h"
+#include "Util.h"
 
 using std::vector;
 using std::unique_ptr;
@@ -48,49 +49,11 @@ void updateViewport(int width, int height) {
 }
 
 /**
- * Main. Initializes SDL and the model, view, and controller. Also has the main game loop.
+ * Run the game loop until the game exits.
+ * @param displayWindow The window the game is being drawn in.
+ * @param view The view of the game being drawn.
  */
-int main(int argc, char *argv[]) {
-	
-	if(TTF_Init()==-1) {
-		std::cout << "Error in TTF_Init: " << TTF_GetError() << std::endl;
-		return 2;
-	}
-	
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE);
-	SDL_Window* displayWindow;
-	SDL_Renderer* displayRenderer;
-	SDL_RendererInfo displayRendererInfo;
-	SDL_CreateWindowAndRenderer(getGraphicsConfig()["screen.width"], getGraphicsConfig()["screen.height"], SDL_WINDOW_OPENGL, &displayWindow, &displayRenderer);
-	SDL_GetRendererInfo(displayRenderer, &displayRendererInfo);
-	/*TODO: Check that we have OpenGL */
-	if ((displayRendererInfo.flags & SDL_RENDERER_ACCELERATED) == 0 || 
-		(displayRendererInfo.flags & SDL_RENDERER_TARGETTEXTURE) == 0) {
-		std::cout << "Unable to create a window using accelerated graphics." << std::endl;
-		return 0;
-	}
-	
-	SDL_GLContext glContext = SDL_GL_CreateContext(displayWindow);
-	
-	initOpenGL();
-
-	updateViewport(getGraphicsConfig()["screen.width"], getGraphicsConfig()["screen.height"]);
-	
-	GameBoard model({"Southern Tribes", "Western Watch", "North Guard", "East Raiders"});
-	GameView view(model);
-	GameController controller(model, view);
-	
-	model.initializeGame();
-	
-//	Player& firstPlayer = model.getPlayer(0);
-//
-//	model.PlaceSettlement(Coordinate{0, 0}, firstPlayer);
-//	model.PlaceRoad(Coordinate{0, 0}, Coordinate{1, 0}, firstPlayer);
-//	model.PlaceRoad(Coordinate{1, 0}, Coordinate{1, 1}, firstPlayer);
-//	model.PlaceRoad(Coordinate{1, 1}, Coordinate{0, 2}, firstPlayer);
-//	model.PlaceSettlement(Coordinate{0, 2}, firstPlayer);
-//	model.UpgradeSettlement(Coordinate{0, 2});
-//
+void gameLoop(SDL_Window& displayWindow, GameView& view) {
 	bool running = true;
 	while(running) {
 		SDL_Event event;
@@ -100,14 +63,78 @@ int main(int argc, char *argv[]) {
 		
 		view.render();
 		
-		SDL_GL_SwapWindow(displayWindow);
+		SDL_GL_SwapWindow(&displayWindow);
 		SDL_Delay(100);
 	}
+}
+
+/**
+ * Check the renderer created by SDL is valid for our purposes (uses accelerated graphics).
+ * @param displayRenderer The renderer being used for the game.
+ * @return If the renderer is valid.
+ */
+bool checkRenderer(SDL_Renderer& displayRenderer) {
+	SDL_RendererInfo displayRendererInfo;
+	SDL_GetRendererInfo(&displayRenderer, &displayRendererInfo);
+	return (displayRendererInfo.flags & SDL_RENDERER_ACCELERATED) && (displayRendererInfo.flags & SDL_RENDERER_TARGETTEXTURE);
+}
+
+/**
+ * Initialize the game objects, and run the game loop.
+ */
+void game() {
+	auto displayWindow = make_resource(SDL_CreateWindow, SDL_DestroyWindow, 
+		"Wars of Catan", 
+		(float)getGraphicsConfig()["screen.x"], 
+		(float)getGraphicsConfig()["screen.y"], 
+		(float)getGraphicsConfig()["screen.width"], 
+		(float)getGraphicsConfig()["screen.height"], 
+		SDL_WINDOW_OPENGL);
+	
+	auto displayRenderer = make_resource(SDL_CreateRenderer, SDL_DestroyRenderer, 
+		displayWindow.get(), 
+		-1, 
+		SDL_RENDERER_ACCELERATED);
+	
+	if(checkRenderer(*displayRenderer)) {}
+	else {
+		std::cerr << "Unable to create a rendering window using accelerated graphics." << std::endl;
+		return;
+	}
+	
+	SDL_GLContext glContext = SDL_GL_CreateContext(displayWindow.get());
+	
+	initOpenGL();
+	
+	updateViewport(getGraphicsConfig()["screen.width"], getGraphicsConfig()["screen.height"]);
+	
+	GameBoard model({"Southern Tribes", "Western Watch", "North Guard", "East Raiders"});
+	GameView view(model);
+	GameController controller(model, view);
+	
+	model.initializeGame();
+	
+	gameLoop(*displayWindow, view);
 	
 	SDL_GL_DeleteContext(glContext);
-	SDL_DestroyWindow(displayWindow);
-	SDL_DestroyRenderer(displayRenderer);
-	SDL_Quit();
+}
+
+/**
+ * Main. Initializes SDL and the model, view, and controller. Also has the main game loop.
+ */
+int main(int argc, char *argv[]) {
 	
-	return 0;
+	if(TTF_Init()==-1) {
+		std::cerr << "Error in TTF_Init: " << TTF_GetError() << std::endl;
+		return 2;
+	}
+	
+	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
+		std::cerr << "Error in SDL_Init: " << SDL_GetError() << std::endl;
+		return -1;
+	}
+	
+	game();
+	
+	SDL_Quit();
 }
