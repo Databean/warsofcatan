@@ -283,7 +283,6 @@ TEST(PlayerTest, UpdateVictoryPoints_VictoryCards){
 	Player& test_player = test_board.getPlayer(0);
 
 	ASSERT_EQ(test_player.getVictoryPoints(), 0);
-	ASSERT_EQ(test_player.getVictoryPointsWithoutCards(), 0);
 
 	std::unique_ptr<DevelopmentCard> test_VictoryCard = std::unique_ptr<DevelopmentCard>(new VictoryPointCard());
 	test_player.addOre(1);
@@ -292,7 +291,6 @@ TEST(PlayerTest, UpdateVictoryPoints_VictoryCards){
 
 	test_player.buyCard(test_VictoryCard);
 	ASSERT_EQ(test_player.getVictoryPoints(), 1);
-	ASSERT_EQ(test_player.getVictoryPointsWithoutCards(), 0);
 }
 
 TEST(PlayerTest, UpdateVictoryPoints_LargestArmy){

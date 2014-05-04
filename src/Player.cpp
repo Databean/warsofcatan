@@ -310,32 +310,12 @@ void Player::updateVictoryPoints()
 }
 
 /**
- * The number of victory points a player has, not counting victory point cards.
- * @return Victory points sans cards.
- */
-int Player::getVictoryPointsWithoutCards()
-{
-    updateVictoryPoints();
-    return victoryPoints - developmentCards[VICTORYPOINT];
-}
-
-/**
  * The number of victory points a player has.
  */
 int Player::getVictoryPoints()
 {
     updateVictoryPoints();
     return victoryPoints;
-}
-
-
-/**
- * The number of victory points the player has from victory point cards.
- * @return Victory points from cards.
- */
-int Player::getVictoryPointCards()
-{
-	return developmentCards[VICTORYPOINT];
 }
 
 
