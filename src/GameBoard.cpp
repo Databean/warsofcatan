@@ -1249,21 +1249,14 @@ Player& GameBoard::getPlayer(int index) {
  */
 std::pair<int, int> GameBoard::startTurn() {
 	int roll = dice.roll();
-	if (roll == 7) {
-		enableRobber();
-	} else {
+	
 		payoutResources(roll);
-	}
+	
 
 	return std::make_pair(dice.getFirst(), dice.getSecond());
 }
 
-/**
- *  When a 7 is rolled, this enforces resource discarding and allows the current player to move the robber
- */
-void GameBoard::enableRobber() {
-	//Do some straight up robber stuff.
-}
+
 
 /**
  * This pays resources based on the current roll
