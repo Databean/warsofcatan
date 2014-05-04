@@ -7,7 +7,6 @@
 
 #include "GameBoard.h"
 #include "GamePiece.h"
-//#include "DevelopmentCard.h"
 #include "Player.h"
 #include "Util.h"
 
@@ -80,7 +79,6 @@ TEST(DevCardTest, RoadBuildingCard){
 	Player& test_player = *test_board.getPlayers()[0];
 
 	test_board.PlaceSettlement(Coordinate(0,0), test_player);
-//	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new RoadBuildingCard());
 	DevCardType test_card = ROADBUILDING;
 
 	test_player.addOre(4);
@@ -116,7 +114,6 @@ TEST(DevCardTest, VictoryPointCard){
 	GameBoard test_board({"tester1"});
 	Player& test_player = *test_board.getPlayers()[0];
 
-//	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new VictoryPointCard());
 	DevCardType test_card = VICTORYPOINT;
 	test_player.addOre(2);
 	test_player.addWheat(2);
@@ -156,7 +153,6 @@ TEST(DevCardTest, MonopolyCard){
 	Player& test_player2 = test_board.getPlayer(1);
 	Player& test_player3 = test_board.getPlayer(2);
 
-//	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new MonopolyCard());
 	DevCardType test_card = MONOPOLY;
 
 
@@ -206,7 +202,6 @@ TEST(DevCardTest, YearOfPlentyCard){
 	GameBoard test_board({"tester1"});
 	Player& test_player = test_board.getPlayer(0);
 
-//	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<YearOfPlentyCard>(new YearOfPlentyCard());
 	DevCardType test_card = YEAROFPLENTY;
 
 
@@ -263,7 +258,6 @@ TEST(DevCardTest, KnightCard){
 	Player& test_player2 = test_board.getPlayer(1);
 	Player& test_player3 = test_board.getPlayer(2);
 
-//	std::unique_ptr<DevelopmentCard> test_card = std::unique_ptr<DevelopmentCard>(new KnightCard());
 	DevCardType test_card = KNIGHT;
 
 	test_player1.addOre(4);

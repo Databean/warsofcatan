@@ -7,7 +7,6 @@
 
 #include "Serialization.h"
 #include "GameBoard.h"
-//#include "DevelopmentCard.h"
 #include "Player.h"
 
 #include "tinyxml2.h"
@@ -41,11 +40,6 @@ TEST(SerializationTest, testCardSerialization) {
 	Player& testPlayer = testBoard.getPlayer(0);
 
 
-//	std::unique_ptr<DevelopmentCard> knight_card = unique_ptr<DevelopmentCard>(new KnightCard());
-//	std::unique_ptr<DevelopmentCard> victory_card = unique_ptr<DevelopmentCard>(new VictoryPointCard());
-//	std::unique_ptr<DevelopmentCard> plenty_card = unique_ptr<DevelopmentCard>(new YearOfPlentyCard());
-//	std::unique_ptr<DevelopmentCard> monopoly_card = unique_ptr<DevelopmentCard>(new MonopolyCard());
-//	std::unique_ptr<DevelopmentCard> road_card = std::unique_ptr<DevelopmentCard>(new RoadBuildingCard());
 
 	testPlayer.buyCard(KNIGHT);
 	testPlayer.buyCard(VICTORYPOINT);

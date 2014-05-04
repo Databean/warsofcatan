@@ -16,8 +16,7 @@ TEST(DeckTest, deck_draw)
     DevCardType temp = testDeck->drawCard();
     ASSERT_NE(temp, NULLTYPE);
     testDeck->discard(temp);
-//    temp = NULL;
-//    delete testDeck;
+
 }
 
 TEST(DeckTest, reshuffle_discard_pile)

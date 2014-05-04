@@ -284,7 +284,6 @@ TEST(PlayerTest, UpdateVictoryPoints_VictoryCards){
 
 	ASSERT_EQ(test_player.getVictoryPoints(), 0);
 
-//	std::unique_ptr<DevelopmentCard> test_VictoryCard = std::unique_ptr<DevelopmentCard>(new VictoryPointCard());
 	test_player.addOre(1);
 	test_player.addWheat(1);
 	test_player.addWool(1);
@@ -304,7 +303,6 @@ TEST(PlayerTest, UpdateVictoryPoints_LargestArmy){
 	test_player.addWheat(3);
 	test_player.addWool(3);
 
-//	std::unique_ptr<DevelopmentCard> test_KnightCard = std::unique_ptr<DevelopmentCard>(new KnightCard());
 	test_player.buyCard(KNIGHT);
 	test_player.buyCard(KNIGHT);
 	test_player.buyCard(KNIGHT);
@@ -343,7 +341,6 @@ TEST(PlayerTest, UpdateVictoryPoints_all){
 
 	ASSERT_EQ(test_player.getVictoryPoints(), 4);
 
-//	std::unique_ptr<DevelopmentCard> test_VictoryCard = std::unique_ptr<DevelopmentCard>(new VictoryPointCard());
 	test_player.addOre(4);
 	test_player.addWheat(4);
 	test_player.addWool(4);
@@ -351,7 +348,6 @@ TEST(PlayerTest, UpdateVictoryPoints_all){
 	test_player.buyCard(VICTORYPOINT);
 	ASSERT_EQ(test_player.getVictoryPoints(), 5);
 
-//	std::unique_ptr<DevelopmentCard> test_KnightCard = std::unique_ptr<DevelopmentCard>(new KnightCard());
 	test_player.buyCard(KNIGHT);
 	test_player.buyCard(KNIGHT);
 	test_player.buyCard(KNIGHT);
@@ -376,7 +372,6 @@ TEST(PlayerTest, Monopoly_card_1){
 
 	tp1.addMultiple(0,0,1,1,1);
 
-//	std::unique_ptr<DevelopmentCard> test_MonopolyCard = std::unique_ptr<DevelopmentCard>(new MonopolyCard());
 	tp1.buyCard(MONOPOLY);
 
 
@@ -421,7 +416,6 @@ TEST(PlayerTest, Monopoly_card_false){
 	Player& tp1 = board.getPlayer(0);
 	Player& tp2 = board.getPlayer(1);
 
-//	std::unique_ptr<DevelopmentCard> test_MonopolyCard = std::unique_ptr<DevelopmentCard>(new MonopolyCard());
 	tp1.buyCard(MONOPOLY);
 
 	tp1.addMultiple(0,0,0,1,1);
@@ -459,7 +453,6 @@ TEST(PlayerTest, Year_Of_Plenty_card){
 
 	tp1.addMultiple(0,0,1,1,1);
 
-//	std::unique_ptr<DevelopmentCard> test_YearOfPlentyCard = std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard());
 	tp1.buyCard(YEAROFPLENTY);
 
 	tp1.addMultiple(0,0,0,1,1);
@@ -477,7 +470,6 @@ TEST(PlayerTest, Year_Of_Plenty_card_false){
 
 	Player& tp1 = board.getPlayer(0);
 
-//	std::unique_ptr<DevelopmentCard> test_YearOfPlentyCard = std::unique_ptr<DevelopmentCard>(new YearOfPlentyCard());
 	tp1.buyCard(YEAROFPLENTY);
 
 	tp1.addMultiple(0,0,0,1,1);
