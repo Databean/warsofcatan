@@ -140,14 +140,13 @@ bool Player::canBuyRoad(){
 
 /**
  * Subtracts the cost of a road from a player's resources if they have enough
- * @return true if the resources were subtracted, false otherwise
+ * @return true if the resources were subtracted, false if the player had insufficient resources
  */
 bool Player::buyRoad(){
 	if(canBuyRoad()){
 		addMultiple(-1,-1,0,0,0);
 		return true;
 	}
-	//insufficient funds
 	return false;
 }
 
@@ -160,14 +159,14 @@ bool Player::canBuySettlement(){
 }
 
 /**
- * Returns the number of knight cards this player has played
+ * @return The number of knight cards this player has played
  */
 int Player::getArmySize() const{
 	return armySize;
 }
 
 /**
- * Returns true if this player has the largest army, false otherwise
+ * @return True if this player has the largest army, false otherwise
  */
 bool Player::hasLargestArmy() const{
 	return largestArmy;
@@ -175,20 +174,21 @@ bool Player::hasLargestArmy() const{
 
 /**
  * Sets whether or not this player has the largest army
+ * @param newVal The value of the largest army in the game
  */
 void Player::setLargestArmy(bool newVal){
 	largestArmy = newVal;
 }
 
 /**
- * Returns the size of this player's longest road
+ * @return The size of this player's longest road
  */
 int Player::getLongestRoadSize() const{
 	return longestRoadSize;
 }
 
 /**
- * Returns true if this player has the longet road, false otherwise
+ * @return True if this player has the longet road, false otherwise
  */
 bool Player::hasLongestRoad() const{
 	return longestRoad;
@@ -196,6 +196,7 @@ bool Player::hasLongestRoad() const{
 
 /**
  * Sets whether or not this player has the longest road
+ * @param newVal The value of the longest road on the board
  */
 void Player::setLongestRoad(bool newVal){
 	longestRoad = newVal;
@@ -203,6 +204,7 @@ void Player::setLongestRoad(bool newVal){
 
 /**
  * Sets how long this player's longest road is
+ * @param newVal The value of this player's longest road
  */
 void Player::setLongestRoadSize(int newVal){
 	longestRoadSize = newVal;
@@ -234,7 +236,7 @@ bool Player::canBuyCity(){
 
 /**
  * Subtracts the cost of a city from a player's resources if they have enough
- * @return true if the resources were subtracted, false otherwise
+ * @return True if the resources were subtracted, false otherwise
  */
 bool Player::buyCity(){
 	if(canBuyCity()){
@@ -246,7 +248,7 @@ bool Player::buyCity(){
 
 /**
  * Determine if the player has enough resources to buy a wonder.
- * @return True if the player has enough resources to buy a wonder, false otherwise
+ * @return True if the player has enough resources to buy a wonder, false if the player has insufficient resources
  */
 bool Player::canBuyWonder(){
 	return getWood() >= 5 && getBrick() >= 5 && getWheat() >= 5 && getWool() >= 5 && getOre() >= 5;
@@ -254,7 +256,7 @@ bool Player::canBuyWonder(){
 
 /**
  * Subtracts the cost of a wonder from a player's resources if they have enough
- * @return true if the resources were subtracted, false otherwise
+ * @return True if the resources were subtracted, false if the player had insufficient resources
  */
 bool Player::buyWonder(){
 	if(canBuyWonder()){
@@ -266,7 +268,7 @@ bool Player::buyWonder(){
 
 /**
  * Determine if the player has enough resources to buy a card.
- * @return True if the player has enough resources to buy a card, false otherwise
+ * @return True if the player has enough resources to buy a card, false if the player has insufficient resources
  */
 bool Player::canBuyCard(){
 	return getWheat() >= 1 && getWool() >= 1 && getOre() >= 1;
@@ -274,7 +276,7 @@ bool Player::canBuyCard(){
 
 /**
  * Subtracts the cost of a card from a player's resources if they have enough
- * @return true if the resources were subtracted, false otherwise
+ * @return True if the resources were subtracted, false if they player has insufficient resources
  */
 bool Player::buyCard(){
 	if(canBuyCard()){
