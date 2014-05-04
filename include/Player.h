@@ -17,6 +17,7 @@
 #include "tinyxml2.h"
 #include "Util.h"
 #include "GameVisitor.h"
+#include "Deck.h"
 
 // WHEAT, SHEEP, STONE, BRICK, WOOD is the order because it matches the enum in GamePiece.h
 const int WHEAT_INDEX = 0;
@@ -26,8 +27,8 @@ const int BRICK_INDEX = 3;
 const int WOOD_INDEX = 4;
 
 
-class DevelopmentCard;
-class Deck;
+//class DevelopmentCard;
+//class Deck;
 
 
 class Player {
@@ -75,7 +76,7 @@ public:
 
     int getDevCardsInHand();
 
-    bool buyCard(std::unique_ptr<DevelopmentCard> &card);
+    bool buyCard(DevCardType card);
     std::string getName() const;
     GameBoard* getBoard();
     void setBoard(GameBoard* newboard);

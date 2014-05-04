@@ -19,7 +19,8 @@
 #include "GameDice.h"
 #include "Deck.h"
 
-#include "DevelopmentCard.h"
+//#include "DevelopmentCard.h"
+
 
 class GameVisitor;
 
@@ -36,7 +37,7 @@ private:
 
 	Deck deck;
 
-	std::map<Coordinate, std::vector<std::shared_ptr<Road>>>roads;
+	std::map<Coordinate, std::vector<std::shared_ptr<Road>>> roads;
 
 	std::vector<std::unique_ptr<Player>> players;
 	Coordinate robber;
@@ -45,10 +46,11 @@ private:
 	int maxVictoryPoints;
 	int winner;
 
-	void addResource(int x, int y, resourceType res, int val);
-	bool checkRolls(int* rolls);
+    void addResource(int x, int y, resourceType res, int val);
+    bool checkRolls(int* rolls);
 
 	bool isValidBoard() const;
+
 
 	bool outOfBounds(const Coordinate& coord) const;
 	bool roadExists(Coordinate start, Coordinate end) const;
@@ -63,9 +65,9 @@ private:
 	void createRing(Coordinate topRight, int sideLength, std::vector<resourceType>& resources, std::vector<int>& rolls);
 	void insertTile(Coordinate location, std::vector<resourceType>& resources, std::vector<int>& rolls);
 
-	std::pair<int, int> startTurn();
-	void enableRobber();
-	void payoutResources(int roll);
+    std::pair<int, int> startTurn();
+    void enableRobber();
+    void payoutResources(int roll);
 
 public:
 	GameBoard(const std::vector<std::string>& playerNames);
@@ -82,7 +84,7 @@ public:
 	void save(std::ostream& out);
 
 	void buyCard(Player& owner);
-	void discardCard(DevelopmentCard * card);
+	void discardCard(DevCardType card);
 
 	ResourceTile& getResourceTile(Coordinate location) const;
 
@@ -138,11 +140,11 @@ public:
 	int getNoOfPlayers();
 	Player& getPlayer(int index);
 
-	bool testRollChecking(int* rolls);
+    bool testRollChecking(int* rolls);
 
-	bool moveRobber(Coordinate newRobber);
-	Coordinate getRobber() const;
-	bool canRobberRob(Player& opponent, Coordinate location);
+    bool moveRobber(Coordinate newRobber);
+    Coordinate getRobber() const;
+    bool canRobberRob(Player& opponent, Coordinate location);
 
 };
 
