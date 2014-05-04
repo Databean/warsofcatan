@@ -140,14 +140,13 @@ bool Player::canBuyRoad(){
 
 /**
  * Subtracts the cost of a road from a player's resources if they have enough
- * @return true if the resources were subtracted, false otherwise
+ * @return true if the resources were subtracted, false if the player had insufficient resources
  */
 bool Player::buyRoad(){
 	if(canBuyRoad()){
 		addMultiple(-1,-1,0,0,0);
 		return true;
 	}
-	//insufficient funds
 	return false;
 }
 
@@ -160,14 +159,14 @@ bool Player::canBuySettlement(){
 }
 
 /**
- * Returns the number of knight cards this player has played
+ * @return The number of knight cards this player has played
  */
 int Player::getArmySize() const{
 	return armySize;
 }
 
 /**
- * Returns true if this player has the largest army, false otherwise
+ * @return True if this player has the largest army, false otherwise
  */
 bool Player::hasLargestArmy() const{
 	return largestArmy;
@@ -175,20 +174,21 @@ bool Player::hasLargestArmy() const{
 
 /**
  * Sets whether or not this player has the largest army
+ * @param newVal The value of the largest army in the game
  */
 void Player::setLargestArmy(bool newVal){
 	largestArmy = newVal;
 }
 
 /**
- * Returns the size of this player's longest road
+ * @return The size of this player's longest road
  */
 int Player::getLongestRoadSize() const{
 	return longestRoadSize;
 }
 
 /**
- * Returns true if this player has the longet road, false otherwise
+ * @return True if this player has the longet road, false otherwise
  */
 bool Player::hasLongestRoad() const{
 	return longestRoad;
@@ -196,6 +196,7 @@ bool Player::hasLongestRoad() const{
 
 /**
  * Sets whether or not this player has the longest road
+ * @param newVal The value of the longest road on the board
  */
 void Player::setLongestRoad(bool newVal){
 	longestRoad = newVal;
@@ -203,6 +204,7 @@ void Player::setLongestRoad(bool newVal){
 
 /**
  * Sets how long this player's longest road is
+ * @param newVal The value of this player's longest road
  */
 void Player::setLongestRoadSize(int newVal){
 	longestRoadSize = newVal;
@@ -234,7 +236,7 @@ bool Player::canBuyCity(){
 
 /**
  * Subtracts the cost of a city from a player's resources if they have enough
- * @return true if the resources were subtracted, false otherwise
+ * @return True if the resources were subtracted, false otherwise
  */
 bool Player::buyCity(){
 	if(canBuyCity()){
@@ -246,7 +248,7 @@ bool Player::buyCity(){
 
 /**
  * Determine if the player has enough resources to buy a wonder.
- * @return True if the player has enough resources to buy a wonder, false otherwise
+ * @return True if the player has enough resources to buy a wonder, false if the player has insufficient resources
  */
 bool Player::canBuyWonder(){
 	return getWood() >= 5 && getBrick() >= 5 && getWheat() >= 5 && getWool() >= 5 && getOre() >= 5;
@@ -254,7 +256,7 @@ bool Player::canBuyWonder(){
 
 /**
  * Subtracts the cost of a wonder from a player's resources if they have enough
- * @return true if the resources were subtracted, false otherwise
+ * @return True if the resources were subtracted, false if the player had insufficient resources
  */
 bool Player::buyWonder(){
 	if(canBuyWonder()){
@@ -266,7 +268,7 @@ bool Player::buyWonder(){
 
 /**
  * Determine if the player has enough resources to buy a card.
- * @return True if the player has enough resources to buy a card, false otherwise
+ * @return True if the player has enough resources to buy a card, false if the player has insufficient resources
  */
 bool Player::canBuyCard(){
 	return getWheat() >= 1 && getWool() >= 1 && getOre() >= 1;
@@ -274,7 +276,7 @@ bool Player::canBuyCard(){
 
 /**
  * Subtracts the cost of a card from a player's resources if they have enough
- * @return true if the resources were subtracted, false otherwise
+ * @return True if the resources were subtracted, false if they player has insufficient resources
  */
 bool Player::buyCard(){
 	if(canBuyCard()){
@@ -288,6 +290,7 @@ bool Player::buyCard(){
 
 /**
  * Updates the player's victory points to the amount of points they have.
+ * @todo Think about merging this with getVictoryPoints()
  */
 void Player::updateVictoryPoints()
 {
@@ -308,17 +311,7 @@ void Player::updateVictoryPoints()
 }
 
 /**
- * The number of victory points a player has, not counting victory point cards.
- * @return Victory points sans cards.
- */
-int Player::getVictoryPointsWithoutCards()
-{
-    updateVictoryPoints();
-    return victoryPoints - developmentCards[VICTORYPOINT];
-}
-
-/**
- * The number of victory points a player has.
+ * @return The number of victory points a player has.
  */
 int Player::getVictoryPoints()
 {
@@ -328,18 +321,9 @@ int Player::getVictoryPoints()
 
 
 /**
- * The number of victory points the player has from victory point cards.
- * @return Victory points from cards.
- */
-int Player::getVictoryPointCards()
-{
-	return developmentCards[VICTORYPOINT];
-}
-
-
-/**
  * Acquire a development card.
  * @param card An owning pointer to the card the player acquired.
+ * @return True if the player successfully bought a card, or false if the player had insufficient resources
  */
 bool Player::buyCard(std::unique_ptr<DevelopmentCard>& card)
 {
@@ -461,7 +445,7 @@ void Player::setGenralModifier()
 
 /**
  * Plays a victory point card if it exists. This means, the Player will 'consume' the card to gain a baseVictoryPoint
- * @ return true if the card was played, false otherwise
+ * @return True if the card was played, false otherwise
  */
 bool Player::playVictoryCard(){
 	if(developmentCards[VICTORYPOINT] > 0){
@@ -474,7 +458,7 @@ bool Player::playVictoryCard(){
 
 /**
  * Plays a knight card if it exists. This means the player will move the Knight and gain 1 random resource from a player around the robber's new position
- * @ param Coordinate of the robber's new position and Player& of the opponent to rob
+ * @param Coordinate of the robber's new position and Player& of the opponent to rob
  * @return true if the card was used, false otherwise
  */
 bool Player::playKnight(Coordinate location, Player& opponent){
@@ -495,8 +479,8 @@ bool Player::playKnight(Coordinate location, Player& opponent){
 
 /**
  * Plays a year of plenty card if it exists. This means the player will gain 2 of 1 resource of their choice
- * @ param the resource the player will recieve
- * @ returns true if the card was played, false otherwise
+ * @param the resource the player will recieve
+ * @return true if the card was played, false otherwise
  */
 bool Player::playYearOfPlenty(int resourceType){
 	if(resourceType >= 5)
@@ -513,8 +497,8 @@ bool Player::playYearOfPlenty(int resourceType){
 
 /**
  * Plays a monopoly card if it exists. This means the player will steal all of 1 resource type from all the other players
- * @ param the resource type the player wants to steal
- * @ return true if the card was played, false otherwise
+ * @param The resource type the player wants to steal
+ * @return True if the card was played, false otherwise
  */
 bool Player::playMonopoly(int resourceType){
 	if (resourceType >= 5)
@@ -533,8 +517,8 @@ bool Player::playMonopoly(int resourceType){
 
 /**
  * Plays a road building card if it exists. This means the player will place two roads of their choosing for free
- * @ param the start and end Coordinates of the two roads the Player wants to place
- * @ return true if the card was played
+ * @param the start and end Coordinates of the two roads the Player wants to place
+ * @return true if the card was played
  */
 bool Player::playRoadBuilding(Coordinate start1, Coordinate end1, Coordinate start2, Coordinate end2){
 	if(developmentCards[ROADBUILDING] > 0){
@@ -562,7 +546,9 @@ void Player::setStartingValues(){
 	developmentCards[ROADBUILDING] = 1;
 }
 
-
+/*
+ * @todo Refactor this and the following methods
+ */
 int Player::getDevelopmentCards(int card_type) const{
 	return developmentCards[card_type];
 }
@@ -570,23 +556,27 @@ int Player::getDevelopmentCards(int card_type) const{
 int Player::getVictoryCards() const{
 	return developmentCards[VICTORYPOINT];
 }
+
 int Player::getKnightCards() const{
 	return developmentCards[KNIGHT];
 }
+
 int Player::getYearOfPlentyCards() const{
 	return developmentCards[YEAROFPLENTY];
 }
+
 int Player::getMonopolyCards() const{
 	return developmentCards[MONOPOLY];
 }
+
 int Player::getRoadBuildingCards() const{
 	return developmentCards[ROADBUILDING];
 }
 
 /**
  * The player gives all their resources of a specific resource type. Meant to compliment the Monopoly card
- * @ param the resource type to give
- * @ return the number of resources given
+ * @param the resource type to give
+ * @return the number of resources given
  */
 int Player::giveAllResources(int resourceType){
 	int resource_count = resources[resourceType];
@@ -663,12 +653,12 @@ bool Player::makeBankTrade(std::array<int, 5> offer, std::array<int, 5> demand) 
 }
 
 /**
- * picks any one resource at random for robber to steal
- * @return type of resource to steal
+ * Picks any one resource at random for robber to steal
+ * @return Type of resource to steal
+ * @todo Make this shit actually random
  */
 int Player::getRandomResource()
 {
-	//int total = getWood() + getBrick() + getOre() + getWheat() + getWool();
 	int randomNo = 0;
 
 	if(getWood()!=0 && randomNo <= getWood())
@@ -715,7 +705,7 @@ int Player::getResource(int resourceType) const {
 
 /**
  * Determine if the player has a valid (nonnegative) set of resources.
- * @return If the player's resources are valid.
+ * @return True if the player has a non-zero number of resources, or false otherwise
  */
 
 bool Player::checkResources(int resourceList[5])
@@ -776,7 +766,9 @@ int Player::getWool() const
 }
 
 
-
+/*
+ *@todo Refactor these add* methods
+ */
 
 void Player::addWood(int resource)
 {
@@ -842,7 +834,6 @@ void Player::addWool(int resource)
  * Adds (or subtracts) the amount of resources a player has
  * Param order: wood, brick, ore, wheat, wool
  * @param [resource], the number to add (negative to subtract)
- *
  */
 void Player::addMultiple(int wood, int brick, int ore, int wheat, int wool){
 	addWood(wood);
@@ -878,7 +869,7 @@ void Player::addResource(int resourceType, int delta) {
 /**
  * Check to see if a player's resources are equal to the input
  * @param [resource]x5 the amount of (wood, brick, ore, wheat, wool) you are checking
- * @return bool if the values match
+ * @return True if the player has the specified amounts of resources, or false otherwise
  */
 bool Player::validateResourceAmount(int wood, int brick, int ore, int wheat, int wool){
 	return wood==getWood() && brick==getBrick() && ore==getOre() && wheat==getWheat() && wool==getWool();
@@ -906,7 +897,7 @@ void Player::accept(GameVisitor& visitor) {
 /**
  * Compare equality with another player.
  * @param player The player to test equality with.
- * @return If the other player is equivalent to this player.
+ * @return True if the other player is equivalent to this player, or false otherwise
  */
 bool Player::operator==(const Player& player) const {
 	return getName() == player.getName() &&

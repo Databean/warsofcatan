@@ -1219,7 +1219,7 @@ bool GameBoard::hasWinner() {
  * @return reference to the winner if there is one, null otherwise
  */
 Player& GameBoard::getWinner() const {
-	if (winner != -1 && winner < players.size())
+	if (winner != -1 && winner < (int)players.size())
 		return *players[winner];
 
 	return *players[0];
