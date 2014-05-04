@@ -100,15 +100,12 @@ TEST(DevCardTest, RoadBuildingCard){
 }
 
 void testVictoryPointCard(Player & test_player, bool correct_result){
-	int prevPoints = test_player.getVictoryPointsWithoutCards();
 	int prevCards = test_player.getVictoryCards();
 
 	ASSERT_EQ(test_player.playVictoryCard(), correct_result);
 	if(correct_result){
-		ASSERT_EQ(prevPoints, test_player.getVictoryPointsWithoutCards() -1);
 		ASSERT_EQ(prevCards, test_player.getVictoryCards()+1);
 	}else{
-		ASSERT_EQ(prevPoints, test_player.getVictoryPointsWithoutCards());
 		ASSERT_EQ(prevCards, test_player.getVictoryCards());
 	}
 

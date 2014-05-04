@@ -19,7 +19,7 @@
 #include "GameDice.h"
 #include "Deck.h"
 
-#include "DevelopmentCard.h"
+//#include "DevelopmentCard.h"
 
 
 class GameVisitor;
@@ -64,11 +64,11 @@ private:
 
 	void createRing(Coordinate topRight, int sideLength, std::vector<resourceType>& resources, std::vector<int>& rolls);
 	void insertTile(Coordinate location, std::vector<resourceType>& resources, std::vector<int>& rolls);
-    
+
     std::pair<int, int> startTurn();
     void enableRobber();
     void payoutResources(int roll);
-    
+
 public:
 	GameBoard(const std::vector<std::string>& playerNames);
 	GameBoard(const std::vector<std::string>& playerNames, const std::map<Coordinate, std::pair<resourceType, int>>& resourceLocations);
@@ -112,16 +112,16 @@ public:
 	void PlaceSettlement(Coordinate location, Player& Owner);
 	void UpgradeSettlement(Coordinate location);
 	void UpgradeToWonder(Coordinate location);
-	
+
 	bool verifyRoadPlacement(Coordinate start, Coordinate end, Player& Owner) const;
 	bool buyRoad(Coordinate start, Coordinate end, Player& Owner);
-	
+
 	bool canPlaceSettlement(const Coordinate& location, const Player& owner);
 	bool buySettlement(const Coordinate& location, Player& owner);
-	
+
 	bool canUpgradeSettlement(Coordinate location, const Player& owner) const;
 	bool buyUpgradeOnSettlement(Coordinate location, Player& owner);
-	
+
 	bool canUpgradeToWonder(Coordinate location, const Player& owner) const;
 	bool buyUpgradeOnWonder(Coordinate location, Player& owner);
 
@@ -136,7 +136,7 @@ public:
 	bool operator==(const GameBoard& other) const;
 
 	const std::vector<std::unique_ptr<Player>>& getPlayers() const;
-	
+
 	int getNoOfPlayers();
 	Player& getPlayer(int index);
 

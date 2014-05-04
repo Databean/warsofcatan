@@ -74,9 +74,6 @@ public:
 
     std::tuple<float, float, float> getColor() const;
 
-    int getVictoryPointsWithoutCards();
-    int getVictoryPointCards();
-
     int getDevCardsInHand();
 
     bool buyCard(DevCardType card);

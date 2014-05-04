@@ -19,7 +19,7 @@ private:
 	Player& owner;
 	Coordinate start;
 	Coordinate end;
-	
+
 	bool checkRoad();
 public:
 
@@ -33,14 +33,13 @@ public:
 	Coordinate getStart() const;
 	Coordinate getEnd() const;
 
-	bool equals(const Road& otherRoad);
-	bool equals(const Coordinate& otherStart, const Coordinate& otherEnd);
-	
-	Player& getOwner();
-	const Player& getOwner() const;
-	
-	virtual void accept(GameVisitor& visitor);
 	bool operator==(const Road&) const;
+	bool equals(const Road& otherRoad) const;
+	bool equals(const Coordinate& otherStart, const Coordinate& otherEnd) const;
+
+	Player& getOwner();
+
+	virtual void accept(GameVisitor& visitor);
 };
 
 #endif

@@ -4,6 +4,7 @@
 
 #include "Config.h"
 #include "GameBoard.h"
+#include "ViewElement.h"
 #include "GameView.h"
 #include "Renderer.h"
 #include "Player.h"

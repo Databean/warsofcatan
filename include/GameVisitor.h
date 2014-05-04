@@ -12,7 +12,8 @@ class GameDice;
 class Wonder;
 
 /**
- * A class to be extended with callbacks to handle the different classes in the model. 
+ * A class to be extended with callbacks to handle the different classes in the model.
+ * Specific subclasses of this visitor pattern are used in Serialization and GameView
  */
 class GameVisitor {
 private:

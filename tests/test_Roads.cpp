@@ -50,7 +50,7 @@ TEST(RoadTest, road_equals_Road){
 	Coordinate start_1 = Coordinate(0,0);
 	Coordinate end_1 = Coordinate(0,1);
 
-	GameBoard board({"tester", "tester_2", "tester_3"});
+	GameBoard board({"tester", "tester_2"});
 	Player& test_player_1 = board.getPlayer(0);
 	Road test_road_1(start_1, end_1, test_player_1);
 
@@ -62,11 +62,41 @@ TEST(RoadTest, road_equals_Road){
 
 	Coordinate start_3 = Coordinate(1,1);
 	Coordinate end_3 = Coordinate(1,2);
-	Player& test_player_3 = board.getPlayer(2);
-	Road test_road_3(start_3, end_3, test_player_3);
+	Road test_road_3(start_3, end_3, test_player_1);
 
-	ASSERT_TRUE(test_road_1.equals(test_road_2));
+	Road test_road_4(end_1, start_1, test_player_1);
+
+	ASSERT_FALSE(test_road_1.equals(test_road_2));
 	ASSERT_FALSE(test_road_1.equals(test_road_3));
+	ASSERT_TRUE(test_road_1.equals(test_road_4));
+	ASSERT_TRUE(test_road_1.equals(test_road_1));
+}
+
+TEST(RoadTest, road_equals_operator){
+	Coordinate start_1 = Coordinate(0,0);
+	Coordinate end_1 = Coordinate(0,1);
+
+	GameBoard board({"tester", "tester_2"});
+	Player& test_player_1 = board.getPlayer(0);
+	Road test_road_1(start_1, end_1, test_player_1);
+
+
+	Coordinate start_2 = Coordinate(0,1);
+	Coordinate end_2 = Coordinate(0,0);
+	Player& test_player_2 = board.getPlayer(1);
+	Road test_road_2(start_2, end_2, test_player_2);
+
+	Coordinate start_3 = Coordinate(1,1);
+	Coordinate end_3 = Coordinate(1,2);
+	Road test_road_3(start_3, end_3, test_player_1);
+
+	Road test_road_4(end_1, start_1, test_player_1);
+
+	ASSERT_FALSE(test_road_1 == test_road_2);
+	ASSERT_FALSE(test_road_1 == test_road_3);
+	ASSERT_TRUE(test_road_1 == test_road_4);
+	ASSERT_TRUE(test_road_1 == test_road_1);
+
 }
 
 TEST(RoadTest, road_equals_Coordinate){

@@ -13,30 +13,24 @@
  */
 Deck::Deck()
 {
-	// TODO Auto-generated constructor stub
 	for(int i = 0; i < 15; i++)
 	{
-//		DevelopmentCard* card = new KnightCard();
 		this->deck.push_back(KNIGHT);
 	}
 	for(int i = 0; i < 4; i++)
 	{
-//		DevelopmentCard* card = new VictoryPointCard();
 		this->deck.push_back(VICTORYPOINT);
 	}
 	for(int i = 0; i < 2; i++)
 	{
-//		DevelopmentCard* card = new YearOfPlentyCard();
 		this->deck.push_back(YEAROFPLENTY);
 	}
 	for(int i = 0; i < 2; i++)
 	{
-//		DevelopmentCard* card = new MonopolyCard();
 		this->deck.push_back(MONOPOLY);
 	}
 	for(int i = 0; i < 2; i++)
 	{
-//		DevelopmentCard* card = new RoadBuildingCard();
 		this->deck.push_back(ROADBUILDING);
 	}
     
@@ -49,19 +43,7 @@ Deck::Deck()
 Deck::~Deck() {
 	// TODO Auto-generated destructor stub
 
-//	while(!this->deck.empty())
-//	{
-//		delete this->deck.back();
-//		this->deck.pop_back();
-//		//std::cout<<":";
-//	}
-//
-//    while(!this->discardPile.empty())
-//	{
-//		delete this->discardPile.back();
-//		this->discardPile.pop_back();
-//		//std::cout<<":";
-//	}
+
 }
 
 /**
