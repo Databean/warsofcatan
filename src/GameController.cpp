@@ -41,7 +41,7 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 		font, fontSize, getGraphicsConfig()["screen.wonderButton.text"]));
 	
 	view.addElement(makeViewButtonText(
-		std::bind(&GameController::nextTurn, this, _1), 
+		std::bind(&GameController::handleNextTurnButtonEvent, this, _1),
 		getGraphicsConfig()["screen.endTurnButton.area"],							
 		font, fontSize, "End Turn"));
 	
@@ -112,7 +112,7 @@ GameController::GameController(GameBoard& model, GameView& view) : model(model),
 		font, fontSize, getGraphicsConfig()["screen.wheatButton.text"]));
 	
 	view.addElement(makeViewButtonText(
-		std::bind(&GameController::viewCardTotals, this, _1), 
+		std::bind(&GameController::handleViewCardTotalsButtonEvent, this, _1),
 		getGraphicsConfig()["screen.showTotalButton.area"],
 		font, fontSize, getGraphicsConfig()["screen.showTotalButton.text"]));
 	
@@ -207,7 +207,7 @@ int GameController::getClickHistorySize(){
 /**
  *  calls a function to advance turn, hide resource and development cards, check for victory, and roll dice
  */
-bool GameController::nextTurn(ScreenCoordinate) {
+bool GameController::handleNextTurnButtonEvent(ScreenCoordinate) {
 	if(getState() != BASESTATE){
 		return false;
 	}
@@ -492,7 +492,7 @@ bool GameController::handleVictoryPointCardButtonEvent(ScreenCoordinate coord){
 /**
  * Makes the development and resource card totals visible
  */
-bool GameController::viewCardTotals(ScreenCoordinate coord)
+bool GameController::handleViewCardTotalsButtonEvent(ScreenCoordinate coord)
 {
     auto font = getGraphicsConfig()["font.path"];
 	auto fontSize = getGraphicsConfig()["font.size"];

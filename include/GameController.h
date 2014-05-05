@@ -34,7 +34,7 @@ public:
 	GameController(GameBoard&, GameView& view);
 	~GameController();
 	
-	bool nextTurn(ScreenCoordinate);
+	bool handleNextTurnButtonEvent(ScreenCoordinate);
 	bool handleBoardEvent(ScreenCoordinate);
 	bool handleRoadButtonEvent(ScreenCoordinate);
 	bool handleSettlementButtonEvent(ScreenCoordinate);
@@ -59,7 +59,7 @@ public:
 	bool handleConfirmRoadCard(ScreenCoordinate);
 	bool handleCancelDialogueEvent(ScreenCoordinate);
     
-    bool viewCardTotals(ScreenCoordinate coord);
+    bool handleViewCardTotalsButtonEvent(ScreenCoordinate coord);
 
 	void pushState(ControlState);
 	ControlState getState();
